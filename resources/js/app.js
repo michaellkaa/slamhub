@@ -1,4 +1,4 @@
-import "./bootstrap";
+import '../css/output.css';
 import { createApp } from "vue";
 
 import App from "./App.vue";
