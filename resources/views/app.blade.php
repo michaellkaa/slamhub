@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Laravel</title>
-        <link href="/resources/css/output.css" rel="stylesheet">
+        <!--<link href="/resources/css/output.css" rel="stylesheet">-->
 
     </head>
     <body>
