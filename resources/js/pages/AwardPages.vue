@@ -1,7 +1,7 @@
 <template>
-    <div class="bg-[#1C1C1C] w-screen h-screen flex overflow-hidden"> 
-        <div class="h-full z-10 shadow-[4px_0_15px_rgba(0,0,0,0.4)]">
-            <SideNav />
+    <div class="bg-[#FFF7CC] w-screen h-screen flex overflow-hidden"> 
+        <div class="h-full rounded-3xl z-10 shadow-[4px_0_15px_rgba(0,0,0,0.4)]">
+            <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
         </div>
         <div class="flex-1 flex flex-col mt-28 overflow-y-auto"> 
             <div class="grid grid-cols-2 gap-4 w-full px-4">
@@ -25,5 +25,10 @@ import SwitchTitle from '../components/SwitchTitle.vue'
 
 import { ref } from 'vue' 
 const activeTab = ref('leaderboard') 
+const activeNav = ref('award') 
 
+
+const handleNavigate = (nav) => {
+  activeNav.value = nav;
+};
 </script>
