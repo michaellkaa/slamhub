@@ -6,7 +6,10 @@
           Přihlas se
         </h1>
         <LoginForm />
-        <p class="my-2">nebo <a href="">se registruj</a></p>
+            <p class="mt-3">
+      nebo 
+      <router-link to="/register" class="text-[#DF68CF] font-bold">se registruj</router-link>
+    </p>
       </div>
     </div>
     <div class="h-auto w-full z-10 shadow-[0_0_15px_6px_rgba(0,0,0,0.4)]">
