@@ -29,9 +29,14 @@ class User extends Authenticatable
         'is_banned' => 'boolean',
     ];
 
-    // vztah k profilům tvůrců (performer / organizer)
-    public function creatorProfile()
+    public function performer()
     {
-        return $this->hasOne(CreatorProfile::class);
+        return $this->hasOne(Performer::class);
     }
+
+    public function organizer()
+    {
+        return $this->hasOne(Organizer::class);
+    }
+
 }

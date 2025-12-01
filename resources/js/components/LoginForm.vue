@@ -35,6 +35,9 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const email = ref('');
 const password = ref('');
@@ -47,8 +50,14 @@ const login = async () => {
       email: email.value,
       password: password.value,
     });
+
     console.log('User logged in:', res.data);
-    // uložit token, přesměrovat na dashboard
+
+    localStorage.setItem('token', res.data.access_token);
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+
+    router.push('/');
   } catch (err) {
     error.value = err.response?.data?.message || 'Chyba přihlášení';
   }

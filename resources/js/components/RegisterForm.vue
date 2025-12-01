@@ -42,6 +42,9 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const name = ref('');
 const email = ref('');
@@ -58,8 +61,10 @@ const register = async () => {
       password: password.value,
       password_confirmation: password_confirmation.value,
     });
+
     console.log('Registered user:', response.data);
-    // po registraci můžeš přesměrovat na login nebo rovnou přihlásit
+
+    router.push('/');
   } catch (err) {
     if (err.response && err.response.data) {
       error.value = err.response.data.message || 'Chyba při registraci';
