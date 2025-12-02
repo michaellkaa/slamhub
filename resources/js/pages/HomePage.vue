@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen flex bg-gradient-to-r from-yellow-100 via-pink-100 to-purple-100">
+  <div class="w-screen h-screen flex bg-[#0f0f12]">
     <div class="h-full z-10 shadow-[4px_0_15px_rgba(0,0,0,0.2)]">
       <SideNav />
     </div>
