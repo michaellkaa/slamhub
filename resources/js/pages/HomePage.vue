@@ -6,10 +6,9 @@
 
     <div class="flex-1 flex gap-6 p-6 overflow-hidden">
       <div
-        class="flex-1 rounded-xl shadow-lg p-4 overflow-y-auto max-h-[90vh] bg-yellow-50"
+        class="flex-1 rounded-xl  p-4 overflow-y-auto max-h-[90vh]"
         style="scroll-snap-type: y mandatory;"
       >
-        <h2 class="font-bold text-purple-700 mb-4">Nová videa</h2>
         <div
         v-for="n in 5"
         :key="n"
@@ -17,9 +16,8 @@
         style="scroll-snap-align: start;"
         >
         <!-- 16:9 frame, centrovaný -->
-        <div class="w-full max-w-md bg-gray-300 rounded-lg aspect-video"></div>
-        <div class="h-4 bg-gray-300 rounded w-3/4"></div>
-        <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+        <div class="w-full h-full max-w-md bg-gray-300 rounded-lg aspect-[9/16] mt-6 "></div>
+
         </div>
 
       </div>
