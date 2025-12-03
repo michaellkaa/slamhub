@@ -65,8 +65,8 @@
         stroke-linecap="round" 
         stroke-linejoin="round"
         class="feather feather-send cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
-        :class="isActive('/send')"
-        @click="goTo('/send')"
+        :class="isActive('/messages')"
+        @click="goTo('/messages')"
       >
         <line x1="22" y1="2" x2="11" y2="13"/>
         <polygon points="22 2 15 22 11 13 2 9 22 2"/>

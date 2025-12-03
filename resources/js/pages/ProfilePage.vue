@@ -47,14 +47,14 @@
         <button class="text-gray-400 hover:text-white">O mně</button>
       </div>
 
-      <div class="grid grid-cols-5  mt-8">
+      <div class="grid grid-cols-3 w-[70%] mt-8">
                 <div
         v-for="n in 5"
         :key="n"
-        class="mb-6 flex flex-col items-center justify-center "
+        class="p-3"
         style="scroll-snap-align: start;"
         >
-        <div class="w-[50%]  max-w-md bg-gray-300 rounded-lg aspect-[9/16] mt-6 "></div>
+        <div class="w-full max-w-md bg-gray-300 rounded-lg aspect-[9/16] mt-6 "></div>
 
         </div>
       </div>

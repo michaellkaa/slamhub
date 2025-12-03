@@ -5,7 +5,6 @@
         <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
       </div>
   
-      <!-- Obsah stránky -->
       <div class="flex-1 flex flex-col mt-4 lg:mt-28 overflow-y-auto pb-28 lg:pb-0">
         <div class="grid grid-cols-2 gap-4 w-full px-4">
           <SwitchTitle text="Liga" :isActive="activeTab === 'league'" @click="activeTab = 'league'" />

@@ -5,6 +5,8 @@ import HomePage from "./pages/HomePage.vue";
 import LoginPage from "./pages/LoginPage.vue";
 import RegisterPage from './pages/RegisterPage.vue';
 import ProfilePage from "./pages/ProfilePage.vue";
+import EventPage from "./pages/EventPage.vue";
+import DirectMessages from "./pages/DirectMessages.vue";
 
 
 const routes = [
@@ -14,6 +16,8 @@ const routes = [
     { path: "/login", name: "login", component: LoginPage },
     { path: '/register', component: RegisterPage },
     { path: '/profile', component: ProfilePage },
+    { path: '/events', component: EventPage },
+    { path: '/messages', component: DirectMessages },
 
 ];
 

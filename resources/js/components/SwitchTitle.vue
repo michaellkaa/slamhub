@@ -3,7 +3,7 @@
       @click="$emit('click')"
       :class="[
         'cursor-pointer uppercase text-[38px] lg:text-lg pb-2 transition-colors duration-300 relative text-center font-bold tracking-wider mt-28 lg:mt-0',
-        isActive ? 'text-[#BF2679]' : 'text-[#DF68CF]'
+        isActive ? 'text-[#E1FF00]' : 'text-[#bf267a]'
       ]"
     >
       {{ text }}
