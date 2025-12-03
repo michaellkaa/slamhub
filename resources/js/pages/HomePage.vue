@@ -16,15 +16,15 @@
         style="scroll-snap-align: start;"
         >
         <!-- 16:9 frame, centrovaný -->
-        <div class="w-full h-full max-w-md bg-gray-300 rounded-lg aspect-[9/16] mt-6 "></div>
+        <div class="w-full h-full max-w-md bg-gray-300 rounded-lg aspect-[9/16] mt-5 "></div>
 
         </div>
 
       </div>
 
       <div class="w-80 flex flex-col gap-6 overflow-y-auto max-h-[90vh]">
-        <div class="rounded-xl shadow-lg p-4 animate-pulse" style="background-color:#FFD6F0">
-          <h2 class="font-bold text-pink-700 mb-4">Sleduj lidi</h2>
+        <div class="rounded-xl shadow-lg p-4 " style="border: 2px solid #FFD6F0">
+          <h2 class="font-bold text-pink-300 mb-4">Sleduj lidi</h2>
           <div v-for="n in 4" :key="'people-' + n" class="flex items-center mb-3">
             <div class="w-12 h-12 rounded-full bg-gray-300 mr-3"></div>
             <div class="flex-1">
@@ -34,8 +34,8 @@
           </div>
         </div>
 
-        <div class="rounded-xl shadow-lg p-4 animate-pulse" style="background-color:#C6F0FF">
-          <h2 class="font-bold text-blue-700 mb-4">Blížící se akce</h2>
+        <div class="rounded-xl shadow-lg p-4 " style="border: 2px solid #C6F0FF">
+          <h2 class="font-bold text-blue-300 mb-4">Blížící se akce</h2>
           <div v-for="n in 3" :key="'event-' + n" class="mb-3">
             <div class="h-4 bg-gray-300 rounded mb-1 w-3/4"></div>
             <div class="h-3 bg-gray-300 rounded w-1/2"></div>
