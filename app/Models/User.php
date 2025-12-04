@@ -31,12 +31,12 @@ class User extends Authenticatable
 
     public function performer()
     {
-        return $this->hasOne(Performer::class);
+        return $this->hasOne(Performer::class); //tady musim doplnit model zejo
     }
 
     public function organizer()
     {
-        return $this->hasOne(Organizer::class);
+        return $this->hasOne(Organizer::class); //tady musim doplnit model zejo
     }
 
 }

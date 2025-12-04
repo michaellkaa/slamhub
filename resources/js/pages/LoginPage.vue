@@ -6,7 +6,7 @@
           Přihlas se
         </h1>
         <LoginForm />
-            <p class="mt-3">
+            <p class="">
       nebo 
       <router-link to="/register" class="text-[#DF68CF] font-bold">se registruj</router-link>
     </p>
