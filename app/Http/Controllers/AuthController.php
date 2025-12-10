@@ -10,20 +10,28 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        $validated = $request->validate( [
+        //'username' => 'required|string|max:255|unique:users,username',
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
+    ],
+    [
+        'username.unique' => 'Toto uživatelské jméno je již zabrané.',
+        'email.unique' => 'Tento email je již použitý.',
+        'password.min' => 'Heslo musí mít alespoň 8 znaků.',
+        'password.confirmed' => 'Hesla se neshodují.',
+    ]);
 
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => 'user',
+            //'username' => $validated['username'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => 'use',
         ]);
 
-        return response()->json($user, 201);
+        return response()->json(['message' => 'Registrace proběhla úspěšně', 'user' => $user], 201);
     }
 
     public function login(Request $request)
@@ -51,8 +59,10 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logged out']);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Odhlášení proběhlo úspěšně']);
     }
 
     public function me(Request $request)

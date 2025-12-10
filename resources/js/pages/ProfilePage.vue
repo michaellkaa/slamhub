@@ -15,6 +15,7 @@
 
     <div class="flex flex-col gap-2 flex-1">
       <div class="flex items-center gap-4">
+        <div class="text-blue-500">{{ user.name }} njj</div>
         <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
         <div class="h-6 w-32 bg-[#1d1d21] rounded"></div>
       </div>
@@ -53,9 +54,37 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 import SideNav from '../components/SideNav.vue'
 
+const user = ref({})
+async function logout() {
+  try {
+    const response = await fetch('/logout', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
 
+    if (!response.ok) throw new Error('Logout failed')
+    window.location.href = '/login'
+  } catch (error) {
+    console.error('Logout selhal', error)
+  }
+}
+
+
+onMounted(async () => {
+  const resUser = await fetch('/api/user', { credentials: 'include' })
+  if (resUser.ok) {
+    user.value = await resUser.json()
+  }
+
+})
 </script>
 
 
