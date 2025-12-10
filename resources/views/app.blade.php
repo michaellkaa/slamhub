@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Laravel</title>
-        <!--<link href="/resources/css/output.css" rel="stylesheet">-->
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/svg+xml">
 
-    </head>
-    <body>
-        <div id="app">
-            <example-component />
-        </div>
-    </body>
-    @vite(['resources/js/app.js'])
+    <title>Title</title>
+
+    @vite('resources/css/output.css')
+  </head>
+  <body class="antialiased bg-gray-100 text-gray-900">
+    <div id="app"></div>
+
+    @vite('resources/js/app.js')
+  </body>
 </html>
