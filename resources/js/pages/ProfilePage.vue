@@ -15,9 +15,9 @@
 
     <div class="flex flex-col gap-2 flex-1">
       <div class="flex items-center gap-4">
-        <div class="text-blue-500">{{ user.name }}</div>
-        <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
-        <div class="h-6 w-32 bg-[#1d1d21] rounded"></div>
+        <div class="font-bold tracking-wider">{{ user.name }}</div>
+        <!--<div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
+        <div class="h-6 w-32 bg-[#1d1d21] rounded"></div>-->
       </div>
       <div class="h-4 w-32 bg-[#1d1d21] rounded"></div>
       <div class="h-4 w-64 bg-[#1d1d21] rounded"></div>
