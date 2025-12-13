@@ -2,37 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
-    {
-        $validated = $request->validate( [
-        //'username' => 'required|string|max:255|unique:users,username',
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email',
-        'password' => 'required|string|min:8|confirmed',
-    ],
-    [
-        'username.unique' => 'Toto uživatelské jméno je již zabrané.',
-        'email.unique' => 'Tento email je již použitý.',
-        'password.min' => 'Heslo musí mít alespoň 8 znaků.',
-        'password.confirmed' => 'Hesla se neshodují.',
+{
+    $validated = $request->validate(
+        [
+            'username' => 'required|string|max:50|unique:users,username',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ],
+        [
+            'username.unique' => 'Toto uživatelské jméno je již zabrané.',
+            'email.unique' => 'Tento email je již použitý.',
+            'password.min' => 'Heslo musí mít alespoň 8 znaků.',
+            'password.confirmed' => 'Hesla se neshodují.',
+        ]
+    );
+
+    $user = User::create([
+        'username' => $validated['username'],
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'role' => 'user',
+        'profile_pic' => 'profile_pics/default-avatar.png',
     ]);
 
-        $user = User::create([
-            //'username' => $validated['username'],
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'use',
-        ]);
-
-        return response()->json(['message' => 'Registrace proběhla úspěšně', 'user' => $user], 201);
-    }
+    return response()->json([
+        'message' => 'Registrace proběhla úspěšně',
+        'user' => $user,
+    ], 201);
+}
 
     public function login(Request $request)
     {
@@ -44,11 +50,24 @@ class AuthController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json([
+                'message' => 'Nesprávný email nebo heslo'
+            ], 401);
         }
 
-        // login přes Sanctum
+        if ($user->is_banned) {
+            return response()->json([
+                'message' => 'Účet je zablokován'
+            ], 403);
+        }
+
+        $user->tokens()->delete();
+
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $user->update([
+            'last_login_at' => now(),
+        ]);
 
         return response()->json([
             'access_token' => $token,
@@ -59,10 +78,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Odhlášení proběhlo úspěšně']);
+        return response()->json([
+            'message' => 'Odhlášení proběhlo úspěšně'
+        ]);
     }
 
     public function me(Request $request)

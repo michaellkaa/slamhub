@@ -55,6 +55,24 @@ class ProfileController extends Controller
 
         return response()->json(['message' => 'uživatel je nyní admin']);
     }
+    
+    public function uploadPhoto(Request $request)
+{
+    $request->validate([
+        'photo' => 'required|image|max:2048',
+    ]);
 
+    $user = $request->user();
+
+    $path = $request->file('photo')->store('profile_pics', 'public');
+
+    $user->profile_pic = $path;
+    $user->save();
+
+    return response()->json([
+        'message' => 'Profilovka úspěšně nahrána',
+        'profile_pic_url' => $user->profile_pic_url
+    ]);
+}
 
 }

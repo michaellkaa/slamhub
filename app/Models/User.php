@@ -4,19 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
+        'username',
         'name',
         'email',
+        'birthdate',
         'password',
+        'profile_pic',
         'role',
         'is_banned',
+        'last_login_at',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -25,18 +30,35 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'birthdate'         => 'date',
         'email_verified_at' => 'datetime',
-        'is_banned' => 'boolean',
+        'last_login_at'     => 'datetime',
+        'is_banned'         => 'boolean',
     ];
 
-    public function performer()
+    // Přidá Accessor do JSONu
+    protected $appends = ['profile_pic_url'];
+
+    public function isAdmin(): bool
     {
-        //return $this->hasOne(Performer::class); //tady musim doplnit model zejo
+        return $this->role === 'admin';
     }
 
-    public function organizer()
+    public function isModerator(): bool
     {
-        //return $this->hasOne(Organizer::class); //tady musim doplnit model zejo
+        return in_array($this->role, ['moderator', 'admin']);
     }
 
+    public function isBanned(): bool
+    {
+        return $this->is_banned;
+    }
+
+    public function getProfilePicUrlAttribute(): string
+    {
+        return $this->profile_pic
+            ? asset('storage/' . $this->profile_pic)
+            : asset('images/default-avatar.png');
+    }
 }
+

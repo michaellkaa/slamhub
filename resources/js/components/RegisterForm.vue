@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col gap-5 px-8 pt-6 pb-8 w-full max-w-sm">
+
     <input
       type="text"
       v-model="name"
@@ -7,6 +8,15 @@
       class="p-3 px-10"
       required
     />
+
+    <input
+      type="text"
+      v-model="username"
+      placeholder="Uživatelské jméno"
+      class="p-3 px-10"
+      required
+    />
+
     <input
       type="email"
       v-model="email"
@@ -14,6 +24,7 @@
       class="p-3 px-10"
       required
     />
+
     <input
       type="password"
       v-model="password"
@@ -21,6 +32,7 @@
       class="p-3 px-10"
       required
     />
+
     <input
       type="password"
       v-model="password_confirmation"
@@ -28,6 +40,7 @@
       class="p-3 px-10"
       required
     />
+
     <button
       @click="register"
       class="bg-[#DF68CF] text-white uppercase font-bold p-3 rounded-md"
@@ -46,6 +59,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
+const username = ref('');
 const name = ref('');
 const email = ref('');
 const password = ref('');
@@ -54,8 +68,10 @@ const error = ref('');
 
 const register = async () => {
   error.value = '';
+
   try {
     const response = await axios.post('/api/register', {
+      username: username.value,
       name: name.value,
       email: email.value,
       password: password.value,
@@ -63,14 +79,15 @@ const register = async () => {
     });
 
     console.log('Registered user:', response.data);
-
     router.push('/');
   } catch (err) {
-    if (err.response && err.response.data) {
-      error.value = err.response.data.message || 'Chyba při registraci';
+    if (err.response?.status === 422) {
+      const errors = err.response.data.errors;
+      error.value = Object.values(errors)[0][0];
     } else {
       error.value = 'Chyba při registraci';
     }
   }
 };
+
 </script>
