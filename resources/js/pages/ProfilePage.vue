@@ -58,6 +58,7 @@
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
+    <CreateButton @create="handleCreate" />
 
   </div>
 </template>
@@ -67,6 +68,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import SideNav from '../components/SideNav.vue'
+import CreateButton from '../components/CreateButton.vue'
 
 const user = ref(null)
 const fileInput = ref(null)
@@ -106,5 +108,14 @@ const uploadPhoto = async (event) => {
   }
 }
 
+const handleCreate = (type) => {
+  if (type === 'event') {
+    console.log('Otevři modal pro přidání Eventu')
+  } else if (type === 'post') {
+    console.log('Otevři modal pro přidání Postu')
+  } else if (type === 'video') {
+    console.log('Otevři modal pro přidání Video')
+  }
+}
 </script>
 

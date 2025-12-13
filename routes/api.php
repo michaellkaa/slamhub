@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController; 
+use App\Http\Controllers\EventController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,3 +21,7 @@ Route::get('/auth/google/redirect', [GoogleController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 Route::middleware('auth:sanctum')->post('/profile/photo', [ProfileController::class, 'uploadPhoto']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/events', [EventController::class, 'store']);
+});
