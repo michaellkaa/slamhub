@@ -1,36 +1,37 @@
 <template>
-  <div class="fixed bottom-8 right-8 flex flex-col items-end">
-    <transition name="fade">
-      <div v-if="menuOpen" class="mb-2 flex flex-col gap-3">
-        <button @click="onCreate('event')"
-                class="bg-white text-black px-4 py-2 rounded shadow hover:bg-gray-200 transition">
-          Přidat Event
-        </button>
-        <button @click="onCreate('post')"
-                class="bg-white text-black px-4 py-2 rounded shadow hover:bg-gray-200 transition">
-          Přidat Post
-        </button>
-        <button @click="onCreate('video')"
-                class="bg-white text-black px-4 py-2 rounded shadow hover:bg-gray-200 transition">
-          Přidat Video
+  <div v-if="user && (user.role === 'performer' || user.role === 'organizer')" class="fixed bottom-8 right-8 flex flex-col items-end z-50">
+    <transition name="slide-fade">
+      <div v-if="menuOpen" class="flex flex-col items-end mb-3 gap-3">
+        <button
+          v-for="item in filteredMenuItems"
+          :key="item.type"
+          @click="onCreate(item.type)"
+          class="w-40 text-white text-sm font-semibold border-b border-transparent hover:border-pink-500 hover:text-pink-400 transition-all text-right"
+        >
+          {{ item.label }}
         </button>
       </div>
     </transition>
 
     <button
       @click="toggleMenu"
-      class="w-16 h-16 bg-[#DF68CF] text-white rounded-full flex items-center justify-center shadow-xl hover:bg-pink-600 transition"
+      class="w-20 h-20 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-pink-600 transition-transform transform hover:scale-110"
     >
-      +
+      <span class="text-3xl font-bold">+</span>
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, computed } from 'vue'
 
 const menuOpen = ref(false)
-const emit = defineEmits(['create'])
+
+const menuItems = ref([
+  { type: 'event', label: 'Přidat Event', roles: ['organizer'] },
+  { type: 'post', label: 'Přidat Post', roles: ['organizer', 'performer'] },
+  { type: 'video', label: 'Přidat Video', roles: ['organizer', 'performer'] },
+])
 
 const toggleMenu = () => {
   menuOpen.value = !menuOpen.value
@@ -40,13 +41,27 @@ const onCreate = (type) => {
   menuOpen.value = false
   emit('create', type)
 }
+
+const emit = defineEmits(['create'])
+
+const props = defineProps({
+  user: Object
+})
+
+const filteredMenuItems = computed(() => {
+  if (!props.user) return []
+  return menuItems.value.filter(item => item.roles.includes(props.user.role))
+})
 </script>
 
 <style>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.2s;
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.2s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.slide-fade-enter-from,
+.slide-fade-leave-to {
   opacity: 0;
+  transform: translateY(10px);
 }
 </style>
