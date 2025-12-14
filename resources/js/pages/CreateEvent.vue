@@ -60,7 +60,6 @@
         </button>
       </form>
 
-      <!-- PerfModal komponenta -->
       <PerfModal
         v-model="showModal"
         :performers="performers"
@@ -135,7 +134,10 @@ const submitEvent = async () => {
     }
   }
 
-  // Přidat user_id pokud je přihlášený
+  guestPerformers.value.forEach((guest, i) => {
+    formData.append(`guest_performers[${i}]`, guest)
+  })
+
   try {
     const userRes = await axios.get('/api/me')
     formData.append('user_id', userRes.data.id)
@@ -164,4 +166,5 @@ const submitEvent = async () => {
     alert(JSON.stringify(err.response?.data))
   }
 }
+
 </script>

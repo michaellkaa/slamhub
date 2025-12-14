@@ -19,8 +19,7 @@ class EventController extends Controller
     }
 
 
-    public function store(Request $request)
-
+public function store(Request $request)
 {
     $data = $request->validate([
         'title' => 'required|string|max:255',
@@ -32,6 +31,8 @@ class EventController extends Controller
         'cover_image' => 'nullable|image|max:2048',
         'performers' => 'nullable|array',
         'performers.*' => 'exists:users,id',
+        'guest_performers' => 'nullable|array',
+        'guest_performers.*' => 'string|max:255',
     ]);
 
     $data['user_id'] = Auth::id();
@@ -47,8 +48,14 @@ class EventController extends Controller
         $event->performers()->sync($data['performers']);
     }
 
+    if (!empty($data['guest_performers'])) {
+        $event->guest_performers = $data['guest_performers'];
+        $event->save();
+    }
+
     return response()->json($event, 201);
 }
+
 
 
 

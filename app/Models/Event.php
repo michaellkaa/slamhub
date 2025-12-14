@@ -19,11 +19,13 @@ class Event extends Model
         'location',
         'ticket_url',
         'cover_image',
+        'guest_performers',
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at'   => 'datetime',
+        'guest_performers' => 'array',
     ];
 
     public function organizer()
