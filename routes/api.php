@@ -26,3 +26,4 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/performers', [PerformerController::class, 'index']);
+Route::get('/events', [EventController::class, 'apiIndex']);

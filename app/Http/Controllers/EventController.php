@@ -66,4 +66,11 @@ public function store(Request $request)
             'events' => $events
         ]);
     }
+
+    public function apiIndex()
+{
+    $events = Event::with('performers', 'organizer')->orderBy('starts_at', 'desc')->get();
+    return response()->json($events);
+}
+
 }
