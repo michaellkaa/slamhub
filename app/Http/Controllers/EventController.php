@@ -52,6 +52,8 @@ public function store(Request $request)
         $event->guest_performers = $data['guest_performers'];
         $event->save();
     }
+    
+
 
     return response()->json($event, 201);
 }

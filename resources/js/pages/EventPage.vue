@@ -14,12 +14,18 @@
           </section>
 
           <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <EventCard
-              v-for="i in loading ? 3 : events.length"
-              :key="loading ? i : events[i-1].id"
-              :event="loading ? {} : events[i-1]"
-              :loading="loading"
-            />
+            <template v-if="loading">
+              <EventCard v-for="i in 3" :key="'skeleton-' + i" :loading="true" />
+            </template>
+
+            <template v-else>
+              <EventCard
+                v-for="event in events"
+                :key="event.id"
+                :event="event"
+                :loading="false"
+              />
+            </template>
           </section>
 
         </div>

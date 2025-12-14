@@ -11,31 +11,28 @@
     </template>
 
     <template v-else>
-      <div v-if="event.cover_image">
-        <img :src="event.cover_image" class="h-28 w-full object-cover" />
-      </div>
+<img 
+  :src="event.cover_image ? `/storage/${event.cover_image}` : '/storage/events/slam.jpg'" 
+  class="h-28 w-full object-cover" 
+/>
       <div class="p-4 space-y-2 flex-1">
-        <h2 class="text-white font-bold text-lg truncate">{{ event.title }}</h2>
-        <p class="text-white/60 text-sm truncate">{{ formatDate(event.starts_at) }}</p>
-        <p class="text-white/70 text-sm truncate">{{ event.location }}</p>
-        
+        <h2 class="text-white font-bold text-lg truncate">{{ event.title || 'Bez názvu' }}</h2>
+        <p class="text-white/60 text-sm truncate">{{ formatDate(event.starts_at) || '-' }}</p>
+        <p class="text-white/70 text-sm truncate">{{ event.location || '-' }}</p>
       </div>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
 const props = defineProps({
-  event: { type: Object, required: false, default: () => ({}) },
+  event: { type: Object, default: () => ({}) },
   loading: { type: Boolean, default: true }
 })
 
 const formatDate = (value) => {
   if (!value) return ''
-  const date = new Date(value)
-  return date.toLocaleString()
+  return new Date(value).toLocaleString()
 }
 </script>
 
