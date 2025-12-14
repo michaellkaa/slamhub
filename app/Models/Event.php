@@ -14,12 +14,25 @@ class Event extends Model
         'user_id',
         'title',
         'description',
-        'date',
+        'starts_at',
+        'ends_at',
         'location',
+        'ticket_url',
+        'cover_image',
+    ];
+
+    protected $casts = [
+        'starts_at' => 'datetime',
+        'ends_at'   => 'datetime',
     ];
 
     public function organizer()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function performers()
+    {
+        return $this->belongsToMany(User::class, 'event_performer');
     }
 }

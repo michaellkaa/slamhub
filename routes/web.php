@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\EventController;
 
 
 /*
@@ -25,4 +26,11 @@ Route::get('/{any}', function () {
 
 Route::get('/test', function () {
     return Inertia::render('Test');
+});
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/events/create', [EventController::class, 'createPage'])->name('events.create');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
 });

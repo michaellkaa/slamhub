@@ -8,27 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('user_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            $table->string('title');
-            $table->text('description')->nullable();
-
-            $table->dateTime('starts_at');
-            $table->dateTime('ends_at')->nullable();
-
-            $table->string('location');
-            $table->string('ticket_url')->nullable();
-
-            $table->string('cover_image')->nullable();
-
-            $table->timestamps();
-        });
-
         Schema::create('event_performer', function (Blueprint $table) {
             $table->id();
 
@@ -47,6 +26,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('event_performer');
-        Schema::dropIfExists('events');
     }
 };

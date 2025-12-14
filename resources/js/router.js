@@ -7,7 +7,7 @@ import RegisterPage from './pages/RegisterPage.vue';
 import ProfilePage from "./pages/ProfilePage.vue";
 import EventPage from "./pages/EventPage.vue";
 import DirectMessages from "./pages/DirectMessages.vue";
-
+import CreateEvent from "./pages/CreateEvent.vue";
 
 const routes = [
     
@@ -18,7 +18,7 @@ const routes = [
     { path: '/profile', component: ProfilePage },
     { path: '/events', component: EventPage },
     { path: '/messages', component: DirectMessages },
-
+    {path: '/events/create', name: 'CreateEvent', component: CreateEvent },
 ];
 
 export default createRouter({

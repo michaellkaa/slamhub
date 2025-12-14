@@ -3,13 +3,14 @@
     <transition name="slide-fade">
       <div v-if="menuOpen" class="flex flex-col items-end mb-3 gap-3">
         <button
-          v-for="item in filteredMenuItems"
-          :key="item.type"
-          @click="onCreate(item.type)"
-          class="w-40 text-white text-sm font-semibold border-b border-transparent hover:border-pink-500 hover:text-pink-400 transition-all text-right"
+        v-for="item in filteredMenuItems"
+        :key="item.type"
+        @click="onCreate(item.type)"
+        class="w-40 text-white text-sm font-semibold border-b border-transparent hover:border-pink-500 hover:text-pink-400 transition-all text-right"
         >
-          {{ item.label }}
+        {{ item.label }}
         </button>
+
       </div>
     </transition>
 
@@ -24,6 +25,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const menuOpen = ref(false)
 
@@ -37,10 +41,18 @@ const toggleMenu = () => {
   menuOpen.value = !menuOpen.value
 }
 
+
+
 const onCreate = (type) => {
   menuOpen.value = false
-  emit('create', type)
+
+  if(type === 'event'){
+    router.push('/events/create')
+  } else {
+    emit('create', type)
+  }
 }
+
 
 const emit = defineEmits(['create'])
 

@@ -60,5 +60,21 @@ class User extends Authenticatable
             ? asset('storage/' . $this->profile_pic)
             : asset('images/default-avatar.png');
     }
+
+    public function createdEvents()
+    {
+        return $this->hasMany(Event::class, 'user_id');
+    }
+
+    public function performedEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_performer');
+    }
+
+    public function performer()
+    {
+        return $this->hasOne(Performer::class);
+    }
+
 }
 
