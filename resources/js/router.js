@@ -8,6 +8,8 @@ import ProfilePage from "./pages/ProfilePage.vue";
 import EventPage from "./pages/EventPage.vue";
 import DirectMessages from "./pages/DirectMessages.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
+import EventDetail from './pages/EventDetail.vue';
+
 
 const routes = [
     
@@ -19,11 +21,14 @@ const routes = [
     { path: '/events', component: EventPage },
     { path: '/messages', component: DirectMessages },
     {path: '/events/create', name: 'CreateEvent', component: CreateEvent },
+    { path: '/events/:id', name: 'EventDetail', component: EventDetail, props: true },
+
 ];
 
 export default createRouter({
   history: createWebHistory(),
   routes,
 });
+
 
 

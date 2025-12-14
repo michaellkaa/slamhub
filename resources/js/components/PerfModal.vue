@@ -35,7 +35,7 @@
         <div class="flex gap-2 mt-1">
           <input
             v-model="guestInput"
-            placeholder="např. DJ Ghost"
+            placeholder="např. Vašek z Aše"
             class="flex-1 p-2 rounded bg-[#1d1d21] text-white"
           />
           <button

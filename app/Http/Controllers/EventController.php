@@ -59,6 +59,11 @@ public function store(Request $request)
 }
 
 
+public function show($id)
+{
+    $event = Event::with('performers', 'organizer')->findOrFail($id);
+    return response()->json($event);
+}
 
 
     public function index()

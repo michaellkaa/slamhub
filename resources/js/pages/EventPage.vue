@@ -10,7 +10,6 @@
 
           <section class="mt-4 mb-2 text-center space-y-3">
             <h1 class="text-white text-2xl font-bold">Události</h1>
-            <p class="text-white/60">Všechny nadcházející eventy</p>
           </section>
 
           <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -20,11 +19,13 @@
 
             <template v-else>
               <EventCard
-                v-for="event in events"
-                :key="event.id"
-                :event="event"
-                :loading="false"
+                v-for="i in loading ? 3 : events.length"
+                :key="loading ? i : events[i-1].id"
+                :event="loading ? {} : events[i-1]"
+                :loading="loading"
+                @click="!loading && $router.push({ name: 'EventDetail', params: { id: events[i-1].id }})"
               />
+
             </template>
           </section>
 

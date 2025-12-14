@@ -1,6 +1,7 @@
 <template>
-  <div class="bg-[#1a1a1d] border border-[#26262b] rounded-xl overflow-hidden flex flex-col">
-    <template v-if="loading">
+  <div class="bg-[#1a1a1d] border border-[#26262b] rounded-xl overflow-hidden flex flex-col cursor-pointer"
+       @click="$emit('click')">    
+       <template v-if="loading">
       <div class="h-28 bg-[#2a2a2e] animate-pulse"></div>
       <div class="p-4 space-y-3 flex-1">
         <div class="w-3/4 h-4 bg-[#2a2a2e] rounded animate-pulse"></div>
