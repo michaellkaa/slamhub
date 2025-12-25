@@ -40,11 +40,89 @@
         </div>
       </div>
 
-      <div class="flex gap-10 border-b border-white/10 pb-4 mt-8">
-        <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
-        <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
-        <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+      <!--icons-->
+      <!-- ICONS -->
+      <div class="border-b border-white/10 pb-4 mt-8">
+
+        <div v-if="!user" class="flex gap-10">
+          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+        </div>
+
+        <div v-else class="flex gap-10">
+          <button
+            @click="activeTab = 'videos'"
+            class="flex flex-col items-center gap-2"
+          >
+            <img
+              src="../../../public/icons/video.png"
+              class="w-6 h-6 transition"
+              :class="activeTab === 'videos'
+                ? 'opacity-100'
+                : 'opacity-40'"
+            />
+            <div
+              v-if="activeTab === 'videos'"
+              class="w-full h-[2px] bg-pink-500 rounded"
+            ></div>
+          </button>
+
+          <button
+            @click="activeTab = 'posts'"
+            class="flex flex-col items-center gap-2"
+          >
+            <img
+              src="../../../public/icons/edit.png"
+              class="w-6 h-6 transition"
+              :class="activeTab === 'posts'
+                ? 'opacity-100'
+                : 'opacity-40'"
+            />
+            <div
+              v-if="activeTab === 'posts'"
+              class="w-full h-[2px] bg-pink-500 rounded"
+            ></div>
+          </button>
+
+          <button
+            @click="activeTab = 'images'"
+            class="flex flex-col items-center gap-2"
+          >
+            <img
+              src="../../../public/icons/award.png"
+              class="w-6 h-6 transition"
+              :class="activeTab === 'images'
+                ? 'opacity-100'
+                : 'opacity-40'"
+            />
+            <div
+              v-if="activeTab === 'images'"
+              class="w-full h-[2px] bg-pink-500 rounded"
+            ></div>
+          </button>
+
+          <button
+            @click="activeTab = 'saved'"
+            class="flex flex-col items-center gap-2"
+          >
+            <img
+              src="../../../public/icons/calendar.png"
+              class="w-6 h-6 transition"
+              :class="activeTab === 'saved'
+                ? 'opacity-100'
+                : 'opacity-40'"
+            />
+            <div
+              v-if="activeTab === 'saved'"
+              class="w-full h-[2px] bg-pink-500 rounded"
+            ></div>
+          </button>
+
+        </div>
       </div>
+
 
       <div class="grid grid-cols-3 w-[50%] gap-4 mt-8">
         <div v-for="n in 6" :key="n" class="p-3">
@@ -76,6 +154,7 @@ import CreateButton from '../components/CreateButton.vue'
 
 const user = ref(null)
 const fileInput = ref(null)
+const activeTab = ref('videos')
 
 onMounted(async () => {
   try {
