@@ -7,19 +7,23 @@
       class="p-4 bg-[#1d1d21] rounded-xl"
     >
       <a
-        :href="`/events/${event.slug}`"
+        :href="`/events/${event.id}`"
         class="font-medium hover:text-pink-400 transition"
       >
-        {{ event.name }}
+        {{ event.title }}
       </a>
 
       <div class="text-sm text-white/40 mt-1">
-        {{ event.place }}
+        {{ event.location }}
       </div>
 
       <div class="text-xs text-white/30 mt-1">
-        {{ event.date }}
+        {{ formatDate(event.starts_at) }}
       </div>
+    </div>
+
+    <div v-if="!events.length" class="text-white/40 text-sm">
+      Zatím jsi nevytvořil žádné eventy.
     </div>
 
   </div>
@@ -35,4 +39,8 @@ onMounted(async () => {
   const res = await axios.get('/api/profile/events')
   events.value = res.data
 })
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('cs-CZ')
+}
 </script>

@@ -80,4 +80,16 @@ public function show($id)
     return response()->json($events);
 }
 
+public function profileEvents()
+{
+    $user = Auth::user();
+
+    $events = Event::where('user_id', $user->id)
+        ->orderBy('starts_at', 'desc')
+        ->get();
+
+    return response()->json($events);
+}
+
+
 }

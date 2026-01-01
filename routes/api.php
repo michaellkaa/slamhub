@@ -29,3 +29,8 @@ Route::get('/performers', [PerformerController::class, 'index']);
 Route::get('/events', [EventController::class, 'apiIndex']);
 
 Route::get('/events/{id}', [EventController::class, 'show']);
+
+Route::middleware('auth:sanctum')->get(
+    '/profile/events',
+    [EventController::class, 'profileEvents']
+);
