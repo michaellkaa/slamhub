@@ -9,113 +9,55 @@
 
       <div v-if="user" class="flex items-center gap-8">
         <img
-            :src="user.profile_pic_url"
-            class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl mb-4 cursor-pointer"
-            @click="triggerUpload"
-          />
-          <input type="file" ref="fileInput" class="hidden" @change="uploadPhoto" />
+          :src="user.profile_pic_url"
+          class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl mb-4 cursor-pointer"
+          @click="triggerUpload"
+        />
+        <input
+          type="file"
+          ref="fileInput"
+          class="hidden"
+          @change="uploadPhoto"
+        />
 
         <div class="flex flex-col gap-2 flex-1">
           <div class="flex items-center gap-4">
             <div class="font-bold tracking-wider">{{ user.name }}</div>
             <div class="text-white/50">@{{ user.username }}</div>
           </div>
-
           <div class="text-white/40 text-sm">{{ user.email }}</div>
         </div>
       </div>
 
       <div v-else class="flex items-center gap-8 animate-pulse">
-        <div
-          class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10 shadow-xl mb-4"
-        ></div>
-
+        <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
         <div class="flex flex-col gap-3 flex-1">
-          <div class="flex items-center gap-4">
-            <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
-            <div class="h-6 w-32 bg-[#1d1d21] rounded"></div>
-          </div>
-
+          <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
           <div class="h-4 w-40 bg-[#1d1d21] rounded"></div>
         </div>
       </div>
 
-      <!--icons-->
-      <!-- ICONS -->
       <div class="border-b border-white/10 pb-4 mt-8">
 
         <div v-if="!user" class="flex gap-10">
-          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
-          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
-          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
-          <div class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
         </div>
 
         <div v-else class="flex gap-10">
-          <button
-            @click="activeTab = 'videos'"
-            class="flex flex-col items-center gap-2"
-          >
-            <img
-              src="../../../public/icons/video.png"
-              class="w-6 h-6 transition"
-              :class="activeTab === 'videos'
-                ? 'opacity-100'
-                : 'opacity-40'"
-            />
-            <div
-              v-if="activeTab === 'videos'"
-              class="w-full h-[2px] bg-pink-500 rounded"
-            ></div>
-          </button>
 
           <button
-            @click="activeTab = 'posts'"
+            v-for="tab in tabs"
+            :key="tab.key"
+            @click="activeTab = tab.key"
             class="flex flex-col items-center gap-2"
           >
             <img
-              src="../../../public/icons/edit.png"
+              :src="tab.icon"
               class="w-6 h-6 transition"
-              :class="activeTab === 'posts'
-                ? 'opacity-100'
-                : 'opacity-40'"
+              :class="activeTab === tab.key ? 'opacity-100' : 'opacity-40'"
             />
             <div
-              v-if="activeTab === 'posts'"
-              class="w-full h-[2px] bg-pink-500 rounded"
-            ></div>
-          </button>
-
-          <button
-            @click="activeTab = 'images'"
-            class="flex flex-col items-center gap-2"
-          >
-            <img
-              src="../../../public/icons/award.png"
-              class="w-6 h-6 transition"
-              :class="activeTab === 'images'
-                ? 'opacity-100'
-                : 'opacity-40'"
-            />
-            <div
-              v-if="activeTab === 'images'"
-              class="w-full h-[2px] bg-pink-500 rounded"
-            ></div>
-          </button>
-
-          <button
-            @click="activeTab = 'saved'"
-            class="flex flex-col items-center gap-2"
-          >
-            <img
-              src="../../../public/icons/calendar.png"
-              class="w-6 h-6 transition"
-              :class="activeTab === 'saved'
-                ? 'opacity-100'
-                : 'opacity-40'"
-            />
-            <div
-              v-if="activeTab === 'saved'"
+              v-if="activeTab === tab.key"
               class="w-full h-[2px] bg-pink-500 rounded"
             ></div>
           </button>
@@ -123,11 +65,8 @@
         </div>
       </div>
 
-
-      <div class="grid grid-cols-3 w-[50%] gap-4 mt-8">
-        <div v-for="n in 6" :key="n" class="p-3">
-          <div class="w-full bg-[#1d1d21] rounded-lg aspect-[9/16]"></div>
-        </div>
+      <div class="mt-8">
+        <component :is="activeComponent" />
       </div>
 
     </div>
@@ -136,6 +75,7 @@
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
+
     <CreateButton
       v-if="user"
       :user="user"
@@ -145,28 +85,48 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+
 import SideNav from '../components/SideNav.vue'
 import CreateButton from '../components/CreateButton.vue'
+
+import VideosTab from '../components/profile/VideosTab.vue'
+import PostsTab from '../components/profile/PostsTab.vue'
+import AwardsTab from '../components/profile/AwardsTab.vue'
+import EventsTab from '../components/profile/EventsTab.vue'
 
 const user = ref(null)
 const fileInput = ref(null)
 const activeTab = ref('videos')
 
+const tabs = [
+  { key: 'videos', icon: '/icons/video.png' },
+  { key: 'posts', icon: '/icons/edit.png' },
+  { key: 'awards', icon: '/icons/award.png' },
+  { key: 'events', icon: '/icons/calendar.png' }
+]
+
+const activeComponent = computed(() => {
+  return {
+    videos: VideosTab,
+    posts: PostsTab,
+    awards: AwardsTab,
+    events: EventsTab
+  }[activeTab.value]
+})
+
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token')
-    if (!token) throw new Error('Uživatel není přihlášen')
+    if (!token) return
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
     const res = await axios.get('/api/me')
     user.value = res.data
   } catch (err) {
-    console.error('Chyba při načítání uživatele:', err)
+    console.error(err)
   }
 })
 
@@ -174,31 +134,18 @@ const triggerUpload = () => {
   fileInput.value.click()
 }
 
-const uploadPhoto = async (event) => {
-  const file = event.target.files[0]
+const uploadPhoto = async (e) => {
+  const file = e.target.files[0]
   if (!file) return
 
   const formData = new FormData()
   formData.append('photo', file)
 
-  try {
-    const res = await axios.post('/api/profile/photo', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    user.value.profile_pic_url = res.data.profile_pic_url
-  } catch (err) {
-    console.error('Chyba při uploadu:', err)
-  }
+  const res = await axios.post('/api/profile/photo', formData)
+  user.value.profile_pic_url = res.data.profile_pic_url
 }
 
 const handleCreate = (type) => {
-  if (type === 'event') {
-    console.log('Otevři modal pro přidání Eventu')
-  } else if (type === 'post') {
-    console.log('Otevři modal pro přidání Postu')
-  } else if (type === 'video') {
-    console.log('Otevři modal pro přidání Video')
-  }
+  console.log('Create:', type)
 }
 </script>
-
