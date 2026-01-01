@@ -1,28 +1,42 @@
 <template>
   <div class="mt-8 w-[50%] space-y-4">
 
-    <div
-      v-for="event in events"
-      :key="event.id"
-      class="p-4 bg-[#1d1d21] rounded-xl"
-    >
-      <a
-        :href="`/events/${event.id}`"
-        class="font-medium hover:text-pink-400 transition"
+    <div v-if="loading" class="space-y-4">
+      <div
+        v-for="n in 3"
+        :key="n"
+        class="p-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-2"
       >
-        {{ event.title }}
-      </a>
-
-      <div class="text-sm text-white/40 mt-1">
-        {{ event.location }}
-      </div>
-
-      <div class="text-xs text-white/30 mt-1">
-        {{ formatDate(event.starts_at) }}
+        <div class="h-4 w-40 bg-white/10 rounded"></div>
+        <div class="h-3 w-32 bg-white/10 rounded"></div>
+        <div class="h-3 w-24 bg-white/10 rounded"></div>
       </div>
     </div>
 
-    <div v-if="!events.length" class="text-white/40 text-sm">
+    <div v-else-if="events.length">
+      <div
+        v-for="event in events"
+        :key="event.id"
+        class="p-4 my-4 bg-[#1d1d21] rounded-xl"
+      >
+        <a
+          :href="`/events/${event.id}`"
+          class="font-medium hover:text-pink-400 transition"
+        >
+          {{ event.title }}
+        </a>
+
+        <div class="text-sm text-white/40 mt-1">
+          {{ event.location }}
+        </div>
+
+        <div class="text-xs text-white/30 mt-1">
+          {{ formatDate(event.starts_at) }}
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="text-white/40 text-sm">
       Zatím jsi nevytvořil žádné eventy.
     </div>
 
@@ -34,10 +48,17 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
 const events = ref([])
+const loading = ref(true)
 
 onMounted(async () => {
-  const res = await axios.get('/api/profile/events')
-  events.value = res.data
+  try {
+    const res = await axios.get('/api/profile/events')
+    events.value = res.data
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
 })
 
 const formatDate = (date) => {

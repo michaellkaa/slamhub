@@ -48,10 +48,13 @@ const onCreate = (type) => {
 
   if(type === 'event'){
     router.push('/events/create')
+  } else if(type === 'post'){
+    router.push('/posts/create')
   } else {
     emit('create', type)
   }
 }
+
 
 
 const emit = defineEmits(['create'])

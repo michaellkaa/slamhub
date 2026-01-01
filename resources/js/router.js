@@ -9,6 +9,7 @@ import EventPage from "./pages/EventPage.vue";
 import DirectMessages from "./pages/DirectMessages.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
 import EventDetail from './pages/EventDetail.vue';
+import CreatePost from "./pages/CreatePost.vue";
 
 
 const routes = [
@@ -22,7 +23,7 @@ const routes = [
     { path: '/messages', component: DirectMessages },
     {path: '/events/create', name: 'CreateEvent', component: CreateEvent },
     { path: '/events/:id', name: 'EventDetail', component: EventDetail, props: true },
-
+    { path: '/posts/create', name: 'CreatePost', component: CreatePost }
 ];
 
 export default createRouter({

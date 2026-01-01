@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProfileController; 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PerformerController;
+use App\Http\Controllers\PostController;
 use App\Models\User;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -34,3 +35,11 @@ Route::middleware('auth:sanctum')->get(
     '/profile/events',
     [EventController::class, 'profileEvents']
 );
+
+Route::get('/posts', [PostController::class, 'index']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::get('/profile/posts', [PostController::class, 'profilePosts']);
+    Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+});

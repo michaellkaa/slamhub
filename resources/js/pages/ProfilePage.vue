@@ -101,12 +101,22 @@ const user = ref(null)
 const fileInput = ref(null)
 const activeTab = ref('videos')
 
-const tabs = [
-  { key: 'videos', icon: '/icons/video.png' },
-  { key: 'posts', icon: '/icons/edit.png' },
-  { key: 'awards', icon: '/icons/award.png' },
-  { key: 'events', icon: '/icons/calendar.png' }
-]
+const tabs = computed(() => {
+  if (!user.value) return []
+
+  const baseTabs = [
+    { key: 'videos', icon: '/icons/video.png' },
+    { key: 'posts', icon: '/icons/edit.png' },
+    { key: 'events', icon: '/icons/calendar.png' }
+  ]
+
+  if (user.value.role === 'performer') {
+    baseTabs.splice(2, 0, { key: 'awards', icon: '/icons/award.png' })
+  }
+
+  return baseTabs
+})
+
 
 const activeComponent = computed(() => {
   return {
