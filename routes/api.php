@@ -48,10 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/awards', [AwardController::class, 'store']);
+    
     Route::post('/awards/assign', [AwardController::class, 'assign']);
     Route::get('/users/{id}/awards', [AwardController::class, 'userAwards']);
 
 });
-
+Route::get('/awards', [AwardController::class, 'index']);
 Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 

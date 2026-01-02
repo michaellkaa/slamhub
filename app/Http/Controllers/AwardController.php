@@ -9,6 +9,12 @@ use Illuminate\Http\Request;
 
 class AwardController extends Controller
 {
+    public function index()
+    {
+        $awards = Award::all();
+        return response()->json($awards);
+    }
+
 
     public function store(Request $request)
     {

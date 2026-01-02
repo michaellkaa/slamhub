@@ -22,7 +22,7 @@
         <label class="text-sm">Popis</label>
         <textarea
           v-model="event.description"
-          rows="4"
+          rows="2"
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
         ></textarea>
 
@@ -53,6 +53,18 @@
         </button>
 
         <button
+        type="button"
+        @click="showAwardModal = true"
+        class="p-3 rounded bg-[#1d1d21] text-left hover:ring-2 hover:ring-pink-500"
+        >
+        Přidat ocenění
+        <span v-if="selectedAwardsLabel" class="text-white/60 text-sm">
+            – {{ selectedAwardsLabel }}
+        </span>
+        </button>
+
+
+        <button
           type="submit"
           class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md"
         >
@@ -68,6 +80,14 @@
         @update:performers="updatePerformers"
         @update:guests="updateGuests"
       />
+
+      <AwardModal
+        v-model="showAwardModal"
+        :awards="awards"
+        :selected-awards="selectedAwards"
+        @update:selectedAwards="val => selectedAwards = val"
+        />
+
     </div>
   </div>
 </template>
@@ -76,6 +96,7 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import PerfModal from '../components/PerfModal.vue'
+import AwardModal from '../components/AwardModal.vue'
 
 const event = ref({
   title: '',
@@ -88,16 +109,22 @@ const event = ref({
   performers: []
 })
 
+const awards = ref([])
+const selectedAwards = ref([])
+const showAwardModal = ref(false)
 const performers = ref([])
 const guestPerformers = ref([])
 const showModal = ref(false)
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/api/performers')
-    performers.value = res.data
+    const resPerformers = await axios.get('/api/performers')
+    performers.value = resPerformers.data
+
+    const resAwards = await axios.get('/api/awards')
+    awards.value = resAwards.data
   } catch (err) {
-    console.error('Chyba při načítání performerů:', err)
+    console.error('Chyba při načítání performerů nebo awards:', err)
   }
 })
 
@@ -121,6 +148,13 @@ const selectedPerformersLabel = computed(() => {
   return [...names, ...guestPerformers.value].join(', ')
 })
 
+const selectedAwardsLabel = computed(() => {
+  return awards.value
+    .filter(a => selectedAwards.value.includes(a.id))
+    .map(a => a.title)
+    .join(', ')
+})
+
 const submitEvent = async () => {
   const formData = new FormData()
 
@@ -136,6 +170,10 @@ const submitEvent = async () => {
 
   guestPerformers.value.forEach((guest, i) => {
     formData.append(`guest_performers[${i}]`, guest)
+  })
+
+  selectedAwards.value.forEach(id => {
+    formData.append('awards[]', id)
   })
 
   try {
