@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\PerformerController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
+use App\Http\Controllers\AwardController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -43,3 +44,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile/posts', [PostController::class, 'profilePosts']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/awards', [AwardController::class, 'store']);
+    Route::post('/awards/assign', [AwardController::class, 'assign']);
+    Route::get('/users/{id}/awards', [AwardController::class, 'userAwards']);
+
+});
+
+Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
+

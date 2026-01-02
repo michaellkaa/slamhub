@@ -35,27 +35,27 @@ const menuItems = ref([
   { type: 'event', label: 'Přidat Event', roles: ['organizer'] },
   { type: 'post', label: 'Přidat Post', roles: ['organizer', 'performer'] },
   { type: 'video', label: 'Přidat Video', roles: ['organizer', 'performer'] },
+  { type: 'award', label: 'Přidat Ocenění', roles: ['organizer', 'admin'] },
+
 ])
 
 const toggleMenu = () => {
   menuOpen.value = !menuOpen.value
 }
 
-
-
 const onCreate = (type) => {
   menuOpen.value = false
 
-  if(type === 'event'){
+  if (type === 'event') {
     router.push('/events/create')
-  } else if(type === 'post'){
+  } else if (type === 'post') {
     router.push('/posts/create')
+  } else if (type === 'award') {
+    router.push('/awards/create')
   } else {
     emit('create', type)
   }
 }
-
-
 
 const emit = defineEmits(['create'])
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Award;
 
 class User extends Authenticatable
 {
@@ -75,6 +76,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(Performer::class);
     }
+
+    public function awards()
+    {
+        return $this->belongsToMany(Award::class, 'award_user')
+            ->withPivot('event_id')
+            ->withTimestamps();
+    }
+
 
 }
 
