@@ -5,6 +5,7 @@
     </div>
 
     <div class="flex-1 flex gap-6 p-6 overflow-hidden">
+        
       <div
         class="flex-1 rounded-xl  p-4 overflow-y-auto max-h-[90vh]"
         style="scroll-snap-type: y mandatory;"
@@ -21,7 +22,9 @@
 
       </div>
 
-      <div class="w-80 flex flex-col gap-6 overflow-y-auto max-h-[90vh]">
+      <div class="w-80 flex flex-col gap-6 overflow-y-auto max-h-[90vh]"><div class="flex justify-center">
+          <TopSearch />
+        </div>
         <div class="rounded-xl shadow-lg p-4 " >
           <div class="h-4 mb-3 bg-[#1d1d21] rounded w-3/4"></div>
           <div v-for="n in 4" :key="'people-' + n" class="flex items-center mb-3">
@@ -47,4 +50,5 @@
 
 <script setup>
 import SideNav from '../components/SideNav.vue'
+import TopSearch from '../components/TopSearch.vue'
 </script>

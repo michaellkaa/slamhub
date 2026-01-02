@@ -10,6 +10,8 @@ use App\Http\Controllers\PerformerController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
 use App\Http\Controllers\AwardController;
+use App\Http\Controllers\SearchController;
+
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -56,3 +58,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/awards', [AwardController::class, 'index']);
 Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
+Route::get('/search', [SearchController::class, 'index']);
