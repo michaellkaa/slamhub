@@ -3,8 +3,8 @@
     <input
       v-model="query"
       @input="search"
-      placeholder="Hledat eventy, lidi, příspěvky…"
-      class="w-full p-3 rounded-xl bg-[#1d1d21] text-white focus:ring-2 focus:ring-pink-500"
+      placeholder="Hledat…"
+      class="w-full p-3 rounded-xl bg-[#1d1d21] text-white focus:outline-none"
     />
 
     <div

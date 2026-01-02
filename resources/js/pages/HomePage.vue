@@ -4,10 +4,10 @@
       <SideNav />
     </div>
 
-    <div class="flex-1 flex gap-6 p-6 overflow-hidden">
+    <div class="flex-1 flex gap-6 p-6 overflow-hidden no-scrollbar">
         
       <div
-        class="flex-1 rounded-xl  p-4 overflow-y-auto max-h-[90vh]"
+        class="flex-1 rounded-xl p-4 overflow-y-auto max-h-[90vh] no-scrollbar"
         style="scroll-snap-type: y mandatory;"
       >
         <div
@@ -16,7 +16,7 @@
         class="mb-6 flex flex-col items-center justify-center gap-3"
         style="scroll-snap-align: start;"
         >
-        <div class="w-full h-full max-w-md bg-[#1d1d21] rounded-lg aspect-[9/16] mt-5 "></div>
+        <div class="w-full h-full max-w-md bg-[#1d1d21] rounded-lg aspect-[9/16] mt-5 no-scrollbar"></div>
 
         </div>
 
