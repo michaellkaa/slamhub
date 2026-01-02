@@ -51,6 +51,9 @@
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const award = ref({
   title: '',
@@ -81,7 +84,9 @@ const submitAward = async () => {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
 
-    alert('Ocenění vytvořeno 🎉')
+    setTimeout(() => {
+    router.push('/profile')
+    }, 600)
 
     award.value = {
       title: '',
