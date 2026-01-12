@@ -39,6 +39,8 @@
         <div
           v-for="e in results.events"
           :key="e.id"
+          @click="goToEvent(e.id)"
+
           class="text-white p-2 rounded hover:bg-white/5 cursor-pointer"
         >
           {{ e.title }}
@@ -98,4 +100,11 @@ const goToProfile = (id) => {
   query.value = ''
   router.push(`/profile/${id}`)
 }
+
+const goToEvent = (id) => {
+  results.value = null
+  query.value = ''
+  router.push({ name: 'EventDetail', params: { id } })
+}
+
 </script>

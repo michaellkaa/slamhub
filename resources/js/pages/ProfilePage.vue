@@ -5,7 +5,7 @@
       <SideNav />
     </div>
 
-    <div class="flex-1 flex flex-col px-12 py-10 overflow-auto">
+    <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
 
       <div v-if="user" class="flex items-center gap-8">
         <img
@@ -37,10 +37,10 @@
         </div>
       </div>
 
-      <div class="border-b border-white/10 pb-4 mt-8">
+      <div class="border-b border-white/10 pb-4 mt-8 no-scrollbar">
 
         <div v-if="!user" class="flex gap-10">
-          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded no-scrollbar"></div>
         </div>
 
         <div v-else class="flex gap-10">
@@ -49,16 +49,16 @@
             v-for="tab in tabs"
             :key="tab.key"
             @click="activeTab = tab.key"
-            class="flex flex-col items-center gap-2"
+            class="flex flex-col items-center gap-2 no-scrollbar"
           >
             <img
               :src="tab.icon"
-              class="w-6 h-6 transition"
+              class="w-6 h-6 transition no-scrollbar"
               :class="activeTab === tab.key ? 'opacity-100' : 'opacity-40'"
             />
             <div
               v-if="activeTab === tab.key"
-              class="w-full h-[2px] bg-pink-500 rounded"
+              class="w-full h-[2px] bg-pink-500 rounded no-scrollbar"
             ></div>
           </button>
 
