@@ -39,7 +39,8 @@
           </h2>
 
           <ul class="space-y-2">
-            <li v-for="performer in event.performers" :key="performer.id" class="flex items-center gap-3">
+            <li v-for="performer in event.performers" :key="performer.id" class="flex items-center gap-3 cursor-pointer" @click="goToProfile(performer.id)"
+            >
               <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
               <span class="text-white/80">
                 {{ performer.name || performer.username }}
@@ -60,9 +61,14 @@
 
 <script setup>
   //az event skonci tak organizator muze pridat vyherce pokud nebylo hlasovani pres mobil
-import { ref, onMounted, computed } from 'vue'
+// link na performer profile
+  import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+
+const query = ref('')
 const props = defineProps({
   id: {
     type: [String, Number],
@@ -105,4 +111,9 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const goToProfile = (id) => {
+  query.value = ''
+  router.push(`/profile/${id}`)
+}
 </script>

@@ -1,9 +1,6 @@
 <template>
   <div
-    class="bg-[#BF2679] z-10 flex justify-center items-center
-           w-screen h-36 
-           lg:static lg:w-28 lg:flex-col lg:h-screen"
-  >
+    class="bg-[#BF2679] z-10 flex justify-center items-center  w-screen h-36 lg:static lg:w-28 lg:flex-col lg:h-screen">
     <div class="flex lg:flex-col flex-row justify-center items-center gap-16 p-5">
 
       <!-- HOME -->
@@ -93,6 +90,7 @@
 </template>
 
 <script setup>
+  //tady abrakadabra udelat to fixed nebo nevim co, ale at se to nehybe xd
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
