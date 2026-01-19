@@ -23,9 +23,8 @@
         <div class="flex flex-col gap-2 flex-1">
           <div class="flex items-center gap-4">
             <div class="font-bold tracking-wider">{{ user.name }}</div>
-            <div class="text-white/50">@{{ user.username }}</div>
           </div>
-          <div class="text-white/40 text-sm">{{ user.email }}</div>
+          <div class="text-white/40 text-sm">@{{ user.username }}</div>
         </div>
       </div>
 

@@ -38,7 +38,6 @@ const submitPost = async () => {
       ...post.value,
       status: 1
     })
-    alert('Příspěvek vytvořen!')
     post.value.body = ''
   } catch (err) {
     console.error(err.response?.data)
