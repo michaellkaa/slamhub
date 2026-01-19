@@ -19,18 +19,18 @@
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
         />
 
+        <label class="text-sm">Místo <span class="text-pink-400">*</span></label>
+        <input
+          v-model="event.location"
+          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+        />
+
         <label class="text-sm">Popis</label>
         <textarea
           v-model="event.description"
           rows="2"
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
         ></textarea>
-
-        <label class="text-sm">Místo</label>
-        <input
-          v-model="event.location"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
 
         <label class="text-sm">Odkaz na lístky</label>
         <input
@@ -93,6 +93,10 @@
 </template>
 
 <script setup>
+  //opravit enter
+  //pridat pocet znaku kdyz pisu popisek
+  //presmerovani
+  // Column 'location' cannot be null
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import PerfModal from '../components/PerfModal.vue'

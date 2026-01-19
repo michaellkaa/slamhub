@@ -34,7 +34,7 @@
         </p>
 
         <div v-if="event.performers?.length" class="mb-8 text-left">
-          <h2 class="text-lg font-semibold mb-3 text-center">
+          <h2 class="text-lg font-semibold mb-3 text-left">
             Účinkující
           </h2>
 
@@ -59,6 +59,7 @@
 
 
 <script setup>
+  //az event skonci tak organizator muze pridat vyherce pokud nebylo hlasovani pres mobil
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 

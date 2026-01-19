@@ -1130,6 +1130,10 @@ video {
   border-width: 1px;
 }
 
+.border-2 {
+  border-width: 2px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -1154,6 +1158,11 @@ video {
 .border-\[\#26262b\] {
   --tw-border-opacity: 1;
   border-color: rgb(38 38 43 / var(--tw-border-opacity, 1));
+}
+
+.border-\[\#BF2679\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(191 38 121 / var(--tw-border-opacity, 1));
 }
 
 .border-transparent {

@@ -25,6 +25,8 @@
 </template>
 
 <script setup>
+//ukazovat pocet znaku kdyz pisu post
+//nepresmerovava me to
 import { ref } from 'vue'
 import axios from 'axios'
 

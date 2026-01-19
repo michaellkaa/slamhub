@@ -9,7 +9,7 @@ import EventPage from "./pages/EventPage.vue";
 import DirectMessages from "./pages/DirectMessages.vue";
 import CreateEvent from "./pages/CreateEvent.vue";
 import EventDetail from './pages/EventDetail.vue';
-import CreatePost from "./pages/CreatePost.vue";
+import CreatePost from "./Pages/CreatePost.vue";
 import CreateAward from "./pages/CreateAward.vue";
 import ProfileDetail from "./Pages/ProfileDetail.vue";
 

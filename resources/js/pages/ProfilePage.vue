@@ -7,6 +7,7 @@
 
     <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
 
+      <div class="">
       <div v-if="user" class="flex items-center gap-8">
         <img
           :src="user.profile_pic_url"
@@ -27,6 +28,7 @@
           <div class="text-white/40 text-sm">@{{ user.username }}</div>
         </div>
       </div>
+
 
       <div v-else class="flex items-center gap-8 animate-pulse">
         <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
@@ -62,6 +64,8 @@
           </button>
 
         </div>
+      </div>
+
       </div>
 
       <div class="mt-8">
