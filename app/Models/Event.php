@@ -40,6 +40,8 @@ class Event extends Model
         return $this->belongsToMany(User::class, 'event_performer');
     }
 
+    
+
     public function awards()
     {
         return $this->belongsToMany(Award::class, 'award_user');

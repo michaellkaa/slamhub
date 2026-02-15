@@ -20,15 +20,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import axios from 'axios'
+
+const props = defineProps({
+  username: String
+})
 
 const posts = ref([])
 
-onMounted(async () => {
-  const res = await axios.get('/api/profile/posts')
-  posts.value = res.data
-})
+const loadPosts = async () => {
+  if (!props.username) return
+  try {
+    const res = await axios.get(`/api/users/${props.username}/posts`)
+    posts.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+onMounted(loadPosts)
+watch(() => props.username, loadPosts)
 
 const timeAgo = (dateString) => {
   const date = new Date(dateString)

@@ -37,29 +37,40 @@
     </div>
 
     <div v-else class="text-white/40 text-sm">
-      Zatím jsi nevytvořil žádné eventy.
+      Tento uživatel zatím nemá žádné eventy, kde by byl performer.
     </div>
 
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
+
+const props = defineProps({
+  username: String
+})
 
 const events = ref([])
 const loading = ref(true)
 
-onMounted(async () => {
+const loadEvents = async () => {
+  if (!props.username) return
+  loading.value = true
+
   try {
-    const res = await axios.get('/api/profile/events')
+    const res = await axios.get(`/api/users/${props.username}/events`)
     events.value = res.data
   } catch (e) {
     console.error(e)
+    events.value = []
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadEvents)
+watch(() => props.username, loadEvents)
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('cs-CZ')

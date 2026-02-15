@@ -91,5 +91,18 @@ public function profileEvents()
     return response()->json($events);
 }
 
+public function userEvents($username)
+{
+    $user = User::where('username', $username)->firstOrFail();
+
+    $events = Event::whereHas('performers', function($q) use ($user) {
+        $q->where('user_id', $user->id);
+    })->orderBy('starts_at', 'desc')->get();
+
+    return response()->json($events);
+}
+
+
+
 
 }
