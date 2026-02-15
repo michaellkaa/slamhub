@@ -71,7 +71,11 @@
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
-
+    <CreateButton
+      v-if="user"
+      :user="user"
+      @create="handleCreate"
+    />
   </div>
 </template>
 
@@ -85,6 +89,7 @@ import VideosTab from '../components/profile/VideosTab.vue'
 import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
+import CreateButton from '../components/CreateButton.vue'
 
 const route = useRoute()
 const user = ref(null)

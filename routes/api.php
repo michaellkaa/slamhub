@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Api\UserController as ApiUserController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -74,3 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/videos', [VideoController::class,'index']);
 Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
 Route::get('/videos/slug/{slug}', [VideoController::class,'showBySlug']);
+
+Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
+Route::get('/users/{username}', [ApiUserController::class, 'show']);
+

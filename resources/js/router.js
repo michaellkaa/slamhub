@@ -11,7 +11,7 @@ import CreateEvent from "./pages/CreateEvent.vue";
 import EventDetail from './pages/EventDetail.vue';
 import CreatePost from "./Pages/CreatePost.vue";
 import CreateAward from "./pages/CreateAward.vue";
-import ProfileDetail from "./Pages/ProfileDetail.vue";
+import ProfileDetail from "./pages/ProfileDetail.vue";
 
 const routes = [
     
