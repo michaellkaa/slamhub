@@ -89,20 +89,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 import SideNav from '../components/SideNav.vue'
-import CreateButton from '../components/CreateButton.vue'
-
 import VideosTab from '../components/profile/VideosTab.vue'
 import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
 
+const route = useRoute()
+
 const user = ref(null)
+const loggedUser = ref(null)
 const fileInput = ref(null)
 const activeTab = ref('videos')
+
+const loadProfile = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+
+    const me = await axios.get('/api/me')
+    loggedUser.value = me.data
+
+    const username = route.params.username
+
+    if (username === loggedUser.value.username) {
+      user.value = loggedUser.value
+    } else {
+      const res = await axios.get(`/api/users/${username}`)
+      user.value = res.data
+    }
+
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+onMounted(loadProfile)
+watch(() => route.params.username, loadProfile)
+
+const isOwnProfile = computed(() => {
+  return loggedUser.value && user.value?.id === loggedUser.value.id
+})
 
 const tabs = computed(() => {
   if (!user.value) return []
@@ -120,7 +153,6 @@ const tabs = computed(() => {
   return baseTabs
 })
 
-
 const activeComponent = computed(() => {
   return {
     videos: VideosTab,
@@ -130,35 +162,25 @@ const activeComponent = computed(() => {
   }[activeTab.value]
 })
 
-onMounted(async () => {
-  try {
-    const token = localStorage.getItem('token')
-    if (!token) return
-
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`
-    const res = await axios.get('/api/me')
-    user.value = res.data
-  } catch (err) {
-    console.error(err)
-  }
-})
-
 const triggerUpload = () => {
+  if (!isOwnProfile.value) return
   fileInput.value.click()
 }
 
 const uploadPhoto = async (e) => {
+  if (!isOwnProfile.value) return
+
   const file = e.target.files[0]
   if (!file) return
 
   const formData = new FormData()
-  formData.append('photo', file)
+  formData.append('profile_picture', file)
 
-  const res = await axios.post('/api/profile/photo', formData)
-  user.value.profile_pic_url = res.data.profile_pic_url
-}
-
-const handleCreate = (type) => {
-  console.log('Create:', type)
+  try {
+    await axios.post('/api/profile/upload-photo', formData)
+    loadProfile()
+  } catch (err) {
+    console.error(err)
+  }
 }
 </script>

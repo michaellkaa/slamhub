@@ -18,23 +18,18 @@ const routes = [
     { path: "/", name: "home", component: HomePage },
     { path: "/awards", name: "awards", component: AwardPages },
     { path: "/login", name: "login", component: LoginPage },
-    { path: '/register', component: RegisterPage },
-    { path: '/profile', component: ProfilePage },
-    { path: '/events', component: EventPage },
-    { path: '/messages', component: DirectMessages },
-    {path: '/events/create', name: 'CreateEvent', component: CreateEvent },
-    { path: '/events/:id', name: 'EventDetail', component: EventDetail, props: true },
-    { path: '/posts/create', name: 'CreatePost', component: CreatePost },
-    { path: '/awards/create', name: 'CreateAward', component: CreateAward },
-    { path: '/profile/:id', name: 'ProfileDetail', component: ProfileDetail, props: true },
-
-
+    { path: "/register", name: "register", component: RegisterPage },
+    { path: "/profile", name: "profile", component: ProfilePage },
+    { path: "/profile/:username", name: "profile.detail", component: ProfileDetail, props: true },
+    { path: "/events", name: "events", component: EventPage },
+    { path: "/messages", name: "messages", component: DirectMessages },
+    { path: "/events/create", name: "CreateEvent", component: CreateEvent },
+    { path: "/events/:id", name: "EventDetail", component: EventDetail, props: true },
+    { path: "/posts/create", name: "CreatePost", component: CreatePost },
+    { path: "/awards/create", name: "CreateAward", component: CreateAward },
 ];
 
 export default createRouter({
   history: createWebHistory(),
   routes,
 });
-
-
-

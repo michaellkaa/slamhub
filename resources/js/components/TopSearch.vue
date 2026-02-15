@@ -18,8 +18,8 @@
 
         <div
           v-for="u in results.users"
-          :key="u.id"
-          @click="goToProfile(u.id)"
+          :key="u.username"
+          @click="goToProfile(u.username)"
           class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer"
         >
           <img
@@ -95,11 +95,12 @@ const search = debounce(async () => {
   }
 }, 300)
 
-const goToProfile = (id) => {
+const goToProfile = (username) => {
   results.value = null
   query.value = ''
-  router.push(`/profile/${id}`)
+  router.push(`/profile/${username}`)
 }
+
 
 const goToEvent = (id) => {
   results.value = null

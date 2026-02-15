@@ -11,6 +11,7 @@ use App\Http\Controllers\PostController;
 use App\Models\User;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\UserController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -59,3 +60,9 @@ Route::get('/awards', [AwardController::class, 'index']);
 Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
 Route::get('/search', [SearchController::class, 'index']);
+
+Route::get('/users/{username}', [UserController::class, 'show']);
+
+Route::get('/users/{username}/posts', [PostController::class, 'userPosts']);
+
+Route::get('/users/{username}/events', [EventController::class, 'userEvents']);
