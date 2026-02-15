@@ -98,6 +98,8 @@ import VideosTab from '../components/profile/VideosTab.vue'
 import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
+import CreateButton from '../components/CreateButton.vue'
+
 
 const route = useRoute()
 

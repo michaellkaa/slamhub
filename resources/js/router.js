@@ -19,7 +19,21 @@ const routes = [
     { path: "/awards", name: "awards", component: AwardPages },
     { path: "/login", name: "login", component: LoginPage },
     { path: "/register", name: "register", component: RegisterPage },
-    { path: "/profile", name: "profile", component: ProfilePage },
+    {
+      path: "/profile",
+      redirect: () => {
+        try {
+          const user = JSON.parse(localStorage.getItem('user'))
+          if (user?.username) {
+            return `/profile/${user.username}`
+          } else {
+            return '/login'
+          }
+        } catch {
+          return '/login'
+        }
+      }
+    },
     { path: "/profile/:username", name: "profile.detail", component: ProfileDetail, props: true },
     { path: "/events", name: "events", component: EventPage },
     { path: "/messages", name: "messages", component: DirectMessages },
