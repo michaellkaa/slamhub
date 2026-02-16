@@ -7,5 +7,5 @@
 </template>
 
 <script setup>
-
+//tohle vymyslet jak bude + design
 </script>

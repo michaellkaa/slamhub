@@ -2,8 +2,8 @@
   <div class="bg-[#0f0f12] min-h-screen text-white px-4 py-8 flex justify-center">
     <div class="w-full max-w-3xl">
 
-      <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline">
-        ← Zpět
+      <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline text-lg">
+        ← 
       </button>
 
       <div v-if="loading" class="animate-pulse space-y-4">
@@ -61,8 +61,8 @@
 
 <script setup>
   //az event skonci tak organizator muze pridat vyherce pokud nebylo hlasovani pres mobil
-// link na performer profile
-  import { ref, onMounted, computed } from 'vue'
+// link na performer profile!! ne na muj
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 

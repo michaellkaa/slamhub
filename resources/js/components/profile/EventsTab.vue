@@ -44,6 +44,7 @@
 </template>
 
 <script setup>
+  //ja chci at to je cele cliickable
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 

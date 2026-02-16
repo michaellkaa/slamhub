@@ -11,5 +11,5 @@
   
   <script>
   //vypisu vsechno z tabulky points a seradim je od nejvic po nejmin
-  
+  // prokliik na profil
   </script>
