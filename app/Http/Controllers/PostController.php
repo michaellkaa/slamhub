@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
 
 class PostController extends Controller
 {
@@ -62,4 +64,16 @@ class PostController extends Controller
 
         return response()->json(['message' => 'Post deleted']);
     }
+
+    public function userPosts($username)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        $posts = $user->posts()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($posts);
+    }
+
 }

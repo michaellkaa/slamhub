@@ -55,13 +55,16 @@ const login = async () => {
 
     localStorage.setItem('token', res.data.access_token);
 
+    localStorage.setItem('user', JSON.stringify(res.data.user));
+
     axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
 
-    router.push('/');
+    router.push(`/profile/${res.data.user.username}`);
   } catch (err) {
     error.value = err.response?.data?.message || 'Chyba přihlášení';
   }
 };
+
 
 // Google login
 const loginWithGoogle = () => {

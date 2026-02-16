@@ -39,13 +39,17 @@
           </h2>
 
           <ul class="space-y-2">
-            <li v-for="performer in event.performers" :key="performer.id" class="flex items-center gap-3 cursor-pointer" @click="goToProfile(performer.id)"
-            >
-              <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
-              <span class="text-white/80">
-                {{ performer.name || performer.username }}
-              </span>
-            </li>
+            <li
+            v-for="performer in event.performers"
+            :key="performer.id"
+            class="flex items-center gap-3 cursor-pointer"
+            @click="goToProfile(performer.username)"
+          >
+            <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
+            <span class="text-white/80">
+              {{ performer.name || performer.username }}
+            </span>
+          </li>
           </ul>
         </div>
 
@@ -112,8 +116,8 @@ onMounted(async () => {
   }
 })
 
-const goToProfile = (id) => {
-  query.value = ''
-  router.push(`/profile/${id}`)
+const goToProfile = (username) => {
+  router.push(`/profile/${username}`)
 }
+
 </script>

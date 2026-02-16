@@ -29,11 +29,13 @@ class SearchController extends Controller
             ->map(fn ($u) => [
                 'id' => $u->id,
                 'name' => $u->name,
+                'username' => $u->username,
                 'role' => $u->role,
                 'profile_pic' => $u->profile_pic
                     ? asset('storage/' . $u->profile_pic)
-                    : null,
+                    : asset('storage/profile_pics/default-avatar.png'),
             ]);
+
 
 
         return response()->json([
