@@ -7,27 +7,45 @@
 
     <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
 
-      <div v-if="user" class="flex items-center gap-8">
-        <img
-          :src="user.profile_pic_url"
-          class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl mb-4 cursor-pointer"
-          @click="triggerUpload"
-          :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
-        />
-        <input
-          type="file"
-          ref="fileInput"
-          class="hidden"
-          @change="uploadPhoto"
-        />
+      <div v-if="user" class="flex flex-col gap-4">
+  <div class="flex items-center gap-8">
+    <img
+      :src="user.profile_pic_url"
+      class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
+      @click="triggerUpload"
+      :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
+    />
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-4">
+        <div class="font-bold text-xl">{{ user.name }}</div>
 
-        <div class="flex flex-col gap-2 flex-1">
-          <div class="flex items-center gap-4">
-            <div class="font-bold tracking-wider">{{ user.name }}</div>
-          </div>
-          <div class="text-white/40 text-sm">@{{ user.username }}</div>
+        <FollowButton
+          v-if="loggedUser && !isOwnProfile"
+          :profileUser="user"
+          :authUser="loggedUser"
+        />
+      </div>
+      <div class="text-white/40 text-sm">@{{ user.username }}</div>
+
+      <div class="flex gap-6 mt-2 text-white/70 text-sm">
+        <div>
+          <span class="font-semibold">{{ user.followers_count || 0 }}</span> sledující
+        </div>
+        <div>
+          <span class="font-semibold">{{ user.following_count || 0 }}</span> sleduje
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- idk jestli nechat - following  -->
+  <div v-if="showFollowersList" class="mt-4 flex gap-3 flex-wrap">
+    <div v-for="f in user.followers" :key="f.id" class="flex flex-col items-center gap-1">
+      <img :src="f.profile_pic_url" class="w-10 h-10 rounded-full object-cover" />
+      <span class="text-xs">@{{ f.username }}</span>
+    </div>
+  </div>
+</div>
 
       <div v-else class="flex items-center gap-8 animate-pulse">
         <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
@@ -90,6 +108,7 @@ import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
 import CreateButton from '../components/CreateButton.vue'
+import FollowButton from '../components/FollowButton.vue'
 
 const route = useRoute()
 const user = ref(null)
