@@ -10,7 +10,7 @@
       <div class="">
       <div v-if="user" class="flex items-center gap-8">
         <img
-          :src="user.profile_pic_url"
+          :src="user.profile_pic"
           class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl mb-4 cursor-pointer"
           @click="triggerUpload"
         />

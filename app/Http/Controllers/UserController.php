@@ -9,9 +9,22 @@ class UserController extends Controller
     public function show($username)
     {
         $user = User::where('username', $username)
-            ->select('id', 'name', 'username', 'role', 'profile_pic')
+            ->withCount(['followers', 'following'])
             ->firstOrFail();
 
-        return response()->json($user);
+        $authUser = auth()->user();
+
+        $isFollowing = false;
+
+        if ($authUser) {
+            $isFollowing = $authUser->following()
+                ->where('following_id', $user->id)
+                ->exists();
+        }
+
+        return response()->json([
+            ...$user->toArray(),
+            'is_following' => $isFollowing,
+        ]);
     }
 }
