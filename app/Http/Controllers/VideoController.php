@@ -30,10 +30,20 @@ class VideoController extends Controller
         return response()->json($video, 201);
     }
 
-    // všechna videa
     public function index()
     {
-        $videos = Video::with('user')->orderBy('created_at','desc')->get();
+        $userId = Auth::id();
+
+        $videos = Video::with('user')
+            ->where(function($q) use ($userId){
+                $q->where('status', '!=', 'private');
+                if ($userId) {
+                    $q->orWhere('user_id', $userId);
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return response()->json($videos);
     }
 

@@ -10,7 +10,16 @@ class Video extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id','title','description','video_path','status','slug'];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'description',
+        'video_path',
+        'status',
+        'slug'
+    ];
+
+    protected $appends = ['video_url'];
 
     protected static function booted()
     {
