@@ -12,6 +12,7 @@ import EventDetail from './pages/EventDetail.vue';
 import CreatePost from "./Pages/CreatePost.vue";
 import CreateAward from "./pages/CreateAward.vue";
 import ProfileDetail from "./pages/ProfileDetail.vue";
+import UploadVideo from "./pages/UploadVideo.vue";
 
 const routes = [
     
@@ -41,6 +42,8 @@ const routes = [
     { path: "/events/:id", name: "EventDetail", component: EventDetail, props: true },
     { path: "/posts/create", name: "CreatePost", component: CreatePost },
     { path: "/awards/create", name: "CreateAward", component: CreateAward },
+    { path: "/videos/create", name: "UploadVideo", component: UploadVideo },
+
 ];
 
 export default createRouter({

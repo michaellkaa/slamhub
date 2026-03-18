@@ -70,10 +70,7 @@ Route::get('/users/{username}/posts', [PostController::class, 'userPosts']);
 
 Route::get('/users/{username}/events', [EventController::class, 'userEvents']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/videos', [VideoController::class,'store']);
-});
-
+Route::middleware('auth:sanctum')->post('/videos', [VideoController::class,'store']);
 Route::get('/videos', [VideoController::class,'index']);
 Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
 Route::get('/videos/slug/{slug}', [VideoController::class,'showBySlug']);

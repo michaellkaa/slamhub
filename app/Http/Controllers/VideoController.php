@@ -11,7 +11,7 @@ class VideoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'video' => 'required|file|mimes:mp4,mov,avi|max:51200',
+            'video' => 'required|file|mimes:mp4,mov,avi,webm|max:204800', 
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'status' => 'nullable|in:public,private,unlisted'

@@ -53,7 +53,7 @@ const onCreate = (type) => {
   } else if (type === 'award') {
     router.push('/awards/create')
   } else if (type === 'video') {
-    triggerVideoUpload()
+    router.push('/videos/create')
   } else {
     emit('create', type)
   }
@@ -79,23 +79,21 @@ const triggerVideoUpload = () => {
     const file = e.target.files[0]
     if (!file) return
 
-    const title = prompt('Název videa?') || file.name
-    const description = prompt('Popis videa?') || ''
-
     const formData = new FormData()
     formData.append('video', file)
-    formData.append('title', title)
-    formData.append('description', description)
+    formData.append('title', prompt('Název videa?') || file.name)
+    formData.append('description', prompt('Popis videa?') || '')
 
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.post('/api/videos', formData, {
+      const res = await axios.post('/api/videos/upload', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       })
-      alert(`Video nahráno! ID: ${res.data.id}`)
+
+      alert(`Video nahráno! Link: ${res.data.shareable_link}`)
     } catch (err) {
       console.error(err)
       alert('Nahrání videa selhalo')
@@ -103,6 +101,7 @@ const triggerVideoUpload = () => {
   }
   input.click()
 }
+
 </script>
 
 <style>
