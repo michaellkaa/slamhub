@@ -16,7 +16,6 @@ use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FollowController;
 
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -78,4 +77,11 @@ Route::get('/videos/{slug}', [VideoController::class,'showBySlug']);
 Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
 Route::get('/users/{username}', [ApiUserController::class, 'show']);
 
-Route::middleware('auth:sanctum')->post('/users/{username}/follow', [FollowController::class, 'toggleFollow']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/users/{username}/follow-status', [FollowController::class, 'followStatus']);
+    Route::post('/users/{username}/follow', [FollowController::class, 'toggleFollow']);
+});
+
+Route::get('/login', function () {
+    return response()->json(['message' => 'Please login'], 401);
+})->name('login');

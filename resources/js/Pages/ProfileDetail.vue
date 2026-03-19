@@ -127,6 +127,7 @@ const activeTab = ref('videos')
 
 const loadProfile = async () => {
   try {
+    
     const token = localStorage.getItem('token')
     if (token) {
       axios.defaults.headers.common.Authorization = `Bearer ${token}`
@@ -203,6 +204,8 @@ const uploadPhoto = async (e) => {
 const handleFollow = (following) => {
   if (following) user.value.followers_count++
   else user.value.followers_count--
+  
+  user.value = { ...user.value }
 }
 
 const handleCreate = (type) => {

@@ -11,7 +11,7 @@ class FollowController extends Controller
 
     public function toggleFollow($username)
     {
-        $authUser = Auth::user();
+        $authUser = auth()->user();
         $userToFollow = User::where('username', $username)->firstOrFail();
 
         if ($authUser->id === $userToFollow->id) {
@@ -19,20 +19,20 @@ class FollowController extends Controller
         }
 
         if (!in_array($userToFollow->role, ['performer', 'organizer'])) {
-            return response()->json([
-                'message' => 'Tento uživatel nemůže být sledován.'
-            ], 403);
+            return response()->json(['message' => 'Tento uživatel nemůže být sledován.'], 403);
         }
 
         $isFollowing = $authUser->following()->where('following_id', $userToFollow->id)->exists();
 
         if ($isFollowing) {
             $authUser->following()->detach($userToFollow->id);
-            return response()->json(['following' => false]);
+            $following = false;
         } else {
             $authUser->following()->attach($userToFollow->id);
-            return response()->json(['following' => true]);
+            $following = true;
         }
+
+        return response()->json(['following' => $following]);
     }
 
     public function followersList($username)
@@ -57,5 +57,20 @@ class FollowController extends Controller
         $following = $user->following()->get(['id', 'username', 'role']);
 
         return response()->json($following);
+    }
+
+    public function followStatus($username)
+    {
+        $authUser = auth()->user();
+        $user = User::where('username', $username)->firstOrFail();
+
+        $isFollowing = false;
+        if ($authUser && $authUser->id !== $user->id) {
+            $isFollowing = $authUser->following()->where('following_id', $user->id)->exists();
+        }
+
+        return response()->json([
+            'is_following' => $isFollowing
+        ]);
     }
 }
