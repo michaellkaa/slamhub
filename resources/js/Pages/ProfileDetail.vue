@@ -10,11 +10,19 @@
       <div v-if="user" class="flex flex-col gap-4">
   <div class="flex items-center gap-8">
     <img
-      :src="user.profile_pic_url"
-      class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
-      @click="triggerUpload"
-      :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
-    />
+        :src="user.profile_pic_url"
+        class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
+        @click="triggerUpload"
+        :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
+      />
+
+      <input
+        type="file"
+        ref="fileInput"
+        class="hidden"
+        accept="image/*"
+        @change="uploadPhoto"
+      />
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-4">
         <div class="font-bold text-xl">{{ user.name }}</div>
