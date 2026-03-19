@@ -14,17 +14,10 @@ class UserController extends Controller
 
         $authUser = auth()->user();
 
-        $isFollowing = false;
+        $user->is_following = $authUser
+            ? $authUser->following()->where('following_id', $user->id)->exists()
+            : false;
 
-        if ($authUser) {
-            $isFollowing = $authUser->following()
-                ->where('following_id', $user->id)
-                ->exists();
-        }
-
-        return response()->json([
-            ...$user->toArray(),
-            'is_following' => $isFollowing,
-        ]);
+        return response()->json($user);
     }
 }

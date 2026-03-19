@@ -12,52 +12,49 @@
   </template>
   
   <script setup>
-  import { ref, watch, onMounted } from 'vue'
-  import axios from 'axios'
-  
-  const props = defineProps({
-    profileUser: { type: Object, required: true },
-    authUser: { type: Object, required: false }
-  })
-  
-  const isFollowing = ref(false)
-  const canFollow = ref(false)
-  
-  const checkCanFollow = () => {
-    if (!props.authUser) return false
-    if (props.authUser.id === props.profileUser.id) return false
-    if (!['performer', 'organizer'].includes(props.profileUser.role)) return false
-    return true
+import { ref, computed, watch, onMounted } from 'vue'
+import axios from 'axios'
+
+const props = defineProps({
+  profileUser: { type: Object, required: true },
+  authUser: { type: Object, required: false }
+})
+
+const isFollowing = ref(false)
+const loading = ref(false)
+
+const canFollow = computed(() => {
+  if (!props.authUser) return false
+  if (props.authUser.id === props.profileUser.id) return false
+  if (!['performer', 'organizer'].includes(props.profileUser.role)) return false
+  return true
+})
+
+const loadFollowStatus = async () => {
+  if (!props.authUser || !canFollow.value) return
+  try {
+    const res = await axios.get(`/api/users/${props.profileUser.username}`)
+    isFollowing.value = res.data.is_following
+  } catch (e) {
+    console.error(e)
   }
-  
-  const loadFollowStatus = async () => {
-    if (!props.authUser || !checkCanFollow()) return
-    try {
-      const res = await axios.get(`/api/users/${props.profileUser.username}`)
-      isFollowing.value = res.data.is_following
-    } catch (e) {
-      console.error(e)
-    }
+}
+
+const emit = defineEmits(['follow-changed'])
+
+const toggleFollow = async () => {
+  try {
+    const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
+
+    isFollowing.value = res.data.following
+
+    emit('follow-changed', res.data.following)
+
+  } catch (e) {
+    console.error(e)
   }
-  
-  const toggleFollow = async () => {
-    try {
-      const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
-      isFollowing.value = res.data.following
-    } catch (e) {
-      console.error(e)
-      alert(e.response?.data?.message || 'Chyba při follow/unfollow')
-    }
-  }
-  
-  onMounted(() => {
-    canFollow.value = checkCanFollow()
-    loadFollowStatus()
-  })
-  
-  watch(() => props.profileUser, () => {
-    canFollow.value = checkCanFollow()
-    loadFollowStatus()
-  })
-  </script>
-  
+}
+onMounted(loadFollowStatus)
+
+watch(() => props.profileUser.username, loadFollowStatus)
+</script>

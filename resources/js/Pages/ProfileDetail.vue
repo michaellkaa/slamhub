@@ -8,52 +8,47 @@
     <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
 
       <div v-if="user" class="flex flex-col gap-4">
-  <div class="flex items-center gap-8">
-    <img
-        :src="user.profile_pic_url"
-        class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
-        @click="triggerUpload"
-        :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
-      />
+        <div class="flex items-center gap-8">
+          <img
+            :src="user.profile_pic_url"
+            class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
+            @click="triggerUpload"
+            :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
+          />
 
-      <input
-        type="file"
-        ref="fileInput"
-        class="hidden"
-        accept="image/*"
-        @change="uploadPhoto"
-      />
-    <div class="flex flex-col gap-2">
-      <div class="flex items-center gap-4">
-        <div class="font-bold text-xl">{{ user.name }}</div>
+          <input
+            type="file"
+            ref="fileInput"
+            class="hidden"
+            accept="image/*"
+            @change="uploadPhoto"
+          />
 
-        <FollowButton
-          v-if="loggedUser && !isOwnProfile"
-          :profileUser="user"
-          :authUser="loggedUser"
-        />
-      </div>
-      <div class="text-white/40 text-sm">@{{ user.username }}</div>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-4">
+              <div class="font-bold text-xl">{{ user.name }}</div>
 
-      <div class="flex gap-6 mt-2 text-white/70 text-sm">
-        <div>
-          <span class="font-semibold">{{ user.followers_count || 0 }}</span> sledující
+              <FollowButton
+                v-if="loggedUser && !isOwnProfile"
+                :profileUser="user"
+                :authUser="loggedUser"
+                @follow-changed="handleFollow"
+              />
+            </div>
+
+            <div class="text-white/40 text-sm">@{{ user.username }}</div>
+
+            <div class="flex gap-6 mt-2 text-white/70 text-sm">
+              <div>
+                <span class="font-semibold">{{ user.followers_count || 0 }}</span> sledující
+              </div>
+              <div>
+                <span class="font-semibold">{{ user.following_count || 0 }}</span> sleduje
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <span class="font-semibold">{{ user.following_count || 0 }}</span> sleduje
-        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- idk jestli nechat - following  -->
-  <div v-if="showFollowersList" class="mt-4 flex gap-3 flex-wrap">
-    <div v-for="f in user.followers" :key="f.id" class="flex flex-col items-center gap-1">
-      <img :src="f.profile_pic_url" class="w-10 h-10 rounded-full object-cover" />
-      <span class="text-xs">@{{ f.username }}</span>
-    </div>
-  </div>
-</div>
 
       <div v-else class="flex items-center gap-8 animate-pulse">
         <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
@@ -63,9 +58,9 @@
         </div>
       </div>
 
-      <div class="border-b border-white/10 pb-4 mt-8 no-scrollbar">
+      <div class="border-b border-white/10 pb-4 mt-8">
         <div v-if="!user" class="flex gap-10">
-          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded no-scrollbar"></div>
+          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
         </div>
 
         <div v-else class="flex gap-10">
@@ -73,35 +68,41 @@
             v-for="tab in tabs"
             :key="tab.key"
             @click="activeTab = tab.key"
-            class="flex flex-col items-center gap-2 no-scrollbar"
+            class="flex flex-col items-center gap-2"
           >
             <img
               :src="tab.icon"
-              class="w-6 h-6 transition no-scrollbar"
+              class="w-6 h-6 transition"
               :class="activeTab === tab.key ? 'opacity-100' : 'opacity-40'"
             />
             <div
               v-if="activeTab === tab.key"
-              class="w-full h-[2px] bg-pink-500 rounded no-scrollbar"
+              class="w-full h-[2px] bg-pink-500 rounded"
             ></div>
           </button>
         </div>
       </div>
 
-      <div class="mt-8">
-        <component :is="activeComponent" :username="user?.username" />
+      <div class="mt-8" v-if="user">
+        <component
+          :is="activeComponent"
+          :username="user.username"
+        />
       </div>
+
     </div>
 
     <div class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4">
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
+
     <CreateButton
-      v-if="user"
+      v-if="isOwnProfile"
       :user="user"
       @create="handleCreate"
     />
+
   </div>
 </template>
 
@@ -134,7 +135,6 @@ const loadProfile = async () => {
     }
 
     const username = route.params.username
-
     if (username) {
       const res = await axios.get(`/api/users/${username}`)
       user.value = res.data
@@ -147,8 +147,8 @@ const loadProfile = async () => {
   }
 }
 
-watch(() => route.params.username, loadProfile)
 onMounted(loadProfile)
+watch(() => route.params.username, loadProfile)
 
 const isOwnProfile = computed(() => {
   return loggedUser.value && user.value?.id === loggedUser.value.id
@@ -198,5 +198,14 @@ const uploadPhoto = async (e) => {
   } catch (err) {
     console.error('Photo upload failed:', err)
   }
+}
+
+const handleFollow = (following) => {
+  if (following) user.value.followers_count++
+  else user.value.followers_count--
+}
+
+const handleCreate = (type) => {
+  console.log('Create clicked:', type)
 }
 </script>

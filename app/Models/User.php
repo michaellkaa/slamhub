@@ -37,7 +37,6 @@ class User extends Authenticatable
         'is_banned'         => 'boolean',
     ];
 
-    // Přidá Accessor do JSONu
     protected $appends = ['profile_pic_url'];
 
     public function isAdmin(): bool
@@ -97,6 +96,11 @@ class User extends Authenticatable
     public function followers()
     {
         return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(Video::class);
     }
 
 }

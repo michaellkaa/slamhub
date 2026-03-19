@@ -73,7 +73,7 @@ Route::get('/users/{username}/events', [EventController::class, 'userEvents']);
 Route::middleware('auth:sanctum')->post('/videos', [VideoController::class,'store']);
 Route::get('/videos', [VideoController::class,'index']);
 Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
-Route::get('/videos/slug/{slug}', [VideoController::class,'showBySlug']);
+Route::get('/videos/{slug}', [VideoController::class,'showBySlug']);
 
 Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
 Route::get('/users/{username}', [ApiUserController::class, 'show']);
