@@ -213,10 +213,11 @@ const uploadPhoto = async (e) => {
 }
 
 const handleFollow = (following) => {
-  if (following) user.value.followers_count++
-  else user.value.followers_count--
-  
-  user.value = { ...user.value }
+  const currentCount = user.value?.followers_count || 0
+  user.value = {
+    ...user.value,
+    followers_count: Math.max(0, following ? currentCount + 1 : currentCount - 1)
+  }
 }
 
 const handleCreate = (type) => {

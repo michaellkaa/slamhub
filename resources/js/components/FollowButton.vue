@@ -94,5 +94,9 @@ const toggleFollow = async () => {
 }
 
 onMounted(loadFollowStatus)
-watch(() => props.profileUser.username, loadFollowStatus)
+
+watch(
+  () => props.profileUser?.username,
+  () => loadFollowStatus()
+)
 </script>
