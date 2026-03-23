@@ -2,17 +2,20 @@
   <div class="flex flex-col gap-5 px-8 pt-6 pb-8 w-full max-w-sm">
     <input
       type="email"
+      name="email"
+      autocomplete="email"
       v-model="email"
       placeholder="Email"
       class="p-3 px-10"
-      required
     />
+
     <input
       type="password"
+      name="password"
+      autocomplete="current-password"
       v-model="password"
       placeholder="Heslo"
       class="p-3 px-10"
-      required
     />
     <button
       @click="login"

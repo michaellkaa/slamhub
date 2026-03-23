@@ -34,6 +34,7 @@
                 :authUser="loggedUser"
                 @follow-changed="handleFollow"
               />
+              
             </div>
 
             <div class="text-white/40 text-sm">@{{ user.username }}</div>
@@ -109,6 +110,8 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
+
 import axios from 'axios'
 
 import SideNav from '../components/SideNav.vue'
@@ -124,19 +127,25 @@ const user = ref(null)
 const loggedUser = ref(null)
 const fileInput = ref(null)
 const activeTab = ref('videos')
+const router = useRouter()
 
 const loadProfile = async () => {
   try {
-    
     const token = localStorage.getItem('token')
-    if (token) {
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`
-      const meRes = await axios.get('/api/me')
-      loggedUser.value = meRes.data
+
+    if (!token) {
+      router.push('/login')
+      return
     }
 
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+
+    const { data } = await axios.get('/api/me')
+    loggedUser.value = data
+
     const username = route.params.username
-    if (username) {
+
+    if (username && username !== loggedUser.value.username) {
       const res = await axios.get(`/api/users/${username}`)
       user.value = res.data
     } else {
@@ -144,7 +153,9 @@ const loadProfile = async () => {
     }
 
   } catch (err) {
-    console.error('Failed to load profile:', err)
+    console.error(err)
+
+    router.push('/login')
   }
 }
 
@@ -210,5 +221,13 @@ const handleFollow = (following) => {
 
 const handleCreate = (type) => {
   console.log('Create clicked:', type)
+}
+
+const updateFollowers = (following) => {
+  if (following) {
+    user.value.followers_count++
+  } else {
+    user.value.followers_count--
+  }
 }
 </script>

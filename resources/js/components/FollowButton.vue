@@ -32,18 +32,27 @@ const canFollow = computed(() => {
   return true
 })
 
-// Load follow status from dedicated endpoint
+
 const loadFollowStatus = async () => {
-  if (!props.authUser || !canFollow.value) return
+  if (!props.authUser) return
+  if (!props.profileUser?.username) return
+  if (!canFollow.value) return
+
   try {
-    const res = await axios.get(`/api/users/${props.profileUser.username}/follow-status`)
-    isFollowing.value = res.data.is_following
+    const { data } = await axios.get(`/api/users/${props.profileUser.username}/follow-status`)
+    isFollowing.value = data.is_following
   } catch (e) {
-    console.error(e)
+    if (e.response?.status === 401) {
+      console.warn("User not authenticated")
+      localStorage.removeItem('token')
+    } else {
+      console.error("Failed to load follow status:", e)
+    }
   }
 }
 
-const toggleFollow = async () => {
+
+/*const toggleFollow = async () => {
   if (loading.value) return
   loading.value = true
   try {
@@ -52,6 +61,33 @@ const toggleFollow = async () => {
     emit('follow-changed', res.data.following)
   } catch (e) {
     console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
+
+const toggleFollow = async () => {
+  const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
+
+  isFollowing.value = res.data.following
+
+  emit('follow-changed', res.data.following)
+}*/
+
+const toggleFollow = async () => {
+  if (loading.value) return
+  if (!props.authUser) return
+
+  loading.value = true
+
+  try {
+    const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
+
+    isFollowing.value = res.data.following
+    emit('follow-changed', res.data.following)
+
+  } catch (e) {
+    console.error('Follow failed:', e)
   } finally {
     loading.value = false
   }

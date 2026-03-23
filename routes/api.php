@@ -85,3 +85,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/login', function () {
     return response()->json(['message' => 'Please login'], 401);
 })->name('login');
+
+Route::get('/users/{username}/followers', [FollowController::class, 'followersList']);
+Route::get('/users/{username}/following', [FollowController::class, 'followingList']);
