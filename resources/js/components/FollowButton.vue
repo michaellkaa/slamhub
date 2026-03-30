@@ -84,7 +84,8 @@ const toggleFollow = async () => {
     const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
 
     isFollowing.value = res.data.following
-    emit('follow-changed', res.data.following)
+
+    emit('follow-changed', res.data.following, res.data.followers_count)
 
   } catch (e) {
     console.error('Follow failed:', e)

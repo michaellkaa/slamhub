@@ -75,7 +75,7 @@ Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
 Route::get('/videos/{slug}', [VideoController::class,'showBySlug']);
 
 Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
-Route::get('/users/{username}', [ApiUserController::class, 'show']);
+//Route::get('/users/{username}', action: [ApiUserController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{username}/follow-status', [FollowController::class, 'followStatus']);

@@ -212,14 +212,9 @@ const uploadPhoto = async (e) => {
   }
 }
 
-const handleFollow = (following) => {
-  const currentCount = user.value?.followers_count || 0
-  user.value = {
-    ...user.value,
-    followers_count: Math.max(0, following ? currentCount + 1 : currentCount - 1)
-  }
+const handleFollow = (following, count) => {
+  user.value.followers_count = count
 }
-
 const handleCreate = (type) => {
   console.log('Create clicked:', type)
 }

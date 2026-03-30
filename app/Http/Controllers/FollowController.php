@@ -22,7 +22,9 @@ class FollowController extends Controller
             return response()->json(['message' => 'Tento uživatel nemůže být sledován.'], 403);
         }
 
-        $isFollowing = $authUser->following()->where('following_id', $userToFollow->id)->exists();
+        $isFollowing = $authUser->following()
+            ->where('following_id', $userToFollow->id)
+            ->exists();
 
         if ($isFollowing) {
             $authUser->following()->detach($userToFollow->id);
@@ -32,7 +34,12 @@ class FollowController extends Controller
             $following = true;
         }
 
-        return response()->json(['following' => $following]);
+        $followersCount = $userToFollow->followers()->count();
+
+        return response()->json([
+            'following' => $following,
+            'followers_count' => $followersCount
+        ]);
     }
 
     public function followersList($username)
