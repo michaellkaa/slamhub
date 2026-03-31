@@ -8,7 +8,7 @@
       isFollowing ? 'bg-gray-700 hover:bg-gray-600' : 'bg-[#BF2679] hover:bg-[#9e2668]'
     ]"
   >
-    {{ isFollowing ? 'Unfollow' : 'Follow' }}
+    {{ isFollowing ? 'Sleduješ' : 'Sledovat' }}
   </button>
 </template>
 
@@ -22,6 +22,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['follow-changed'])
+
 const isFollowing = ref(false)
 const loading = ref(false)
 
@@ -32,72 +33,31 @@ const canFollow = computed(() => {
   return true
 })
 
-
 const loadFollowStatus = async () => {
-  if (!props.authUser) return
-  if (!props.profileUser?.username) return
   if (!canFollow.value) return
-
   try {
     const { data } = await axios.get(`/api/users/${props.profileUser.username}/follow-status`)
     isFollowing.value = data.is_following
   } catch (e) {
-    if (e.response?.status === 401) {
-      console.warn("User not authenticated")
-      localStorage.removeItem('token')
-    } else {
-      console.error("Failed to load follow status:", e)
-    }
-  }
-}
-
-
-/*const toggleFollow = async () => {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
-    isFollowing.value = res.data.following
-    emit('follow-changed', res.data.following)
-  } catch (e) {
-    console.error(e)
-  } finally {
-    loading.value = false
+    console.error("Failed to load follow status:", e)
   }
 }
 
 const toggleFollow = async () => {
-  const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
-
-  isFollowing.value = res.data.following
-
-  emit('follow-changed', res.data.following)
-}*/
-
-const toggleFollow = async () => {
-  if (loading.value) return
-  if (!props.authUser) return
+  if (!canFollow.value || loading.value) return
 
   loading.value = true
-
   try {
-    const res = await axios.post(`/api/users/${props.profileUser.username}/follow`)
-
-    isFollowing.value = res.data.following
-
-    emit('follow-changed', res.data.following, res.data.followers_count)
-
+    const { data } = await axios.post(`/api/users/${props.profileUser.username}/follow`)
+    isFollowing.value = data.following
+    emit('follow-changed', data.following, data.followers_count)
   } catch (e) {
-    console.error('Follow failed:', e)
+    console.error("Follow failed:", e)
   } finally {
     loading.value = false
   }
 }
 
 onMounted(loadFollowStatus)
-
-watch(
-  () => props.profileUser?.username,
-  () => loadFollowStatus()
-)
+watch(() => props.profileUser.username, loadFollowStatus)
 </script>

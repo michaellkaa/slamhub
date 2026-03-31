@@ -15,15 +15,20 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\MessageController;
+
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto']);
 });
+
+Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
 
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
@@ -74,7 +79,6 @@ Route::get('/videos', [VideoController::class,'index']);
 Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
 Route::get('/videos/{slug}', [VideoController::class,'showBySlug']);
 
-Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
 //Route::get('/users/{username}', action: [ApiUserController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -88,3 +92,15 @@ Route::get('/login', function () {
 
 Route::get('/users/{username}/followers', [FollowController::class, 'followersList']);
 Route::get('/users/{username}/following', [FollowController::class, 'followingList']);
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/conversations', [MessageController::class, 'index']);
+    Route::post('/conversations/{userId}', [MessageController::class, 'startConversation']);
+
+    Route::get('/conversations/{id}/messages', [MessageController::class, 'getMessages']);
+    Route::post('/conversations/{id}/messages', [MessageController::class, 'sendMessage']);
+});
+
+Route::middleware('auth:sanctum')->get('/users', [ApiUserController::class, 'index']);
+

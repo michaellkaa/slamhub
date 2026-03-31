@@ -8,18 +8,15 @@ use App\Models\User;
 
 class GoogleController extends Controller
 {
-    // Přesměrování na Google login
     public function redirect()
     {
         return Socialite::driver('google')->stateless()->redirect();
     }
 
-    // Callback z Google po úspěšném přihlášení
     public function callback()
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
 
-        // Najdi uživatele podle emailu nebo vytvoř nového
         $user = User::firstOrCreate(
             ['email' => $googleUser->getEmail()],
             [
@@ -30,10 +27,8 @@ class GoogleController extends Controller
             ]
         );
 
-        // Vytvoření Sanctum tokenu pro SPA
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Vrátíme token a info uživatele (JSON) – SPA může uložit token
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',

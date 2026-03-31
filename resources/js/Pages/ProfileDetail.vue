@@ -131,34 +131,43 @@ const router = useRouter()
 
 const loadProfile = async () => {
   try {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
 
     if (!token) {
-      router.push('/login')
-      return
+      router.push('/login');
+      return;
     }
 
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
-    const { data } = await axios.get('/api/me')
-    loggedUser.value = data
+    const { data: me } = await axios.get('/api/me');
+    loggedUser.value = me;
 
-    const username = route.params.username
+    const username = route.params.username;
 
     if (username && username !== loggedUser.value.username) {
-      const res = await axios.get(`/api/users/${username}`)
-      user.value = res.data
+      const { data } = await axios.get(`/api/users/${username}`);
+      user.value = data;
     } else {
-      user.value = loggedUser.value
+      user.value = { ...loggedUser.value };
     }
 
+    if (user.value) {
+      user.value.followers_count = user.value.followers_count || 0;
+      user.value.following_count = user.value.following_count || 0;
+      user.value.is_following = user.value.is_following || false;
+    }
   } catch (err) {
-    console.error(err)
-
-    router.push('/login')
+    console.error('Chyba při načítání profilu:', err);
+    router.push('/login');
   }
-}
+};
 
+const handleFollow = (following, count) => {
+  if (!user.value) return
+  user.value.is_following = following
+  user.value.followers_count = count
+}
 onMounted(loadProfile)
 watch(() => route.params.username, loadProfile)
 
@@ -212,9 +221,7 @@ const uploadPhoto = async (e) => {
   }
 }
 
-const handleFollow = (following, count) => {
-  user.value.followers_count = count
-}
+
 const handleCreate = (type) => {
   console.log('Create clicked:', type)
 }
