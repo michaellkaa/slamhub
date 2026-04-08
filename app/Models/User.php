@@ -103,9 +103,16 @@ class User extends Authenticatable
         return $this->hasMany(Video::class);
     }
 
+    
+
     public function conversations()
     {
-        return $this->belongsToMany(Conversation::class);
+        return $this->belongsToMany(
+            \App\Models\Conversation::class,
+            'conversation_user',
+            'user_id',
+            'conversation_id'
+        );
     }
 
 }

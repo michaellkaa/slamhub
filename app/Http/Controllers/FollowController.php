@@ -80,4 +80,9 @@ class FollowController extends Controller
             'is_following' => $isFollowing
         ]);
     }
+
+    public function following()
+{
+    return auth()->user()->following()->get();
+}
 }

@@ -27,6 +27,27 @@
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-4">
               <div class="font-bold text-xl">{{ user.name }}</div>
+              <button
+                v-if="isOwnProfile"
+                @click="goToSettings"
+                class="p-2 rounded-md bg-[#1d1d21] hover:bg-[#2a2a30] transition"
+                title="Settings"
+                aria-label="Open settings"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4 text-white"
+                >
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c0 .39.14.76.4 1.04.27.28.64.44 1.04.46H21a2 2 0 1 1 0 4h-.09c-.4.02-.77.18-1.04.46-.26.28-.4.65-.4 1.04z"></path>
+                </svg>
+              </button>
 
               <FollowButton
                 v-if="loggedUser && !isOwnProfile"
@@ -109,8 +130,7 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import axios from 'axios'
 
@@ -226,11 +246,7 @@ const handleCreate = (type) => {
   console.log('Create clicked:', type)
 }
 
-const updateFollowers = (following) => {
-  if (following) {
-    user.value.followers_count++
-  } else {
-    user.value.followers_count--
-  }
+const goToSettings = () => {
+  router.push('/settings')
 }
 </script>

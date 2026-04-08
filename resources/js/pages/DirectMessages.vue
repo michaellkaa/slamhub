@@ -31,19 +31,14 @@
             </template>
 
             <template v-else>
-              <div class="flex flex-col items-center justify-center mt-12 space-y-4 text-gray-400">
-                <p class="text-center">Nemáte žádné kontakty</p>
-                <button 
-                  @click="fetchUsers" 
-                  class="bg-[#1d1d21] text-white px-4 py-2 rounded hover:bg-[#2a2a30]"
-                >
-                  Načíst uživatele
-                </button>
-              </div>
-            </template>
+  <div class="flex flex-col items-center justify-center mt-12 space-y-4 text-gray-400">
+    <p class="text-center">Zkuste napsat lidem, které sledujete</p>
+  </div>
+</template>
 
-            <div v-if="suggestedUsers.length > 0" class="mt-6 w-full space-y-3">
-              <div 
+<div v-if="suggestedUsers.length > 0" class="mt-6 w-full space-y-3">
+  <div class="text-gray-400 text-sm mb-2 px-1">Lidé které sledujete</div>
+                <div 
                 v-for="user in suggestedUsers" 
                 :key="user.id" 
                 class="flex items-center justify-between p-2 bg-[#1d1d21] rounded hover:bg-[#2a2a30]"
@@ -110,13 +105,15 @@ import SideNav from '../components/SideNav.vue'
 
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = "http://127.0.0.1:8000"
 axios.defaults.withCredentials = true
+axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
 
 onMounted(async () => {
-  await axios.get('/sanctum/csrf-cookie')
+  //await axios.get('/sanctum/csrf-cookie')
   await fetchMe()
   await fetchUsers()
+  await fetchFollowing()
 })
 
 const activeNav = ref('award')
@@ -124,7 +121,7 @@ function handleNavigate(nav) { activeNav.value = nav }
 
 const placeholderAvatar = 'https://i.pravatar.cc/150?img=1'
 
-const currentUser = ref(null)  // načteme z /api/me
+const currentUser = ref(null)  
 
 const contacts = ref([])
 const suggestedUsers = ref([])
@@ -149,14 +146,18 @@ async function fetchUsers() {
     const allUsers = Array.isArray(response.data) ? response.data : []
 
     const convResponse = await axios.get('/api/conversations')
-    const contactIds = convResponse.data.map(c => c.participant_id)
+
+    const contactIds = convResponse.data.map(c => {
+  const otherUser = c.users.find(u => u.id !== currentUser.value.id)
+  return otherUser?.id
+})
 
     contacts.value = allUsers.filter(u => contactIds.includes(u.id))
-    suggestedUsers.value = allUsers.filter(u => !contactIds.includes(u.id))
 
     if (contacts.value.length > 0 && !selectedUser.value) {
       selectUser(contacts.value[0])
     }
+
   } catch (err) {
     console.error('Error fetching users:', err)
   }
@@ -230,5 +231,16 @@ function scrollToBottom() {
   })
 }
 
+async function fetchFollowing() {
+  try {
+    const response = await axios.get('/api/following')
+      const data = await response.json()
+
+    suggestedUsers.value = data
+
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 </script>
