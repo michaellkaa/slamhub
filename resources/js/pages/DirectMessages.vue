@@ -41,18 +41,13 @@
                 <div 
                 v-for="user in suggestedUsers" 
                 :key="user.id" 
-                class="flex items-center justify-between p-2 bg-[#1d1d21] rounded hover:bg-[#2a2a30]"
+                class="flex items-center justify-between p-2 bg-[#1d1d21] rounded hover:bg-[#2a2a30] cursor-pointer"
+                @click="selectUser(user)"
               >
                 <div class="flex items-center space-x-3">
                   <img :src="user.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
                   <div class="text-white">{{ user.name }}</div>
                 </div>
-                <button 
-                  @click="followUser(user)" 
-                  class="bg-[#2a2a30] text-white px-3 py-1 rounded hover:bg-[#3a3a3a]"
-                >
-                  Sleduj
-                </button>
               </div>
             </div>
 
@@ -215,16 +210,6 @@ async function sendMessage() {
   }
 }
 
-async function followUser(user) {
-  try {
-    await axios.post(`/api/users/${user.username}/follow`)
-    contacts.value.push(user)
-    suggestedUsers.value = suggestedUsers.value.filter(u => u.id !== user.id)
-  } catch (err) {
-    console.error('Error following user:', err)
-  }
-}
-
 function scrollToBottom() {
   nextTick(() => {
     if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight
@@ -234,10 +219,7 @@ function scrollToBottom() {
 async function fetchFollowing() {
   try {
     const response = await axios.get('/api/following')
-      const data = await response.json()
-
-    suggestedUsers.value = data
-
+    suggestedUsers.value = response.data  
   } catch (err) {
     console.error(err)
   }

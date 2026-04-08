@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -20,16 +21,20 @@ class MessageController extends Controller
     public function startConversation($userId)
     {
         $authId = auth()->id();
+        $recipient = User::findOrFail($userId);
 
-        $conversation = Conversation::whereHas('users', fn($q) =>
-            $q->where('users.id', $authId)
-        )->whereHas('users', fn($q) =>
-            $q->where('users.id', $userId)
-        )->first();
+        if ((int) $recipient->id === (int) $authId) {
+            return response()->json(['message' => 'Cannot start conversation with yourself.'], 422);
+        }
+
+        $conversation = auth()->user()
+            ->conversations()
+            ->whereHas('users', fn($q) => $q->where('users.id', $recipient->id))
+            ->first();
 
         if (!$conversation) {
             $conversation = Conversation::create();
-            $conversation->users()->attach([$authId, $userId]);
+            $conversation->users()->attach([$authId, $recipient->id]);
         }
 
         return $conversation->load('users');
@@ -37,18 +42,36 @@ class MessageController extends Controller
 
     public function getMessages($id)
     {
+        $conversation = auth()->user()
+            ->conversations()
+            ->where('conversations.id', $id)
+            ->first();
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found.'], 404);
+        }
+
         return Message::with('sender')
-            ->where('conversation_id', $id)
+            ->where('conversation_id', $conversation->id)
             ->orderBy('created_at')
             ->get();
     }
 
     public function sendMessage(Request $request, $id)
     {
+        $conversation = auth()->user()
+            ->conversations()
+            ->where('conversations.id', $id)
+            ->first();
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found.'], 404);
+        }
+
         $message = Message::create([
-            'conversation_id' => $id,
+            'conversation_id' => $conversation->id,
             'sender_id' => auth()->id(),
-            'body' => $request->body
+            'body' => (string) $request->input('body', '')
         ]);
 
         return $message->load('sender');
