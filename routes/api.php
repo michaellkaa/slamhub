@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\PerformerController;
 use App\Http\Controllers\PostController;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AwardController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
@@ -18,17 +19,17 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\MessageController;
 
 
+Route::post('/login', [AuthController::class, 'login']);
+/*
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
-
-
+*/
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [ApiUserController::class, 'me']);
+    Route::put('/me', [ApiUserController::class, 'updateMe']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/profile/photo', [ProfileController::class, 'uploadPhoto']);
 });
-
-Route::middleware('auth:sanctum')->get('/me', [ApiUserController::class, 'me']);
 
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect']);
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
@@ -87,8 +88,9 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/login', function () {
-    return response()->json(['message' => 'Please login'], 401);
+  return response()->json(['message' => 'Please login'], 401);
 })->name('login');
+
 
 Route::get('/users/{username}/followers', [FollowController::class, 'followersList']);
 Route::get('/users/{username}/following', [FollowController::class, 'followingList']);
@@ -103,4 +105,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->get('/users', [ApiUserController::class, 'index']);
+
+Route::middleware('auth:sanctum')->get('/following', [FollowController::class, 'following']);
 

@@ -22,9 +22,9 @@ class MessageController extends Controller
         $authId = auth()->id();
 
         $conversation = Conversation::whereHas('users', fn($q) =>
-            $q->where('user_id', $authId)
+            $q->where('users.id', $authId)
         )->whereHas('users', fn($q) =>
-            $q->where('user_id', $userId)
+            $q->where('users.id', $userId)
         )->first();
 
         if (!$conversation) {

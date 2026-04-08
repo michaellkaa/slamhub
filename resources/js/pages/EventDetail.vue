@@ -29,7 +29,7 @@
           </p>
         </div>
 
-        <p v-if="event.description" class="text-white/80 leading-relaxed mb-6 text-left">
+        <p v-if="event.description" class="text-white/80 leading-relaxed mb-6 text-left whitespace-pre-line">
           {{ event.description }}
         </p>
 

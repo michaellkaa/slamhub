@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -40,7 +41,7 @@ class AuthController extends Controller
     ], 201);
 }
 
-    public function login(Request $request)
+    /*public function login(Request $request)
     {
         $data = $request->validate([
             'email' => 'required|email',
@@ -74,16 +75,55 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => $user,
         ]);
-    }
+    }*/
 
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
 
+public function login(Request $request)
+{
+    $data = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    $user = User::where('email', $data['email'])->first();
+
+    if (!$user || !Hash::check($data['password'], $user->password)) {
         return response()->json([
-            'message' => 'Odhlášení proběhlo úspěšně'
-        ]);
+            'message' => 'Nesprávný email nebo heslo'
+        ], 401);
     }
+
+    if ($user->is_banned) {
+        return response()->json([
+            'message' => 'Účet je zablokován'
+        ], 403);
+    }
+
+    $user->tokens()->delete();
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    $user->update([
+        'last_login_at' => now(),
+    ]);
+
+    return response()->json([
+        'message' => 'Logged in',
+        'access_token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $user,
+    ]);
+}
+
+public function logout(Request $request)
+{
+    if ($request->user()?->currentAccessToken()) {
+        $request->user()->currentAccessToken()->delete();
+    }
+
+    return response()->json([
+        'message' => 'Logged out'
+    ]);
+}
 
     public function me(Request $request)
     {

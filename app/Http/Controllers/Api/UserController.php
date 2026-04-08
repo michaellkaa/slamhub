@@ -56,4 +56,29 @@ class UserController extends Controller
     
         return response()->json($users);
     }
+
+    public function updateMe(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:users,username,' . $user->id],
+        ]);
+
+        $user->update([
+            'name' => $validated['name'],
+            'username' => $validated['username'],
+        ]);
+
+        return response()->json([
+            'id' => $user->id,
+            'username' => $user->username,
+            'name' => $user->name,
+            'role' => $user->role,
+            'profile_pic_url' => $user->profile_pic_url,
+            'followers_count' => $user->followers()->count(),
+            'following_count' => $user->following()->count(),
+        ]);
+    }
 }

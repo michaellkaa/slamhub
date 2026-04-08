@@ -17,6 +17,7 @@
       placeholder="Heslo"
       class="p-3 px-10"
     />
+
     <button
       @click="login"
       class="bg-[#DF68CF] text-white uppercase font-bold p-3 rounded-md"
@@ -36,41 +37,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 
-const email = ref('');
-const password = ref('');
-const error = ref('');
+const email = ref('')
+const password = ref('')
+const error = ref('')
 
 const login = async () => {
-  error.value = '';
+  error.value = ''
+
   try {
-    const res = await axios.post('/api/login', {
+    const response = await axios.post('/api/login', {
       email: email.value,
-      password: password.value,
-    });
+      password: password.value
+    })
 
-    console.log('User logged in:', res.data);
+    const token = response.data?.access_token
+    const loggedInUser = response.data?.user
 
-    localStorage.setItem('token', res.data.access_token);
+    if (!token || !loggedInUser) {
+      throw new Error('Missing token or user in login response')
+    }
 
-    localStorage.setItem('user', JSON.stringify(res.data.user));
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(loggedInUser))
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access_token}`;
+    const user = await axios.get('/api/me')
 
-    router.push(`/profile/${res.data.user.username}`);
+    router.push(`/profile/${user.data.username}`)
+
   } catch (err) {
-    error.value = err.response?.data?.message || 'Chyba přihlášení';
+    error.value = err.response?.data?.message || 'Chyba přihlášení'
   }
-};
+}
 
 
-// Google login
 const loginWithGoogle = () => {
-  window.location.href = '/api/auth/google/redirect';
-};
+  window.location.href = '/api/auth/google/redirect'
+}
 </script>
