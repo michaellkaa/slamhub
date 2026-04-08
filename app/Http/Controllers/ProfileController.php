@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\User;
@@ -57,22 +58,36 @@ class ProfileController extends Controller
     }
     
     public function uploadPhoto(Request $request)
-{
-    $request->validate([
-        'photo' => 'required|image|max:2048',
-    ]);
+    {
+        $request->validate([
+            'photo' => 'nullable|image|max:10240',
+            'profile_picture' => 'nullable|image|max:10240',
+        ]);
 
-    $user = $request->user();
+        $file = $request->file('photo') ?: $request->file('profile_picture');
 
-    $path = $request->file('photo')->store('profile_pics', 'public');
+        if (!$file) {
+            return response()->json([
+                'message' => 'Nebyl nahrán žádný obrázek.'
+            ], 422);
+        }
 
-    $user->profile_pic = $path;
-    $user->save();
+        $user = $request->user();
 
-    return response()->json([
-        'message' => 'Profilovka úspěšně nahrána',
-        'profile_pic_url' => $user->profile_pic_url
-    ]);
-}
+        if ($user->profile_pic && str_starts_with($user->profile_pic, 'profile_pics/')) {
+            Storage::disk('public')->delete($user->profile_pic);
+        }
+
+        $path = $file->store('profile_pics', 'public');
+
+        $user->profile_pic = $path;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profilovka úspěšně nahrána',
+            'profile_pic' => $user->profile_pic,
+            'profile_pic_url' => $user->profile_pic_url,
+        ]);
+    }
 
 }

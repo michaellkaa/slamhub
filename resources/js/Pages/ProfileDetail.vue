@@ -72,6 +72,13 @@
         </div>
       </div>
 
+      <div
+        v-if="uploadError"
+        class="mt-3 max-w-lg rounded-md border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-4 py-3"
+      >
+        {{ uploadError }}
+      </div>
+
       <div v-else class="flex items-center gap-8 animate-pulse">
         <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
         <div class="flex flex-col gap-3 flex-1">
@@ -114,7 +121,10 @@
 
     </div>
 
-    <div class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4">
+    <div
+      v-if="!user"
+      class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4"
+    >
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
@@ -146,6 +156,7 @@ const route = useRoute()
 const user = ref(null)
 const loggedUser = ref(null)
 const fileInput = ref(null)
+const uploadError = ref('')
 const activeTab = ref('videos')
 const router = useRouter()
 
@@ -227,6 +238,7 @@ const triggerUpload = () => {
 
 const uploadPhoto = async (e) => {
   if (!isOwnProfile.value) return
+  uploadError.value = ''
   const file = e.target.files[0]
   if (!file) return
 
@@ -234,10 +246,32 @@ const uploadPhoto = async (e) => {
   formData.append('photo', file)
 
   try {
-    await axios.post('/api/profile/photo', formData)
-    loadProfile()
+    const token = localStorage.getItem('token')
+    if (!token) {
+      router.push('/login')
+      return
+    }
+
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+
+    const { data } = await axios.post('/api/profile/photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+
+    if (data?.profile_pic_url && user.value) {
+      user.value.profile_pic_url = data.profile_pic_url
+    }
   } catch (err) {
-    console.error('Photo upload failed:', err)
+    const backendMessage = err.response?.data?.message
+      || err.response?.data?.errors?.photo?.[0]
+      || err.response?.data?.errors?.profile_picture?.[0]
+      || err.message
+    uploadError.value = backendMessage.includes('kilobytes')
+      ? 'Photo is too large. Maximum size is 10 MB.'
+      : backendMessage
+    console.error('Photo upload failed:', backendMessage, err.response?.data)
+  } finally {
+    if (fileInput.value) fileInput.value.value = ''
   }
 }
 
