@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import SideNav from '../components/SideNav.vue'
 
 import axios from 'axios'
@@ -107,11 +107,16 @@ axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
 onMounted(async () => {
   //await axios.get('/sanctum/csrf-cookie')
   await fetchMe()
-  await fetchUsers()
   await fetchFollowing()
+  await fetchUsers()
+  startRealtimePolling()
 })
 
-const activeNav = ref('award')
+onBeforeUnmount(() => {
+  stopRealtimePolling()
+})
+
+const activeNav = ref('messages')
 function handleNavigate(nav) { activeNav.value = nav }
 
 const placeholderAvatar = 'https://i.pravatar.cc/150?img=1'
@@ -125,6 +130,7 @@ const messages = ref([])
 const newMessage = ref('')
 
 const chatContainer = ref(null)
+let realtimeTimer = null
 
 async function fetchMe() {
   try {
@@ -180,7 +186,7 @@ async function selectUser(user) {
     selectedUser.value.conversation_id = conversation.id
 
     const messagesRes = await axios.get(`/api/conversations/${conversation.id}/messages`)
-    messages.value = messagesRes.data
+    messages.value = Array.isArray(messagesRes.data) ? messagesRes.data : []
     scrollToBottom()
   } catch (err) {
     console.error('Error selecting user / fetching conversation:', err)
@@ -196,12 +202,7 @@ async function sendMessage() {
       { body: newMessage.value }
     )
 
-    messages.value.push({
-      id: response.data.id,
-      sender_id: currentUser.value.id,
-      sender: currentUser.value,
-      body: newMessage.value
-    })
+    messages.value.push(response.data)
 
     newMessage.value = ''
     scrollToBottom()
@@ -222,6 +223,38 @@ async function fetchFollowing() {
     suggestedUsers.value = response.data  
   } catch (err) {
     console.error(err)
+  }
+}
+
+async function refreshOpenConversation() {
+  if (!selectedUser.value?.conversation_id) return
+
+  try {
+    const response = await axios.get(`/api/conversations/${selectedUser.value.conversation_id}/messages`)
+    const nextMessages = Array.isArray(response.data) ? response.data : []
+
+    const hasChanged =
+      nextMessages.length !== messages.value.length ||
+      nextMessages[nextMessages.length - 1]?.id !== messages.value[messages.value.length - 1]?.id
+
+    if (hasChanged) {
+      messages.value = nextMessages
+      scrollToBottom()
+    }
+  } catch (err) {
+    console.error('Error refreshing conversation:', err)
+  }
+}
+
+function startRealtimePolling() {
+  stopRealtimePolling()
+  realtimeTimer = setInterval(refreshOpenConversation, 1200)
+}
+
+function stopRealtimePolling() {
+  if (realtimeTimer) {
+    clearInterval(realtimeTimer)
+    realtimeTimer = null
   }
 }
 
