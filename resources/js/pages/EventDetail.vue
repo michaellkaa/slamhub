@@ -32,12 +32,13 @@
         <div class="mb-6">
           <button
             @click="sessionStatus.enabled && $router.push({ name: 'EventVote', params: { id: props.id } })"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition shadow-[0_0_24px_rgba(236,72,153,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
-            :class="sessionStatus.enabled ? 'bg-pink-500 hover:bg-pink-600' : 'bg-white/10 hover:bg-white/10'"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="sessionStatus.enabled
+              ? 'bg-pink-500 hover:bg-pink-600 shadow-[0_0_24px_rgba(236,72,153,0.25)]'
+              : 'bg-white/10'"
             :disabled="!sessionStatus.enabled"
           >
             Hlasovani
-            <span class="text-white/80 text-sm font-semibold">1–10</span>
             <span v-if="!sessionStatus.enabled" class="text-white/60 text-sm font-semibold">(Neaktivni)</span>
           </button>
         </div>

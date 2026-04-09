@@ -10,11 +10,10 @@
         </div>
       </div>
 
-      <div class="bg-[#121218] rounded-2xl p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+      <div class="p-5">
         <div class="flex items-start justify-between gap-4 mb-5">
           <div>
             <h1 class="text-2xl font-extrabold tracking-wide">Hlasovani (host)</h1>
-            <p class="text-white/60 text-sm mt-1">Sprava session, kol a live vysledku.</p>
           </div>
           <div class="text-right">
             <div class="text-xs text-white/50">Kod</div>
