@@ -829,6 +829,14 @@ video {
   max-height: 100vh;
 }
 
+.max-h-\[95vh\] {
+  max-height: 95vh;
+}
+
+.max-h-full {
+  max-height: 100%;
+}
+
 .min-h-0 {
   min-height: 0px;
 }
@@ -2058,6 +2066,14 @@ video {
     margin-top: 7rem;
   }
 
+  .lg\:block {
+    display: block;
+  }
+
+  .lg\:flex {
+    display: flex;
+  }
+
   .lg\:h-24 {
     height: 6rem;
   }
@@ -2072,6 +2088,10 @@ video {
 
   .lg\:h-screen {
     height: 100vh;
+  }
+
+  .lg\:max-h-\[90vh\] {
+    max-height: 90vh;
   }
 
   .lg\:w-28 {
@@ -2108,6 +2128,18 @@ video {
 
   .lg\:gap-4 {
     gap: 1rem;
+  }
+
+  .lg\:p-4 {
+    padding: 1rem;
+  }
+
+  .lg\:p-6 {
+    padding: 1.5rem;
+  }
+
+  .lg\:p-0 {
+    padding: 0px;
   }
 
   .lg\:px-20 {

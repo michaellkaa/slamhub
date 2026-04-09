@@ -4,9 +4,9 @@
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex gap-6 p-6 overflow-hidden no-scrollbar">
+    <div class="flex-1 flex gap-6 lg:p-6 overflow-hidden no-scrollbar">
       <div
-        class="flex-1 rounded-xl p-4 overflow-y-auto max-h-[90vh] no-scrollbar"
+        class="flex-1 rounded-xl lg:p-4 overflow-y-auto lg:max-h-[90vh] max-h-full no-scrollbar"
         style="scroll-snap-type: y mandatory;"
       >
         <div
@@ -24,13 +24,12 @@
             playsinline
           ></video>
 
-          <div class="w-full max-w-md text-white/80 mt-2">
+          <div class="w-full max-w-md text-white/80 mt-2 p-3 lg:p-0">
             <p class="font-semibold">{{ video.title || 'Bez názvu' }}</p>
             <p class="text-sm">{{ video.description }}</p>
           </div>
         </div>
 
-        <!-- Skeleton placeholder -->
         <div v-if="loading" v-for="n in 3" :key="'skeleton-' + n" class="mb-6 flex flex-col items-center gap-3 animate-pulse">
           <div class="w-full max-w-md h-[400px] bg-[#1d1d21] rounded-lg"></div>
           <div class="w-full max-w-md h-4 bg-[#1d1d21] rounded"></div>
@@ -38,8 +37,7 @@
         </div>
       </div>
 
-      <!-- Right sidebar -->
-      <div class="w-80 flex flex-col gap-6 overflow-y-auto max-h-[90vh]">
+      <div class="hidden w-80 lg:flex flex-col gap-6 overflow-y-auto max-h-[90vh]">
         <div class="flex justify-center">
           <TopSearch />
         </div>
