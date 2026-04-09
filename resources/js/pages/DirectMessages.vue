@@ -1,14 +1,14 @@
 <template>
-  <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
+  <div class="bg-[#0f0f12] w-screen min-h-screen flex flex-col lg:flex-row overflow-hidden">
 
     <div class="lg:h-full lg:w-28 w-full h-36 fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex flex-col overflow-y-auto pb-28 lg:pb-0">
-      <div class="flex w-full h-full overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-y-auto pb-28 lg:pb-0 min-h-0">
+      <div class="flex w-full h-full overflow-hidden min-h-0">
 
-        <div class="w-72 bg-[#141418] border-r border-[#1f1f22] flex flex-col">
+        <div class="w-full lg:w-72 bg-[#141418] border-r border-[#1f1f22] flex flex-col">
           <div class="h-16 border-b border-[#1f1f22] flex items-center px-4">
             <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
           </div>
@@ -54,7 +54,7 @@
           </div>
         </div>
 
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col min-h-0">
 
           <div class="h-16 border-b border-[#1f1f22] flex items-center px-6 space-x-4">
             <img v-if="selectedUser" :src="selectedUser.profile_pic_url || placeholderAvatar" class="h-12 w-12 rounded-full object-cover" />
@@ -64,14 +64,17 @@
             </div>
           </div>
 
-          <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4">
+          <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+            <div v-if="!selectedUser" class="h-full flex items-center justify-center text-gray-400 text-sm">
+              Vyberte konverzaci vlevo.
+            </div>
             <div 
               v-for="message in messages" 
               :key="message.id" 
-              :class="{'flex justify-end': message.sender_id === currentUser.id, 'flex space-x-3 items-start': message.sender_id !== currentUser.id }"
+              :class="{'flex justify-end': message.sender_id === currentUser?.id, 'flex space-x-3 items-start': message.sender_id !== currentUser?.id }"
             >
-              <img v-if="message.sender_id !== currentUser.id" :src="message.sender.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
-              <div :class="message.sender_id === currentUser.id ? 'bg-[#1d1d21] text-white p-3 rounded-lg max-w-md' : 'bg-[#2a2a30] text-white p-3 rounded-lg max-w-md'">
+              <img v-if="message.sender_id !== currentUser?.id" :src="message.sender.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
+              <div :class="message.sender_id === currentUser?.id ? 'bg-[#1d1d21] text-white p-3 rounded-lg max-w-md' : 'bg-[#2a2a30] text-white p-3 rounded-lg max-w-md'">
                 {{ message.body }}
               </div>
             </div>
@@ -110,10 +113,16 @@ onMounted(async () => {
   await fetchFollowing()
   await fetchUsers()
   startRealtimePolling()
+  window.addEventListener('focus', handleFocus)
+  window.addEventListener('blur', handleBlur)
+  document.addEventListener('visibilitychange', handleVisibilityChange)
 })
 
 onBeforeUnmount(() => {
   stopRealtimePolling()
+  window.removeEventListener('focus', handleFocus)
+  window.removeEventListener('blur', handleBlur)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 
 const activeNav = ref('messages')
@@ -131,6 +140,9 @@ const newMessage = ref('')
 
 const chatContainer = ref(null)
 let realtimeTimer = null
+const FAST_POLL_MS = 2500
+const SLOW_POLL_MS = 10000
+const pageVisible = ref(true)
 
 async function fetchMe() {
   try {
@@ -148,10 +160,11 @@ async function fetchUsers() {
 
     const convResponse = await axios.get('/api/conversations')
 
+    const currentUserId = currentUser.value?.id
     const contactIds = convResponse.data.map(c => {
-  const otherUser = c.users.find(u => u.id !== currentUser.value.id)
-  return otherUser?.id
-})
+      const otherUser = c.users.find(u => u.id !== currentUserId)
+      return otherUser?.id
+    })
 
     contacts.value = allUsers.filter(u => contactIds.includes(u.id))
 
@@ -248,7 +261,8 @@ async function refreshOpenConversation() {
 
 function startRealtimePolling() {
   stopRealtimePolling()
-  realtimeTimer = setInterval(refreshOpenConversation, 1200)
+  const interval = pageVisible.value ? FAST_POLL_MS : SLOW_POLL_MS
+  realtimeTimer = setInterval(refreshOpenConversation, interval)
 }
 
 function stopRealtimePolling() {
@@ -256,6 +270,21 @@ function stopRealtimePolling() {
     clearInterval(realtimeTimer)
     realtimeTimer = null
   }
+}
+
+function handleVisibilityChange() {
+  pageVisible.value = document.visibilityState === 'visible'
+  startRealtimePolling()
+}
+
+function handleFocus() {
+  pageVisible.value = true
+  startRealtimePolling()
+}
+
+function handleBlur() {
+  pageVisible.value = false
+  startRealtimePolling()
 }
 
 </script>

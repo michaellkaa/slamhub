@@ -47,4 +47,9 @@ class Event extends Model
         return $this->belongsToMany(Award::class, 'award_user');
     }
 
+    public function voteSession()
+    {
+        return $this->hasOne(EventVoteSession::class);
+    }
+
 }

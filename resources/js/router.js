@@ -1,26 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import AwardPages from '../js/pages/AwardPages.vue'
-import HomePage from "./pages/HomePage.vue";
-import LoginPage from "./pages/LoginPage.vue";
-import RegisterPage from './pages/RegisterPage.vue';
-import ProfilePage from "./pages/ProfilePage.vue";
-import EventPage from "./pages/EventPage.vue";
-import DirectMessages from "./pages/DirectMessages.vue";
-import CreateEvent from "./pages/CreateEvent.vue";
-import EventDetail from './pages/EventDetail.vue';
-import CreatePost from "./Pages/CreatePost.vue";
-import CreateAward from "./pages/CreateAward.vue";
-import ProfileDetail from "./pages/ProfileDetail.vue";
-import UploadVideo from "./pages/UploadVideo.vue";
-import ProfileSettings from "./pages/ProfileSettings.vue";
-
 const routes = [
     
-    { path: "/", name: "home", component: HomePage, meta: { requiresAuth: true } },
-    { path: "/awards", name: "awards", component: AwardPages, meta: { requiresAuth: true } },
-    { path: "/login", name: "login", component: LoginPage, meta: { guestOnly: true } },
-    { path: "/register", name: "register", component: RegisterPage, meta: { guestOnly: true } },
+    { path: "/", name: "home", component: () => import("./pages/HomePage.vue"), meta: { requiresAuth: true } },
+    { path: "/awards", name: "awards", component: () => import("../js/pages/AwardPages.vue"), meta: { requiresAuth: true } },
+    { path: "/login", name: "login", component: () => import("./pages/LoginPage.vue"), meta: { guestOnly: true } },
+    { path: "/register", name: "register", component: () => import("./pages/RegisterPage.vue"), meta: { guestOnly: true } },
     {
       path: "/profile",
       meta: { requiresAuth: true },
@@ -37,15 +22,17 @@ const routes = [
         }
       }
     },
-    { path: "/profile/:username", name: "profile.detail", component: ProfileDetail, props: true, meta: { requiresAuth: true } },
-    { path: "/settings", name: "settings", component: ProfileSettings, meta: { requiresAuth: true } },
-    { path: "/events", name: "events", component: EventPage, meta: { requiresAuth: true } },
-    { path: "/messages", name: "messages", component: DirectMessages, meta: { requiresAuth: true } },
-    { path: "/events/create", name: "CreateEvent", component: CreateEvent, meta: { requiresAuth: true } },
-    { path: "/events/:id", name: "EventDetail", component: EventDetail, props: true, meta: { requiresAuth: true } },
-    { path: "/posts/create", name: "CreatePost", component: CreatePost, meta: { requiresAuth: true } },
-    { path: "/awards/create", name: "CreateAward", component: CreateAward, meta: { requiresAuth: true } },
-    { path: "/videos/create", name: "UploadVideo", component: UploadVideo, meta: { requiresAuth: true } },
+    { path: "/profile/:username", name: "profile.detail", component: () => import("./pages/ProfileDetail.vue"), props: true, meta: { requiresAuth: true } },
+    { path: "/settings", name: "settings", component: () => import("./pages/ProfileSettings.vue"), meta: { requiresAuth: true } },
+    { path: "/events", name: "events", component: () => import("./pages/EventPage.vue"), meta: { requiresAuth: true } },
+    { path: "/messages", name: "messages", component: () => import("./pages/DirectMessages.vue"), meta: { requiresAuth: true } },
+    { path: "/events/create", name: "CreateEvent", component: () => import("./pages/CreateEvent.vue"), meta: { requiresAuth: true } },
+    { path: "/events/:id", name: "EventDetail", component: () => import("./pages/EventDetail.vue"), props: true, meta: { requiresAuth: true } },
+    { path: "/events/:id/vote", name: "EventVote", component: () => import("./pages/EventVote.vue"), props: true, meta: { requiresAuth: true } },
+    { path: "/events/:id/voting/host", name: "EventVoteHost", component: () => import("./pages/EventVoteHost.vue"), props: true, meta: { requiresAuth: true } },
+    { path: "/posts/create", name: "CreatePost", component: () => import("./Pages/CreatePost.vue"), meta: { requiresAuth: true } },
+    { path: "/awards/create", name: "CreateAward", component: () => import("./pages/CreateAward.vue"), meta: { requiresAuth: true } },
+    { path: "/videos/create", name: "UploadVideo", component: () => import("./pages/UploadVideo.vue"), meta: { requiresAuth: true } },
 
 ];
 

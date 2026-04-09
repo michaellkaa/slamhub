@@ -49,6 +49,15 @@ class User extends Authenticatable
         return in_array($this->role, ['moderator', 'admin']);
     }
 
+    public function canManageEventVoting(Event $event): bool
+    {
+        if ($this->isAdmin() || $this->isModerator()) {
+            return true;
+        }
+
+        return $this->role === 'organizer' && (int) $event->user_id === (int) $this->id;
+    }
+
     public function isBanned(): bool
     {
         return $this->is_banned;

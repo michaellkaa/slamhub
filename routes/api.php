@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\UserController as ApiUserController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\EventVotingController;
+use App\Http\Controllers\EventVotingHostController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -107,4 +109,19 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->get('/users', [ApiUserController::class, 'index']);
 
 Route::middleware('auth:sanctum')->get('/following', [FollowController::class, 'following']);
+
+Route::get('/events/{event}/voting/status', [EventVotingController::class, 'sessionStatus']);
+Route::get('/events/{event}/voting/live-round', [EventVotingController::class, 'liveRound']);
+Route::post('/voting/join', [EventVotingController::class, 'joinByCode'])->middleware('throttle:voting-join');
+Route::post('/events/{event}/voting/cast', [EventVotingController::class, 'castVote'])->middleware('throttle:voting-cast');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/events/{event}/voting/session', [EventVotingHostController::class, 'upsertSession']);
+    Route::patch('/events/{event}/voting/session/toggle', [EventVotingHostController::class, 'toggleEnabled']);
+    Route::post('/events/{event}/voting/session/rotate-code', [EventVotingHostController::class, 'rotateCode']);
+    Route::post('/events/{event}/voting/rounds', [EventVotingHostController::class, 'createRound']);
+    Route::post('/events/{event}/voting/rounds/{round}/start', [EventVotingHostController::class, 'startRound']);
+    Route::post('/events/{event}/voting/rounds/{round}/close', [EventVotingHostController::class, 'closeRound']);
+    Route::get('/events/{event}/voting/results/live', [EventVotingHostController::class, 'liveResults']);
+});
 

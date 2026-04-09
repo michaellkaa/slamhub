@@ -29,6 +29,19 @@
           </p>
         </div>
 
+        <div class="mb-6">
+          <button
+            @click="sessionStatus.enabled && $router.push({ name: 'EventVote', params: { id: props.id } })"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition shadow-[0_0_24px_rgba(236,72,153,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="sessionStatus.enabled ? 'bg-pink-500 hover:bg-pink-600' : 'bg-white/10 hover:bg-white/10'"
+            :disabled="!sessionStatus.enabled"
+          >
+            Hlasovani
+            <span class="text-white/80 text-sm font-semibold">1–10</span>
+            <span v-if="!sessionStatus.enabled" class="text-white/60 text-sm font-semibold">(Neaktivni)</span>
+          </button>
+        </div>
+
         <p v-if="event.description" class="text-white/80 leading-relaxed mb-6 text-left whitespace-pre-line">
           {{ event.description }}
         </p>
@@ -57,6 +70,25 @@
           class="inline-block bg-pink-500 hover:bg-pink-600 transition px-6 py-2 rounded font-semibold">
           Koupit lístek
         </a>
+
+        <div class="mt-8 bg-[#121218] rounded-2xl p-5 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-extrabold">Hlasovani</h3>
+              <p class="text-sm text-white/60">
+                {{ sessionStatus.enabled ? 'Aktivni' : 'Neaktivni' }}
+              </p>
+            </div>
+
+            <button
+              v-if="canManageVoting"
+              @click="$router.push({ name: 'EventVoteHost', params: { id: props.id } })"
+              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
+            >
+              Host panel
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -66,13 +98,12 @@
 <script setup>
   //az event skonci tak organizator muze pridat vyherce pokud nebylo hlasovani pres mobil
 // link na performer profile!! ne na muj
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const query = ref('')
 const props = defineProps({
   id: {
     type: [String, Number],
@@ -91,6 +122,31 @@ const event = ref({
 })
 
 const loading = ref(true)
+const sessionStatus = ref({ enabled: false, status: 'draft' })
+let votingTimer = null
+let pollInFlight = false
+let cooldownUntilTs = 0
+const ACTIVE_POLL_MS = 4000
+const HIDDEN_POLL_MS = 12000
+const isPageVisible = ref(true)
+
+const cachedUser = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null')
+  } catch {
+    return null
+  }
+})
+
+const currentUser = ref(null)
+
+const canManageVoting = computed(() => {
+  const role = currentUser.value?.role || cachedUser.value?.role
+  if (!role) return false
+  if (role === 'admin' || role === 'moderator') return true
+  const userId = currentUser.value?.id || cachedUser.value?.id
+  return role === 'organizer' && Number(userId) === Number(event.value?.user_id)
+})
 
 const formatDate = (value) => {
   return new Date(value).toLocaleString('cs-CZ', {
@@ -107,8 +163,21 @@ const coverSrc = computed(() => {
 
 onMounted(async () => {
   try {
+    try {
+      const me = await axios.get('/api/me')
+      currentUser.value = me.data
+    } catch {
+      currentUser.value = cachedUser.value
+    }
+
     const res = await axios.get(`/api/events/${props.id}`)
     event.value = res.data
+    await fetchVotingStatus()
+    if (canManageVoting.value) {
+      await ensureSession()
+    }
+    startVotingPolling()
+    document.addEventListener('visibilitychange', handleVisibilityChange)
   } catch (err) {
     console.error('Chyba při načítání eventu:', err)
   } finally {
@@ -116,8 +185,56 @@ onMounted(async () => {
   }
 })
 
+onBeforeUnmount(() => {
+  if (votingTimer) {
+    clearInterval(votingTimer)
+    votingTimer = null
+  }
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+})
+
 const goToProfile = (username) => {
   router.push(`/profile/${username}`)
+}
+
+const fetchVotingStatus = async () => {
+  const res = await axios.get(`/api/events/${props.id}/voting/status`)
+  sessionStatus.value = res.data
+}
+
+const pollLiveState = async () => {
+  if (pollInFlight) return
+  if (Date.now() < cooldownUntilTs) return
+
+  pollInFlight = true
+  try {
+    await fetchVotingStatus()
+  } catch (err) {
+    const status = err?.response?.status
+    if (status === 429) {
+      const retryAfterHeader = Number(err?.response?.headers?.['retry-after'])
+      const retryMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+        ? retryAfterHeader * 1000
+        : 20000
+      cooldownUntilTs = Date.now() + retryMs
+      startVotingPolling()
+      return
+    }
+    console.error('Voting poll failed:', err)
+  } finally {
+    pollInFlight = false
+  }
+}
+
+const startVotingPolling = () => {
+  if (votingTimer) clearInterval(votingTimer)
+  const intervalMs = isPageVisible.value ? ACTIVE_POLL_MS : HIDDEN_POLL_MS
+  votingTimer = setInterval(pollLiveState, intervalMs)
+}
+
+const handleVisibilityChange = () => {
+  isPageVisible.value = document.visibilityState === 'visible'
+  startVotingPolling()
 }
 
 </script>
