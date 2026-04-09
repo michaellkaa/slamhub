@@ -1,5 +1,5 @@
 <template>
-  <div v-if="user && (user.role === 'performer' || user.role === 'organizer')" class="fixed bottom-8 right-8 flex flex-col items-end z-50">
+  <div v-if="user && (user.role === 'performer' || user.role === 'organizer')" class="fixed lg:bottom-8 lg:right-8 bottom-[6rem] right-[2rem] flex flex-col items-end z-50">
     <transition name="slide-fade">
       <div v-if="menuOpen" class="flex flex-col items-end mb-3 gap-3">
         <button

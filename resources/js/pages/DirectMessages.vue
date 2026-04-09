@@ -1,7 +1,7 @@
 <template>
   <div class="bg-[#0f0f12] w-screen min-h-screen flex flex-col lg:flex-row overflow-hidden">
 
-    <div class="lg:h-full lg:w-28 w-full h-36 fixed bottom-0 lg:static z-10">
+    <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 

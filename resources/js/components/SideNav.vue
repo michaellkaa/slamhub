@@ -1,7 +1,7 @@
 <template>
   <div
-    class="bg-[#BF2679] z-10 flex justify-center items-center  w-screen h-36 lg:static lg:w-28 lg:flex-col lg:h-screen">
-    <div class="flex lg:flex-col flex-row justify-center items-center gap-16 p-5">
+    class="bg-[#BF2679] z-10 flex justify-center items-center  w-screen h-18 lg:static lg:w-28 lg:flex-col lg:h-screen">
+    <div class="flex lg:flex-col flex-row justify-center items-center gap-10 lg:gap-16 p-5">
 
       <!-- HOME -->
       <svg 
@@ -11,7 +11,7 @@
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        class="feather feather-home cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
+        class="feather feather-home cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/')"
         @click="goTo('/')"
       >
@@ -27,7 +27,7 @@
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        class="feather feather-calendar cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
+        class="feather feather-calendar cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/events')"
         @click="goTo('/events')"
       >
@@ -45,7 +45,7 @@
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        class="feather feather-award cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
+        class="feather feather-award cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/awards')"
         @click="goTo('/awards')"
       >
@@ -61,7 +61,7 @@
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        class="feather feather-send cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
+        class="feather feather-send cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/messages')"
         @click="goTo('/messages')"
       >
@@ -77,7 +77,7 @@
         stroke-width="2" 
         stroke-linecap="round" 
         stroke-linejoin="round"
-        class="feather feather-user cursor-pointer w-14 h-14 lg:w-7 lg:h-7"
+        class="feather feather-user cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/profile')"
         @click="goTo('/profile')"
       >

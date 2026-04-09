@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#0f0f12] text-white flex justify-center px-4 py-10">
+  <div class="min-h-screen bg-[#0f0f12] text-white flex justify-center px-3 md:px-4 py-6 md:py-10 pb-24 lg:pb-10">
     <div class="w-full max-w-xl">
       <button
         @click="goBack"
@@ -8,7 +8,7 @@
         ← Back to profile
       </button>
 
-      <div class="rounded-xl border border-white/10 bg-[#141418] p-6">
+      <div class="rounded-xl border border-white/10 bg-[#141418] p-4 md:p-6">
         <h1 class="text-xl font-semibold">Settings</h1>
         <p class="text-white/60 text-sm mt-1">Update your profile details.</p>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-3 w-[50%] gap-4">
+  <div class="grid grid-cols-3 w-full lg:w-[50%] gap-4">
     <div
       v-for="video in videos"
       :key="video.id"

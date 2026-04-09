@@ -1,13 +1,12 @@
 <template>
   <div class="w-screen h-screen flex bg-[#0f0f12] text-white overflow-hidden">
 
-    <div class="h-full bg-[#141418] flex flex-col items-center">
-      <SideNav />
+    <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
+      <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
+    <div class="flex-1 flex flex-col px-6 py-10 lg:px-12 lg:py-10 overflow-auto no-scrollbar">
 
-      <!-- Loading skeleton -->
       <div v-if="isLoading" class="flex items-center gap-8 animate-pulse">
         <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
         <div class="flex flex-col gap-3 flex-1">
@@ -16,7 +15,6 @@
         </div>
       </div>
 
-      <!-- Profile content -->
       <div v-else-if="user" class="flex flex-col gap-4">
         <div class="flex items-center gap-8">
           <img
@@ -45,7 +43,6 @@
                 title="Settings"
                 aria-label="Open settings"
               >
-                <!-- Settings icon SVG -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                      class="w-4 h-4 text-white">
@@ -76,7 +73,6 @@
         </div>
       </div>
 
-      <!-- Upload error -->
       <div
         v-if="uploadError"
         class="mt-3 max-w-lg rounded-md border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-4 py-3"
@@ -84,7 +80,6 @@
         {{ uploadError }}
       </div>
 
-      <!-- Tabs -->
       <div class="border-b border-white/10 pb-4 mt-8">
         <div v-if="!user" class="flex gap-10">
           <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
@@ -110,14 +105,12 @@
         </div>
       </div>
 
-      <!-- Active tab content -->
       <div class="mt-8" v-if="user">
         <component :is="activeComponent" :username="user.username" />
       </div>
 
     </div>
 
-    <!-- Sidebar skeleton -->
     <div
       v-if="!user"
       class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4"
@@ -126,7 +119,6 @@
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
 
-    <!-- Create button -->
     <CreateButton
       v-if="isOwnProfile"
       :user="user"
@@ -185,7 +177,9 @@ const loadProfile = async () => {
     }
   } catch (err) {
     console.error('Chyba při načítání profilu:', err)
-    router.push('/login')
+    if (err?.response?.status === 401) {
+      router.push('/login')
+    }
   } finally {
     isLoading.value = false
   }

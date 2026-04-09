@@ -1,7 +1,7 @@
 <template>
-  <div class="w-screen h-screen flex bg-[#0f0f12]">
-    <div class="h-full z-10 shadow-[4px_0_15px_rgba(0,0,0,0.2)]">
-      <SideNav />
+  <div class="bg-[#0f0f12] w-screen min-h-screen flex flex-col lg:flex-row overflow-hidden">
+    <div class="lg:h-full lg:w-28 w-full  fixed bottom-0 lg:static z-10">
+      <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
     <div class="flex-1 flex gap-6 p-6 overflow-hidden no-scrollbar">
