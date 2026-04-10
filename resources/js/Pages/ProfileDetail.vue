@@ -151,6 +151,12 @@ const uploadError = ref('')
 const activeTab = ref('videos')
 const isLoading = ref(true)
 
+const activeNav = ref('profile')
+  
+const handleNavigate = (nav) => {
+  activeNav.value = nav
+}
+
 const loadProfile = async () => {
   isLoading.value = true
   try {

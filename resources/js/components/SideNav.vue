@@ -104,6 +104,6 @@ const goTo = (path) => {
 const isActive = (path) => {
   return route.path === path 
     ? 'stroke-[#E1FF00]'  // active
-    : 'stroke-[#FFF7CC]'  // inactive
+    : 'stroke-[#FFF7CC]'  // neactive
 }
 </script>

@@ -5,10 +5,10 @@
         @click="goBack"
         class="mb-6 text-sm text-white/70 hover:text-white transition"
       >
-        ← Back to profile
+        ← 
       </button>
 
-      <div class="rounded-xl border border-white/10 bg-[#141418] p-4 md:p-6">
+      <div class="rounded-xl p-4 md:p-6">
         <h1 class="text-xl font-semibold">Settings</h1>
         <p class="text-white/60 text-sm mt-1">Update your profile details.</p>
 
@@ -43,7 +43,7 @@
         <button
           @click="logout"
           :disabled="isLoggingOut"
-          class="bg-[#DF68CF] hover:bg-[#c857b8] disabled:opacity-60 text-white font-semibold px-4 py-2 rounded-md transition"
+          class="bg-pink-500 hover:bg-pink-600 disabled:opacity-60 text-white font-semibold px-4 py-2 rounded-md transition"
         >
           {{ isLoggingOut ? 'Logging out...' : 'Logout' }}
         </button>

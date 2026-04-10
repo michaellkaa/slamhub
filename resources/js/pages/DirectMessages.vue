@@ -25,7 +25,7 @@
                 <img :src="user.profile_pic_url || placeholderAvatar" alt="" class="h-12 w-12 rounded-full object-cover" />
                 <div class="flex-1 space-y-1">
                   <div class="text-white font-medium">{{ user.name }}</div>
-                  <div class="text-gray-400 text-sm">{{ user.status || 'Online' }}</div>
+                  <!--<div class="text-gray-400 text-sm">{{ user.status || 'Online' }}</div>-->
                 </div>
               </div>
             </template>

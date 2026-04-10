@@ -33,7 +33,7 @@
         <div v-if="loading" v-for="n in 3" :key="'skeleton-' + n" class="mb-6 flex flex-col items-center gap-3 animate-pulse">
           <div class="w-full max-w-md h-[400px] bg-[#1d1d21] rounded-lg"></div>
           <div class="w-full max-w-md h-4 bg-[#1d1d21] rounded"></div>
-          <div class="w-full max-w-md h-3 bg-[#1d1d21] rounded w-3/4"></div>
+          <div class="w-full max-w-md h-3 bg-[#1d1d21] rounded "></div>
         </div>
       </div>
 
@@ -84,6 +84,12 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const activeNav = ref('home')
+  
+  const handleNavigate = (nav) => {
+    activeNav.value = nav
+  }
 </script>
 
 <style scoped>

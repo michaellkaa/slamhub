@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-8 w-[50%] space-y-4">
+  <div class="mt-8 w-full lg:w-[50%] space-y-4">
 
     <div v-if="loading" class="space-y-4">
       <div

@@ -11,6 +11,13 @@ use Illuminate\Support\Str;
 
 class EventVotingController extends Controller
 {
+    private function resolveParticipantToken(Request $request): ?string
+    {
+        return $request->cookie('vote_participant_token')
+            ?? $request->header('X-Vote-Participant-Token')
+            ?? $request->input('participant_token');
+    }
+
     public function sessionStatus($eventId)
     {
         $session = EventVoteSession::with('currentRound')
@@ -38,6 +45,7 @@ class EventVotingController extends Controller
             'code' => ['required', 'string', 'size:6'],
             'is_anonymous' => ['nullable', 'boolean'],
             'nickname' => ['nullable', 'string', 'max:60'],
+            'participant_token' => ['nullable', 'string', 'max:255'],
         ]);
 
         $normalizedCode = strtoupper(trim($payload['code']));
@@ -45,7 +53,7 @@ class EventVotingController extends Controller
 
         abort_if(!$session->enabled || $session->status === 'closed', 422, 'Voting is not active.');
 
-        $token = $request->cookie('vote_participant_token') ?? Str::random(40);
+        $token = $this->resolveParticipantToken($request) ?? Str::random(40);
         $isAnonymous = (bool) ($payload['is_anonymous'] ?? true);
         $user = $request->user();
 
@@ -101,7 +109,7 @@ class EventVotingController extends Controller
         ];
 
         if ($session->currentRound) {
-            $token = $request->cookie('vote_participant_token');
+            $token = $this->resolveParticipantToken($request);
             $participant = $token
                 ? EventVoteParticipant::where('event_vote_session_id', $session->id)
                     ->where('participant_token', $token)
@@ -125,13 +133,14 @@ class EventVotingController extends Controller
     {
         $payload = $request->validate([
             'vote_value' => ['required', 'integer', 'between:1,10'],
+            'participant_token' => ['nullable', 'string', 'max:255'],
         ]);
 
         $session = EventVoteSession::with('currentRound')->where('event_id', $eventId)->firstOrFail();
         abort_if(!$session->enabled || !$session->currentRound, 422, 'No active round.');
         abort_if($session->currentRound->state !== 'live', 422, 'Round is not live.');
 
-        $token = $request->cookie('vote_participant_token');
+        $token = $this->resolveParticipantToken($request);
         abort_if(!$token, 422, 'Join session first.');
 
         $participant = EventVoteParticipant::where('event_vote_session_id', $session->id)

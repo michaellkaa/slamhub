@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-8 w-[50%] space-y-6">
+  <div class="mt-8 w-full lg:w-[50%] space-y-6">
 
     <div
       v-for="post in posts"

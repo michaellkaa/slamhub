@@ -31,13 +31,13 @@
 
         <div class="mb-6">
           <button
-            @click="sessionStatus.enabled && $router.push({ name: 'EventVote', params: { id: props.id } })"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="sessionStatus.enabled && router.push({ name: 'EventVote', params: { id: props.id } })"            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition disabled:opacity-50 disabled:cursor-not-allowed"
             :class="sessionStatus.enabled
               ? 'bg-pink-500 hover:bg-pink-600 shadow-[0_0_24px_rgba(236,72,153,0.25)]'
               : 'bg-white/10'"
             :disabled="!sessionStatus.enabled"
           >
+          
             Hlasovani
             <span v-if="!sessionStatus.enabled" class="text-white/60 text-sm font-semibold">(Neaktivni)</span>
           </button>
@@ -79,6 +79,14 @@
               <p class="text-sm text-white/60">
                 {{ sessionStatus.enabled ? 'Aktivni' : 'Neaktivni' }}
               </p>
+              <div class="mt-2">
+                <span
+                  class="inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="canManageVoting ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-white/5 text-white/50 ring-1 ring-white/10'"
+                >
+                  Host: {{ canManageVoting ? 'On' : 'Off' }}
+                </span>
+              </div>
             </div>
 
             <button
@@ -236,6 +244,10 @@ const startVotingPolling = () => {
 const handleVisibilityChange = () => {
   isPageVisible.value = document.visibilityState === 'visible'
   startVotingPolling()
+}
+
+const ensureSession = async () => {
+  await axios.post(`/api/events/${props.id}/voting/session`)
 }
 
 </script>

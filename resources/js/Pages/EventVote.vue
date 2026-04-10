@@ -79,6 +79,8 @@ import axios from 'axios'
 const route = useRoute()
 const eventId = computed(() => route.params.id)
 
+const participantTokenKey = computed(() => `vote_participant_token_event_${eventId.value}`)
+
 const joinCode = ref('')
 const nickname = ref('')
 const joinAsAnonymous = ref(true)
@@ -165,17 +167,24 @@ const onVisibility = () => {
 }
 
 const joinVoting = async () => {
-  await axios.post('/api/voting/join', {
+  const res = await axios.post('/api/voting/join', {
     code: joinCode.value.toUpperCase().trim(),
     is_anonymous: !currentUser.value ? true : joinAsAnonymous.value,
     nickname: nickname.value || null,
   })
+
+  const token = res?.data?.participant_token
+  if (token) {
+    localStorage.setItem(participantTokenKey.value, token)
+    axios.defaults.headers.common['X-Vote-Participant-Token'] = token
+  }
   joined.value = true
   await poll()
 }
 
 const castVote = async (points) => {
-  await axios.post(`/api/events/${eventId.value}/voting/cast`, { vote_value: points })
+  const token = localStorage.getItem(participantTokenKey.value)
+  await axios.post(`/api/events/${eventId.value}/voting/cast`, { vote_value: points, participant_token: token || null })
   await poll()
 }
 
@@ -185,6 +194,11 @@ onMounted(async () => {
     currentUser.value = me.data
   } catch {
     currentUser.value = cachedUser.value
+  }
+
+  const existingToken = localStorage.getItem(participantTokenKey.value)
+  if (existingToken) {
+    axios.defaults.headers.common['X-Vote-Participant-Token'] = existingToken
   }
 
   await fetchStatus()

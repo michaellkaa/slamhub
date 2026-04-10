@@ -1,11 +1,11 @@
 <template>
-    <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
+    <div class="bg-[#0f0f12] w-screen h-screen flex flex-col md:flex-row overflow-hidden">
       <!-- SideNav -->
-      <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
+      <div class="md:h-full md:w-28 w-full fixed bottom-0 md:static z-10">
         <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
       </div>
   
-      <div class="flex-1 flex flex-col mt-4 lg:mt-28 overflow-y-auto pb-28 lg:pb-0">
+      <div class="flex-1 flex flex-col mt-4 md:mt-28 overflow-y-auto pb-28 md:pb-0">
         <div class="grid grid-cols-2 gap-4 w-full px-4">
           <SwitchTitle text="Liga" :isActive="activeTab === 'league'" @click="activeTab = 'league'" />
           <SwitchTitle text="Žebříček" :isActive="activeTab === 'leaderboard'" @click="activeTab = 'leaderboard'" />

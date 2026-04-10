@@ -1,9 +1,7 @@
 <template>
   <div class="w-screen h-screen flex bg-[#0f0f12] text-white overflow-hidden">
 
-    <div class="h-full bg-[#141418] flex flex-col items-center">
-      <SideNav />
-    </div>
+
 
     <div class="flex-1 flex flex-col px-12 py-10 overflow-auto no-scrollbar">
 
@@ -93,7 +91,6 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
-import SideNav from '../components/SideNav.vue'
 import VideosTab from '../components/profile/VideosTab.vue'
 import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
