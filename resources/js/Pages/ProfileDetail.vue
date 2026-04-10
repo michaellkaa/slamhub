@@ -62,12 +62,20 @@
             <div class="text-white/40 text-sm">@{{ user.username }}</div>
 
             <div class="flex gap-6 mt-2 text-white/70 text-sm">
-              <div>
+              <button
+                type="button"
+                class="hover:text-white transition"
+                @click="openFollowModal('followers')"
+              >
                 <span class="font-semibold">{{ user.followers_count || 0 }}</span> sledující
-              </div>
-              <div>
+              </button>
+              <button
+                type="button"
+                class="hover:text-white transition"
+                @click="openFollowModal('following')"
+              >
                 <span class="font-semibold">{{ user.following_count || 0 }}</span> sleduje
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -119,10 +127,22 @@
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
 
+    
+
     <CreateButton
       v-if="isOwnProfile"
       :user="user"
       @create="handleCreate"
+    />
+
+    <FollowListModal
+      v-if="showFollowModal && user"
+      :username="user.username"
+      :initialTab="followModalTab"
+      :canUnfollow="isOwnProfile"
+      @close="closeFollowModal"
+      @open-profile="goToProfile"
+      @following-changed="handleFollowingCountChanged"
     />
 
   </div>
@@ -140,6 +160,8 @@ import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
 import CreateButton from '../components/CreateButton.vue'
 import FollowButton from '../components/FollowButton.vue'
+import FollowSidebar from '../components/FollowSidebar.vue'
+import FollowListModal from '../components/profile/FollowListModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -156,6 +178,9 @@ const activeNav = ref('profile')
 const handleNavigate = (nav) => {
   activeNav.value = nav
 }
+
+const showFollowModal = ref(false)
+const followModalTab = ref('following')
 
 const loadProfile = async () => {
   isLoading.value = true
@@ -201,6 +226,25 @@ onMounted(loadProfile)
 watch(() => route.params.username, loadProfile)
 
 const isOwnProfile = computed(() => loggedUser.value && user.value?.id === loggedUser.value.id)
+
+const openFollowModal = (tab) => {
+  followModalTab.value = tab === 'followers' ? 'followers' : 'following'
+  showFollowModal.value = true
+}
+
+const closeFollowModal = () => {
+  showFollowModal.value = false
+}
+
+const goToProfile = (username) => {
+  closeFollowModal()
+  router.push(`/profile/${username}`)
+}
+
+const handleFollowingCountChanged = (newCount) => {
+  if (!user.value) return
+  user.value.following_count = newCount
+}
 
 const tabs = computed(() => {
   if (!user.value) return []

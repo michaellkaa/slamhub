@@ -52,7 +52,7 @@ class FollowController extends Controller
             ], 403);
         }
 
-        $followers = $user->followers()->get(['id', 'username', 'role']);
+        $followers = $user->followers()->get(['users.id', 'users.username', 'users.name', 'users.role', 'users.profile_pic']);
 
         return response()->json($followers);
     }
@@ -61,7 +61,7 @@ class FollowController extends Controller
     {
         $user = User::where('username', $username)->firstOrFail();
 
-        $following = $user->following()->get(['id', 'username', 'role']);
+        $following = $user->following()->get(['users.id', 'users.username', 'users.name', 'users.role', 'users.profile_pic']);
 
         return response()->json($following);
     }
