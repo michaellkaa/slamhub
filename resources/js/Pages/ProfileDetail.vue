@@ -62,28 +62,12 @@
             <div class="text-white/40 text-sm">@{{ user.username }}</div>
 
             <div class="flex gap-6 mt-2 text-white/70 text-sm">
-              <button
-                type="button"
-                class="hover:text-white transition"
-                @click="openFollowModal('followers')"
-              >
-                <span class="font-semibold">{{ user.followers_count || 0 }}</span> sledující
-              </button>
-              <button
-                type="button"
-                class="hover:text-white transition"
-                @click="openFollowModal('following')"
-              >
-                <span class="font-semibold">{{ user.following_count || 0 }}</span> sleduje
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
+              <div>
+              </div>
+              </div>
+              <div>
         v-if="uploadError"
-        class="mt-3 max-w-lg rounded-md border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-4 py-3"
+              </div>
       >
         {{ uploadError }}
       </div>
@@ -127,22 +111,10 @@
       <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
     </div>
 
-    
-
     <CreateButton
       v-if="isOwnProfile"
       :user="user"
       @create="handleCreate"
-    />
-
-    <FollowListModal
-      v-if="showFollowModal && user"
-      :username="user.username"
-      :initialTab="followModalTab"
-      :canUnfollow="isOwnProfile"
-      @close="closeFollowModal"
-      @open-profile="goToProfile"
-      @following-changed="handleFollowingCountChanged"
     />
 
   </div>
@@ -160,27 +132,12 @@ import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
 import CreateButton from '../components/CreateButton.vue'
 import FollowButton from '../components/FollowButton.vue'
-import FollowSidebar from '../components/FollowSidebar.vue'
-import FollowListModal from '../components/profile/FollowListModal.vue'
-
-const route = useRoute()
-const router = useRouter()
-
-const user = ref(null)
-const loggedUser = ref(null)
-const fileInput = ref(null)
-const uploadError = ref('')
-const activeTab = ref('videos')
-const isLoading = ref(true)
 
 const activeNav = ref('profile')
   
 const handleNavigate = (nav) => {
   activeNav.value = nav
 }
-
-const showFollowModal = ref(false)
-const followModalTab = ref('following')
 
 const loadProfile = async () => {
   isLoading.value = true
@@ -191,7 +148,6 @@ const loadProfile = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
     const { data: me } = await axios.get('/api/me')
-    loggedUser.value = me
 
     const username = route.params.username
     if (username && username !== loggedUser.value.username) {
@@ -209,9 +165,6 @@ const loadProfile = async () => {
   } catch (err) {
     console.error('Chyba při načítání profilu:', err)
     if (err?.response?.status === 401) {
-      router.push('/login')
-    }
-  } finally {
     isLoading.value = false
   }
 }
@@ -226,25 +179,6 @@ onMounted(loadProfile)
 watch(() => route.params.username, loadProfile)
 
 const isOwnProfile = computed(() => loggedUser.value && user.value?.id === loggedUser.value.id)
-
-const openFollowModal = (tab) => {
-  followModalTab.value = tab === 'followers' ? 'followers' : 'following'
-  showFollowModal.value = true
-}
-
-const closeFollowModal = () => {
-  showFollowModal.value = false
-}
-
-const goToProfile = (username) => {
-  closeFollowModal()
-  router.push(`/profile/${username}`)
-}
-
-const handleFollowingCountChanged = (newCount) => {
-  if (!user.value) return
-  user.value.following_count = newCount
-}
 
 const tabs = computed(() => {
   if (!user.value) return []
@@ -276,25 +210,6 @@ const uploadPhoto = async (e) => {
   formData.append('photo', file)
 
   try {
-    const token = localStorage.getItem('token')
-    if (!token) { router.push('/login'); return }
-
-    axios.defaults.headers.common.Authorization = `Bearer ${token}`
-    const { data } = await axios.post('/api/profile/photo', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-
-    if (data?.profile_pic_url && user.value) user.value.profile_pic_url = data.profile_pic_url
-  } catch (err) {
-    const backendMessage = err.response?.data?.message
-      || err.response?.data?.errors?.photo?.[0]
-      || err.response?.data?.errors?.profile_picture?.[0]
-      || err.message
-    uploadError.value = backendMessage.includes('kilobytes')
-      ? 'Photo is too large. Maximum size is 10 MB.'
-      : backendMessage
-    console.error('Photo upload failed:', backendMessage, err.response?.data)
-  } finally {
     if (fileInput.value) fileInput.value.value = ''
   }
 }
