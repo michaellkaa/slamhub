@@ -20,6 +20,7 @@ class User extends Authenticatable
         'password',
         'profile_pic',
         'role',
+        'google_id',
         'is_banned',
         'last_login_at',
         'email_verified_at',

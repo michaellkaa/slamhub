@@ -63,13 +63,20 @@
 
             <div class="flex gap-6 mt-2 text-white/70 text-sm">
               <div>
-              </div>
+                <span class="font-semibold text-white">{{ user.followers_count }}</span>
+                <span class="text-white/60"> sledujících</span>
               </div>
               <div>
-        v-if="uploadError"
+                <span class="font-semibold text-white">{{ user.following_count }}</span>
+                <span class="text-white/60"> sleduje</span>
               </div>
-      >
-        {{ uploadError }}
+            </div>
+
+            <div v-if="uploadError" class="mt-2 text-sm text-red-300">
+              {{ uploadError }}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="border-b border-white/10 pb-4 mt-8">
@@ -139,6 +146,17 @@ const handleNavigate = (nav) => {
   activeNav.value = nav
 }
 
+const route = useRoute()
+const router = useRouter()
+
+const user = ref(null)
+const loggedUser = ref(null)
+const isLoading = ref(true)
+const activeTab = ref('videos')
+
+const fileInput = ref(null)
+const uploadError = ref('')
+
 const loadProfile = async () => {
   isLoading.value = true
   try {
@@ -148,9 +166,10 @@ const loadProfile = async () => {
     axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
     const { data: me } = await axios.get('/api/me')
+    loggedUser.value = me
 
     const username = route.params.username
-    if (username && username !== loggedUser.value.username) {
+    if (username && username !== loggedUser.value?.username) {
       const { data } = await axios.get(`/api/users/${username}`)
       user.value = data
     } else {
@@ -165,6 +184,11 @@ const loadProfile = async () => {
   } catch (err) {
     console.error('Chyba při načítání profilu:', err)
     if (err?.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      router.push('/login')
+    }
+  } finally {
     isLoading.value = false
   }
 }
@@ -210,6 +234,13 @@ const uploadPhoto = async (e) => {
   formData.append('photo', file)
 
   try {
+    await axios.post('/api/profile/photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    await loadProfile()
+  } catch (err) {
+    uploadError.value = err?.response?.data?.message || 'Nepodařilo se nahrát fotku.'
+  } finally {
     if (fileInput.value) fileInput.value.value = ''
   }
 }

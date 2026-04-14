@@ -1,54 +1,58 @@
 <template>
-  <div class="flex flex-col gap-5 px-8 pt-6 pb-8 w-full max-w-sm">
-
+  <div class="flex flex-col gap-4 w-full">
+    <label class="text-xs text-white/60">Jméno</label>
     <input
       type="text"
       v-model="name"
-      placeholder="Jméno"
-      class="p-3 px-10"
+      placeholder="např. Adam Novák"
+      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required
     />
 
+    <label class="mt-2 text-xs text-white/60">Uživatelské jméno</label>
     <input
       type="text"
       v-model="username"
-      placeholder="Uživatelské jméno"
-      class="p-3 px-10"
+      placeholder="např. adam_novak"
+      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required
     />
 
+    <label class="mt-2 text-xs text-white/60">Email</label>
     <input
       type="email"
       v-model="email"
-      placeholder="Email"
-      class="p-3 px-10"
+      placeholder="např. novak@email.cz"
+      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required
     />
 
+    <label class="mt-2 text-xs text-white/60">Heslo</label>
     <input
       type="password"
       v-model="password"
-      placeholder="Heslo"
-      class="p-3 px-10"
+      placeholder="••••••••"
+      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required
     />
 
+    <label class="mt-2 text-xs text-white/60">Potvrzení hesla</label>
     <input
       type="password"
       v-model="password_confirmation"
-      placeholder="Potvrzení hesla"
-      class="p-3 px-10"
+      placeholder="••••••••"
+      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required
     />
 
     <button
       @click="register"
-      class="bg-[#DF68CF] text-white uppercase font-bold p-3 rounded-md"
+      class="mt-4 w-full rounded-2xl bg-pink-500 hover:bg-pink-400 transition text-white font-semibold py-3"
     >
       Registrovat se
     </button>
 
-    <p v-if="error" class="text-red-500">{{ error }}</p>
+    <p v-if="error" class="text-sm text-red-300">{{ error }}</p>
   </div>
 </template>
 

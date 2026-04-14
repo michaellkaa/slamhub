@@ -6,6 +6,7 @@ const routes = [
     { path: "/awards", name: "awards", component: () => import("../js/pages/AwardPages.vue"), meta: { requiresAuth: true } },
     { path: "/login", name: "login", component: () => import("./pages/LoginPage.vue"), meta: { guestOnly: true } },
     { path: "/register", name: "register", component: () => import("./pages/RegisterPage.vue"), meta: { guestOnly: true } },
+    { path: "/auth/google/callback", name: "auth.google.callback", component: () => import("./pages/AuthGoogleCallback.vue"), meta: { guestOnly: true } },
     {
       path: "/profile",
       meta: { requiresAuth: true },
