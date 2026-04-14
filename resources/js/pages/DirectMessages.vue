@@ -14,8 +14,15 @@
             selectedUser ? 'hidden lg:flex' : 'flex',
           ]"
         >
-          <div class="h-16 border-b border-[#1f1f22] flex items-center px-4">
-            <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
+          <div class="h-16 border-b border-[#1f1f22] flex items-center justify-between px-4">
+            <div class="text-white font-semibold">Direct messages</div>
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-lg bg-[#1d1d21] hover:bg-[#2a2a30] text-white text-sm"
+              @click="showNewChat = !showNewChat"
+            >
+              New chat
+            </button>
           </div>
 
           <div class="flex-1 overflow-y-auto p-4 space-y-4">
@@ -36,24 +43,29 @@
             </template>
 
             <template v-else>
-  <div class="flex flex-col items-center justify-center mt-12 space-y-4 text-gray-400">
-    <p class="text-center">Zkuste napsat lidem, které sledujete</p>
-  </div>
-</template>
+              <div class="flex flex-col items-center justify-center mt-12 space-y-4 text-gray-400">
+                <p class="text-center">Žádné konverzace. Začni přes New chat.</p>
+              </div>
+            </template>
 
-<div v-if="suggestedUsers.length > 0" class="mt-6 w-full space-y-3">
-  <div class="text-gray-400 text-sm mb-2 px-1">Lidé které sledujete</div>
+            <div v-if="showNewChat && suggestedUsers.length > 0" class="mt-2 w-full space-y-3">
+              <div class="text-gray-400 text-sm mb-2 px-1">People you follow</div>
                 <div 
                 v-for="user in suggestedUsers" 
                 :key="user.id" 
                 class="flex items-center justify-between p-2 bg-[#1d1d21] rounded hover:bg-[#2a2a30] cursor-pointer"
-                @click="selectUser(user)"
+                @click="startNewChat(user)"
               >
                 <div class="flex items-center space-x-3">
                   <img :src="user.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
                   <div class="text-white">{{ user.name }}</div>
                 </div>
+                <span class="text-xs text-white/60">Message</span>
               </div>
+            </div>
+
+            <div v-else-if="showNewChat" class="text-sm text-white/60 bg-[#1d1d21] rounded p-3">
+              Nobody in your following list yet.
             </div>
 
           </div>
@@ -149,9 +161,11 @@ const suggestedUsers = ref([])
 const selectedUser = ref(null)
 const messages = ref([])
 const newMessage = ref('')
+const showNewChat = ref(false)
 
 const chatContainer = ref(null)
 let realtimeTimer = null
+let refreshInFlight = false
 const FAST_POLL_MS = 2500
 const SLOW_POLL_MS = 10000
 const pageVisible = ref(true)
@@ -167,22 +181,20 @@ async function fetchMe() {
 
 async function fetchUsers() {
   try {
-    const response = await axios.get('/api/users')
-    const allUsers = Array.isArray(response.data) ? response.data : []
-
     const convResponse = await axios.get('/api/conversations')
+    const conversations = Array.isArray(convResponse.data) ? convResponse.data : []
 
     const currentUserId = currentUser.value?.id
-    const contactIds = convResponse.data.map(c => {
-      const otherUser = c.users.find(u => u.id !== currentUserId)
-      return otherUser?.id
-    })
-
-    contacts.value = allUsers.filter(u => contactIds.includes(u.id))
-
-    if (contacts.value.length > 0 && !selectedUser.value) {
-      selectUser(contacts.value[0])
-    }
+    contacts.value = conversations
+      .map((conversation) => {
+        const otherUser = conversation.users.find((u) => u.id !== currentUserId)
+        if (!otherUser) return null
+        return {
+          ...otherUser,
+          conversation_id: conversation.id,
+        }
+      })
+      .filter(Boolean)
 
   } catch (err) {
     console.error('Error fetching users:', err)
@@ -190,32 +202,25 @@ async function fetchUsers() {
 }
 
 
-
-async function fetchMessages(userId) {
-  try {
-    const convResponse = await axios.get(`/api/conversations/${userId}/messages`)
-    messages.value = convResponse.data
-    scrollToBottom()
-  } catch (err) {
-    console.error('Error fetching messages:', err)
-  }
-}
-
-
 async function selectUser(user) {
   selectedUser.value = user
+  showNewChat.value = false
 
   try {
-    const convRes = await axios.post(`/api/conversations/${user.id}`)
-    const conversation = convRes.data
-    selectedUser.value.conversation_id = conversation.id
+    if (!selectedUser.value.conversation_id) {
+      const convRes = await axios.post(`/api/conversations/${user.id}`)
+      selectedUser.value.conversation_id = convRes.data?.id
+    }
 
-    const messagesRes = await axios.get(`/api/conversations/${conversation.id}/messages`)
-    messages.value = Array.isArray(messagesRes.data) ? messagesRes.data : []
+    await loadConversationMessages(selectedUser.value.conversation_id)
     scrollToBottom()
   } catch (err) {
     console.error('Error selecting user / fetching conversation:', err)
   }
+}
+
+async function startNewChat(user) {
+  await selectUser(user)
 }
 
 function backToList() {
@@ -247,6 +252,27 @@ function scrollToBottom() {
   })
 }
 
+async function loadConversationMessages(conversationId, options = {}) {
+  if (!conversationId) return
+
+  const { sinceId = null } = options
+  try {
+    const params = sinceId ? { since_id: sinceId } : { limit: 60 }
+    const response = await axios.get(`/api/conversations/${conversationId}/messages`, { params })
+    const incoming = Array.isArray(response.data) ? response.data : []
+
+    if (!sinceId) {
+      messages.value = incoming
+      return
+    }
+
+    if (!incoming.length) return
+    messages.value = [...messages.value, ...incoming]
+  } catch (err) {
+    console.error('Error loading messages:', err)
+  }
+}
+
 async function fetchFollowing() {
   try {
     const response = await axios.get('/api/following')
@@ -257,22 +283,21 @@ async function fetchFollowing() {
 }
 
 async function refreshOpenConversation() {
-  if (!selectedUser.value?.conversation_id) return
+  if (!selectedUser.value?.conversation_id || refreshInFlight) return
 
+  refreshInFlight = true
   try {
-    const response = await axios.get(`/api/conversations/${selectedUser.value.conversation_id}/messages`)
-    const nextMessages = Array.isArray(response.data) ? response.data : []
+    const lastMessageId = messages.value[messages.value.length - 1]?.id || null
+    const previousCount = messages.value.length
+    await loadConversationMessages(selectedUser.value.conversation_id, { sinceId: lastMessageId })
 
-    const hasChanged =
-      nextMessages.length !== messages.value.length ||
-      nextMessages[nextMessages.length - 1]?.id !== messages.value[messages.value.length - 1]?.id
-
-    if (hasChanged) {
-      messages.value = nextMessages
+    if (messages.value.length > previousCount) {
       scrollToBottom()
     }
   } catch (err) {
     console.error('Error refreshing conversation:', err)
+  } finally {
+    refreshInFlight = false
   }
 }
 

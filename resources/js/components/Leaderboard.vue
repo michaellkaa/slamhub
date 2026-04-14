@@ -2,15 +2,15 @@
   <div class="w-full flex justify-center mt-8 px-4 pb-28 md:pb-8">
     <div class="w-full max-w-4xl">
       <div class="mb-3 px-1 flex items-center justify-between text-sm">
-        <span class="text-white/60">Pořadí</span>
-        <span class="text-white/60">Body</span>
+        <span class="text-white/60">Leaderboard</span>
+        <span class="text-white/60">Awards</span>
       </div>
 
       <div v-if="loading" class="text-white/60 py-6">Načítám leaderboard…</div>
       <div v-else-if="error" class="text-red-300 py-6">{{ error }}</div>
       <div v-else-if="rows.length === 0" class="text-white/60 py-6">Zatím žádní performeři.</div>
 
-      <div v-else class="flex flex-col items-center gap-4">
+      <div v-else class="flex flex-col items-center gap-3">
         <LeaderboardRow
           v-for="row in rows"
           :key="row.id"

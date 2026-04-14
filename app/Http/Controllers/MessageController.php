@@ -51,10 +51,25 @@ class MessageController extends Controller
             return response()->json(['message' => 'Conversation not found.'], 404);
         }
 
-        return Message::with('sender')
-            ->where('conversation_id', $conversation->id)
-            ->orderBy('created_at')
-            ->get();
+        $sinceId = request()->integer('since_id');
+        $limit = min(max(request()->integer('limit', 50), 1), 100);
+
+        $query = Message::with('sender')
+            ->where('conversation_id', $conversation->id);
+
+        if ($sinceId) {
+            return $query
+                ->where('id', '>', $sinceId)
+                ->orderBy('id')
+                ->get();
+        }
+
+        return $query
+            ->latest('id')
+            ->limit($limit)
+            ->get()
+            ->sortBy('id')
+            ->values();
     }
 
     public function sendMessage(Request $request, $id)
