@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './router';
 import axios from 'axios';
 import './bootstrap';
-import { registerSW } from 'virtual:pwa-register'
 
 // Set base URL for all requests (dev/prod safe)
 axios.defaults.baseURL = window.location.origin;
@@ -19,5 +18,3 @@ axios.defaults.headers.common['Accept'] = 'application/json';
 const app = createApp(App);
 app.use(router);
 app.mount('#app');
-
-registerSW({ immediate: true })

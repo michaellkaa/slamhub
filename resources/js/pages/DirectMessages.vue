@@ -8,7 +8,12 @@
     <div class="flex-1 flex flex-col overflow-y-auto pb-28 lg:pb-0 min-h-0">
       <div class="flex w-full h-full overflow-hidden min-h-0">
 
-        <div class="w-full lg:w-72 bg-[#141418] border-r border-[#1f1f22] flex flex-col">
+        <div
+          :class="[
+            'w-full lg:w-72 bg-[#141418] border-r border-[#1f1f22] flex flex-col',
+            selectedUser ? 'hidden lg:flex' : 'flex',
+          ]"
+        >
           <div class="h-16 border-b border-[#1f1f22] flex items-center px-4">
             <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
           </div>
@@ -54,9 +59,16 @@
           </div>
         </div>
 
-        <div class="flex-1 flex flex-col min-h-0">
+        <div :class="['flex-1 flex flex-col min-h-0', selectedUser ? 'flex' : 'hidden lg:flex']">
 
-          <div class="h-16 border-b border-[#1f1f22] flex items-center px-6 space-x-4">
+          <div class="h-16 border-b border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
+            <button
+              v-if="selectedUser"
+              @click="backToList"
+              class="lg:hidden text-white/80 hover:text-white px-2 py-1 rounded bg-white/5"
+            >
+              ←
+            </button>
             <img v-if="selectedUser" :src="selectedUser.profile_pic_url || placeholderAvatar" class="h-12 w-12 rounded-full object-cover" />
             <div>
               <div class="text-white font-medium mb-1">{{ selectedUser?.name || 'Select a user' }}</div>
@@ -64,7 +76,7 @@
             </div>
           </div>
 
-          <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+          <div ref="chatContainer" class="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4 min-h-0">
             <div v-if="!selectedUser" class="h-full flex items-center justify-center text-gray-400 text-sm">
               Vyberte konverzaci vlevo.
             </div>
@@ -74,20 +86,20 @@
               :class="{'flex justify-end': message.sender_id === currentUser?.id, 'flex space-x-3 items-start': message.sender_id !== currentUser?.id }"
             >
               <img v-if="message.sender_id !== currentUser?.id" :src="message.sender.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
-              <div :class="message.sender_id === currentUser?.id ? 'bg-[#1d1d21] text-white p-3 rounded-lg max-w-md' : 'bg-[#2a2a30] text-white p-3 rounded-lg max-w-md'">
+              <div :class="message.sender_id === currentUser?.id ? 'bg-[#1d1d21] text-white p-3 rounded-lg max-w-[80%] lg:max-w-md break-words' : 'bg-[#2a2a30] text-white p-3 rounded-lg max-w-[80%] lg:max-w-md break-words'">
                 {{ message.body }}
               </div>
             </div>
           </div>
 
-          <div class="h-20 border-t border-[#1f1f22] flex items-center px-6 space-x-4">
+          <div class="h-20 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
             <input 
               v-model="newMessage" 
               @keyup.enter="sendMessage" 
               placeholder="Type a message..." 
               class="flex-1 h-12 px-4 rounded-lg bg-[#1d1d21] text-white focus:outline-none" 
             />
-            <button @click="sendMessage" class="h-12 w-24 bg-[#1d1d21] rounded-lg text-white">Send</button>
+            <button @click="sendMessage" class="h-12 px-4 lg:w-24 bg-[#1d1d21] rounded-lg text-white shrink-0">Send</button>
           </div>
 
         </div>
@@ -103,7 +115,7 @@ import SideNav from '../components/SideNav.vue'
 
 import axios from 'axios'
 
-axios.defaults.baseURL = "http://127.0.0.1:8000"
+axios.defaults.baseURL = window.location.origin
 axios.defaults.withCredentials = true
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
 
@@ -204,6 +216,11 @@ async function selectUser(user) {
   } catch (err) {
     console.error('Error selecting user / fetching conversation:', err)
   }
+}
+
+function backToList() {
+  selectedUser.value = null
+  messages.value = []
 }
 
 async function sendMessage() {

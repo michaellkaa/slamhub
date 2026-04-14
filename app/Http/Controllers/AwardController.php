@@ -6,6 +6,7 @@ use App\Models\Award;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AwardController extends Controller
 {
@@ -13,6 +14,40 @@ class AwardController extends Controller
     {
         $awards = Award::all();
         return response()->json($awards);
+    }
+
+    public function leaderboard()
+    {
+        $performers = User::query()
+            ->select([
+                'users.id',
+                'users.username',
+                'users.name',
+                'users.profile_pic',
+                DB::raw('COUNT(DISTINCT award_user.id) as awards_count'),
+                DB::raw('COUNT(DISTINCT event_performer.event_id) as events_count'),
+            ])
+            ->leftJoin('award_user', 'award_user.user_id', '=', 'users.id')
+            ->leftJoin('event_performer', 'event_performer.user_id', '=', 'users.id')
+            ->whereIn('users.role', ['performer', 'organizer', 'user'])
+            ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic')
+            ->orderByDesc('awards_count')
+            ->orderByDesc('events_count')
+            ->orderBy('users.name')
+            ->get()
+            ->map(function ($user, $index) {
+                return [
+                    'rank' => $index + 1,
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'name' => $user->name,
+                    'profile_pic_url' => $user->profile_pic_url,
+                    'awards_count' => (int) $user->awards_count,
+                    'events_count' => (int) $user->events_count,
+                ];
+            });
+
+        return response()->json($performers);
     }
 
 

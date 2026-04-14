@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 Route::get('/awards', [AwardController::class, 'index']);
+Route::get('/awards/leaderboard', [AwardController::class, 'leaderboard']);
 Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
 Route::get('/search', [SearchController::class, 'index']);

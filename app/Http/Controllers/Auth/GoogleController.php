@@ -30,6 +30,9 @@ class GoogleController extends Controller
             ->user();
 
         $email = $googleUser->getEmail();
+        if (!$email) {
+            return redirect()->to(url('/auth/google/callback') . '?error=' . urlencode('Google account does not provide an email.'));
+        }
         $name = $googleUser->getName() ?: 'Uživatel';
 
         $user = User::where('email', $email)->first();

@@ -1,15 +1,28 @@
 <template>
-    <div class="rounded border-2 border-[#BF2679]  h-20 lg:h-24 px-32 lg:px-20 flex items-center justify-center w-[70%] lg:w-[100%]">
-      <div class="flex flex-row items-center justify-center gap-6 text-[#FFF7CC]">
-        <h1 class="text-[20px] lg:text-xl">1</h1>
-        <img src="../../../public/images/default-avatar.png" alt="" class="h-14 w-14 rounded-full mr-10 lg:mr-20">
-        <h1 class="text-[20px] lg:text-xl">Michaelka</h1>
-        <h1 class="text-[20px] lg:text-xl ml-10 lg:ml-20">19</h1>
+  <button
+    type="button"
+    class="rounded-xl border-2 border-[#BF2679] h-20 lg:h-24 px-4 lg:px-6 flex items-center w-full bg-[#141418] hover:bg-[#18181d] transition"
+    @click="$emit('select', row)"
+  >
+    <div class="w-full grid grid-cols-[48px_56px_1fr_auto] items-center gap-3 text-[#FFF7CC]">
+      <h1 class="text-lg lg:text-xl font-bold">#{{ row.rank }}</h1>
+      <img :src="row.profile_pic_url || '/images/default-avatar.png'" alt="" class="h-12 w-12 lg:h-14 lg:w-14 rounded-full object-cover" />
+      <div class="min-w-0">
+        <h1 class="text-base lg:text-xl truncate font-semibold">{{ row.name }}</h1>
+        <p class="text-xs lg:text-sm text-white/60 truncate">@{{ row.username }}</p>
       </div>
+      <h1 class="text-lg lg:text-xl font-bold">{{ row.awards_count }}</h1>
     </div>
-  </template>
-  
-  <script>
-  //vypisu vsechno z tabulky points a seradim je od nejvic po nejmin
-  // prokliik na profil
-  </script>
+  </button>
+</template>
+
+<script setup>
+defineProps({
+  row: {
+    type: Object,
+    required: true,
+  },
+})
+
+defineEmits(['select'])
+</script>

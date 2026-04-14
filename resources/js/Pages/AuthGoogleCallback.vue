@@ -24,6 +24,12 @@ const error = ref('')
 
 onMounted(async () => {
   const token = route.query.access_token
+  const providerError = route.query.error
+
+  if (providerError && typeof providerError === 'string') {
+    error.value = providerError
+    return
+  }
 
   if (!token || typeof token !== 'string') {
     error.value = 'Chybí token z Google přihlášení.'

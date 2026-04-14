@@ -1,14 +1,55 @@
 <template>
-    <div class=" max-h-screen flex justify-center overflow-hidden mt-10 w-full">
-        <!--nejaky systen jakoze for each, nemazat tento soubor :D -->
-      <div class="flex flex-col items-center gap-10 lg:gap-4">
-        <LeaderboardRow />
+  <div class="w-full flex justify-center mt-8 px-4 pb-28 md:pb-8">
+    <div class="w-full max-w-4xl">
+      <div class="mb-3 px-1 flex items-center justify-between text-sm">
+        <span class="text-white/60">Pořadí</span>
+        <span class="text-white/60">Body</span>
+      </div>
+
+      <div v-if="loading" class="text-white/60 py-6">Načítám leaderboard…</div>
+      <div v-else-if="error" class="text-red-300 py-6">{{ error }}</div>
+      <div v-else-if="rows.length === 0" class="text-white/60 py-6">Zatím žádní performeři.</div>
+
+      <div v-else class="flex flex-col items-center gap-4">
+        <LeaderboardRow
+          v-for="row in rows"
+          :key="row.id"
+          :row="row"
+          @select="goToProfile"
+        />
       </div>
     </div>
-  </template>
-  
-  <script setup>
-    import LeaderboardRow from './LeaderboardRow.vue';
+  </div>
+</template>
 
-  </script>
-  
+<script setup>
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import LeaderboardRow from './LeaderboardRow.vue'
+
+const router = useRouter()
+const rows = ref([])
+const loading = ref(false)
+const error = ref('')
+
+const fetchLeaderboard = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await axios.get('/api/awards/leaderboard')
+    rows.value = Array.isArray(response.data) ? response.data : []
+  } catch (err) {
+    error.value = err?.response?.data?.message || 'Nepodařilo se načíst leaderboard.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const goToProfile = (row) => {
+  if (!row?.username) return
+  router.push(`/profile/${row.username}`)
+}
+
+onMounted(fetchLeaderboard)
+</script>

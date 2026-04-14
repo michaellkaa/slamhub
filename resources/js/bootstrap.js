@@ -13,7 +13,7 @@ import axios from 'axios'
 
 axios.defaults.withCredentials = true
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-axios.defaults.baseURL = 'http://localhost:8000'
+axios.defaults.baseURL = window.location.origin
 axios.defaults.headers.common['Accept'] = 'application/json'
 
 const token = localStorage.getItem('token')
