@@ -42,6 +42,7 @@ class AwardController extends Controller
                     'username' => $user->username,
                     'name' => $user->name,
                     'profile_pic_url' => $user->profile_pic_url,
+                    'points' => 0,
                     'awards_count' => (int) $user->awards_count,
                     'events_count' => (int) $user->events_count,
                 ];

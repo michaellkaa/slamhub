@@ -1,12 +1,9 @@
 <template>
-  <div class="w-full flex justify-center mt-10 px-4 pb-24">
+  <div class="w-full flex justify-center mt-8 px-4 md:px-6 pb-24">
     <div class="w-full max-w-3xl">
-
-
       <div v-if="loading" class="text-white/60 py-6 text-center">
         <LeaderboardRow v-for="i in 6" :key="i" loading />      
       </div>
-
 
       <div v-else class="flex flex-col gap-3">
         <LeaderboardRow

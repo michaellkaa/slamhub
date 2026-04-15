@@ -47,8 +47,9 @@
 
     <div class="text-right">
       <h1 class="text-lg font-bold text-[#BF2679]">
-        {{ row.awards_count }}
+        {{ row.points ?? 0 }}
       </h1>
+      <p class="text-[11px] text-white/45 -mt-1">pts</p>
     </div>
   </button>
 </template>
