@@ -198,6 +198,24 @@ let refreshInFlight = false
 const FAST_POLL_MS = 2500
 const SLOW_POLL_MS = 10000
 const pageVisible = ref(true)
+const lastSendFingerprint = ref({ key: '', at: 0 })
+
+function mergeMessagesUnique(existingMessages, incomingMessages) {
+  const mergedById = new Map()
+
+  for (const message of existingMessages) {
+    if (message?.id != null) {
+      mergedById.set(message.id, message)
+    }
+  }
+
+  for (const message of incomingMessages) {
+    if (message?.id == null) continue
+    mergedById.set(message.id, message)
+  }
+
+  return Array.from(mergedById.values()).sort((a, b) => (a.id || 0) - (b.id || 0))
+}
 
 async function fetchMe() {
   try {
@@ -263,6 +281,12 @@ function backToList() {
 async function sendMessage() {
   const trimmedBody = newMessage.value.trim()
   if (!trimmedBody || !selectedUser.value || !selectedUser.value.conversation_id || sendingMessage.value) return
+  const currentFingerprint = `${selectedUser.value.conversation_id}:${trimmedBody}`
+  const now = Date.now()
+  if (lastSendFingerprint.value.key === currentFingerprint && now - lastSendFingerprint.value.at < 1500) {
+    return
+  }
+  lastSendFingerprint.value = { key: currentFingerprint, at: now }
 
   sendingMessage.value = true
 
@@ -272,7 +296,7 @@ async function sendMessage() {
       { body: trimmedBody }
     )
 
-    messages.value.push(response.data)
+    messages.value = mergeMessagesUnique(messages.value, [response.data])
 
     newMessage.value = ''
     scrollToBottom()
@@ -300,12 +324,12 @@ async function loadConversationMessages(conversationId, options = {}) {
     const incoming = Array.isArray(response.data) ? response.data : []
 
     if (!sinceId) {
-      messages.value = incoming
+      messages.value = mergeMessagesUnique([], incoming)
       return
     }
 
     if (!incoming.length) return
-    messages.value = [...messages.value, ...incoming]
+    messages.value = mergeMessagesUnique(messages.value, incoming)
   } catch (err) {
     console.error('Error loading messages:', err)
     handleUnauthorized(err)

@@ -10,9 +10,14 @@ use App\Models\User;
 
 class PostController extends Controller
 {
+    private function currentUserId(): int
+    {
+        return (int) (Auth::guard('sanctum')->id() ?? Auth::id() ?? 0);
+    }
+
     public function index()
     {
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $posts = Post::with('user')
             ->withCount([
@@ -32,7 +37,7 @@ class PostController extends Controller
 
     public function profilePosts()
     {
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $posts = Post::where('user_id', Auth::id())
             ->withCount([
@@ -68,7 +73,7 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $post = Post::with('user')
             ->withCount([
@@ -99,7 +104,7 @@ class PostController extends Controller
     public function userPosts($username)
     {
         $user = User::where('username', $username)->firstOrFail();
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $posts = $user->posts()
             ->withCount([

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
+use App\Notifications\NewMessageNotification;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -74,6 +75,10 @@ class MessageController extends Controller
 
     public function sendMessage(Request $request, $id)
     {
+        $validated = $request->validate([
+            'body' => 'required|string|max:2000',
+        ]);
+
         $conversation = auth()->user()
             ->conversations()
             ->where('conversations.id', $id)
@@ -86,8 +91,14 @@ class MessageController extends Controller
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => auth()->id(),
-            'body' => (string) $request->input('body', '')
+            'body' => trim((string) $validated['body']),
         ]);
+
+        $sender = auth()->user();
+        $recipients = $conversation->users()->where('users.id', '!=', $sender->id)->get();
+        foreach ($recipients as $recipient) {
+            $recipient->notify(new NewMessageNotification($message, $sender));
+        }
 
         return $message->load('sender');
     }

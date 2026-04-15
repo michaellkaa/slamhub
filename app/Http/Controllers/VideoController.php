@@ -9,6 +9,11 @@ use App\Models\User;
 
 class VideoController extends Controller
 {
+    private function currentUserId(): int
+    {
+        return (int) (Auth::guard('sanctum')->id() ?? Auth::id() ?? 0);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -33,7 +38,7 @@ class VideoController extends Controller
 
     public function index()
     {
-        $userId = Auth::id();
+        $userId = $this->currentUserId();
         $likedByUserId = $userId ?: 0;
 
         $videos = Video::with('user')
@@ -60,7 +65,7 @@ class VideoController extends Controller
     public function userVideos($username)
     {
         $user = \App\Models\User::where('username',$username)->firstOrFail();
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $videos = Video::where('user_id',$user->id)
             ->with('user')
@@ -70,7 +75,7 @@ class VideoController extends Controller
                 'likes as liked_by_me' => fn ($q) => $q->where('user_id', $likedByUserId),
             ])
             ->where(function($q) use ($user) {
-                if (Auth::id() !== $user->id) {
+                if ($this->currentUserId() !== (int) $user->id) {
                     $q->whereIn('status',['public','unlisted']);
                 }
             })
@@ -85,7 +90,7 @@ class VideoController extends Controller
 
     public function showBySlug($slug)
     {
-        $likedByUserId = Auth::id() ?: 0;
+        $likedByUserId = $this->currentUserId();
 
         $video = Video::with('user')
             ->withCount([
@@ -96,7 +101,7 @@ class VideoController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        if ($video->status === 'private' && Auth::id() !== $video->user_id) {
+        if ($video->status === 'private' && $this->currentUserId() !== (int) $video->user_id) {
             return response()->json(['message'=>'Unauthorized'],403);
         }
 
