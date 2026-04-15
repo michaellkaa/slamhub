@@ -17,11 +17,15 @@ class EventVoteSession extends Model
         'enabled',
         'status',
         'current_round_id',
+        'winner_round_id',
+        'winner_user_id',
+        'finalized_at',
         'created_by',
     ];
 
     protected $casts = [
         'enabled' => 'boolean',
+        'finalized_at' => 'datetime',
     ];
 
     public function event(): BelongsTo

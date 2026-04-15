@@ -31,6 +31,7 @@ const routes = [
     { path: "/events/:id", name: "EventDetail", component: () => import("./pages/EventDetail.vue"), props: true, meta: { requiresAuth: true } },
     { path: "/events/:id/vote", name: "EventVote", component: () => import("./pages/EventVote.vue"), props: true, meta: { requiresAuth: true } },
     { path: "/events/:id/voting/host", name: "EventVoteHost", component: () => import("./pages/EventVoteHost.vue"), props: true, meta: { requiresAuth: true } },
+    { path: "/events/:id/league/host", name: "EventLeagueHost", component: () => import("./pages/EventLeagueHost.vue"), props: true, meta: { requiresAuth: true } },
     { path: "/posts/create", name: "CreatePost", component: () => import("./pages/CreatePost.vue"), meta: { requiresAuth: true } },
     { path: "/awards/create", name: "CreateAward", component: () => import("./pages/CreateAward.vue"), meta: { requiresAuth: true } },
     { path: "/videos/create", name: "UploadVideo", component: () => import("./pages/UploadVideo.vue"), meta: { requiresAuth: true } },

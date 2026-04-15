@@ -24,13 +24,15 @@ class AwardController extends Controller
                 'users.username',
                 'users.name',
                 'users.profile_pic',
+                'users.points',
                 DB::raw('COUNT(DISTINCT award_user.id) as awards_count'),
                 DB::raw('COUNT(DISTINCT event_performer.event_id) as events_count'),
             ])
             ->leftJoin('award_user', 'award_user.user_id', '=', 'users.id')
             ->leftJoin('event_performer', 'event_performer.user_id', '=', 'users.id')
             ->whereIn('users.role', ['performer', 'organizer', 'user'])
-            ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic')
+            ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic', 'users.points')
+            ->orderByDesc('users.points')
             ->orderByDesc('awards_count')
             ->orderByDesc('events_count')
             ->orderBy('users.name')
@@ -42,13 +44,42 @@ class AwardController extends Controller
                     'username' => $user->username,
                     'name' => $user->name,
                     'profile_pic_url' => $user->profile_pic_url,
-                    'points' => 0,
+                    'points' => (int) $user->points,
                     'awards_count' => (int) $user->awards_count,
                     'events_count' => (int) $user->events_count,
                 ];
             });
 
         return response()->json($performers);
+    }
+
+    public function leagueProgress()
+    {
+        $events = Event::query()
+            ->where('event_mode', 'league')
+            ->orderByDesc('starts_at')
+            ->limit(30)
+            ->get()
+            ->map(function (Event $event) {
+                $data = $event->league_data ?: [];
+                $roundRobin = (array) ($data['round_robin'] ?? []);
+                $filledRoundRobin = collect(['ab', 'bc', 'ca'])
+                    ->filter(fn ($key) => !empty($roundRobin[$key]))
+                    ->count();
+                $second = !empty($data['second_round_winner']) ? 1 : 0;
+                $final = !empty($data['final_winner']) ? 1 : 0;
+                $progress = (int) round((($filledRoundRobin + $second + $final) / 5) * 100);
+
+                return [
+                    'event_id' => $event->id,
+                    'event_title' => $event->title,
+                    'starts_at' => $event->starts_at,
+                    'progress' => max(0, min(100, $progress)),
+                    'winner' => $data['final_winner'] ?? null,
+                ];
+            });
+
+        return response()->json($events->values());
     }
 
 

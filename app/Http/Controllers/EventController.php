@@ -33,9 +33,17 @@ public function store(Request $request)
         'performers.*' => 'exists:users,id',
         'guest_performers' => 'nullable|array',
         'guest_performers.*' => 'string|max:255',
+        'event_mode' => 'nullable|in:regular,league',
+        'is_award_event' => 'nullable|boolean',
+        'winner_award_id' => 'nullable|exists:awards,id',
     ]);
 
     $data['user_id'] = Auth::id();
+    $data['event_mode'] = $data['event_mode'] ?? 'regular';
+    $data['is_award_event'] = (bool) ($data['is_award_event'] ?? false);
+    if (!$data['is_award_event']) {
+        $data['winner_award_id'] = null;
+    }
 
     if ($request->hasFile('cover_image')) {
         $data['cover_image'] = $request->file('cover_image')
@@ -61,7 +69,7 @@ public function store(Request $request)
 
 public function show($id)
 {
-    $event = Event::with('performers', 'organizer')->findOrFail($id);
+    $event = Event::with('performers', 'organizer', 'winnerAward')->findOrFail($id);
     return response()->json($event);
 }
 
@@ -76,7 +84,7 @@ public function show($id)
 
     public function apiIndex()
 {
-    $events = Event::with('performers', 'organizer')->orderBy('starts_at', 'desc')->get();
+    $events = Event::with('performers', 'organizer', 'winnerAward')->orderBy('starts_at', 'desc')->get();
     return response()->json($events);
 }
 

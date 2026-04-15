@@ -41,6 +41,26 @@
         <label class="text-sm">Obrázek eventu</label>
         <input type="file" @change="uploadCover" class="p-3 rounded bg-[#1d1d21]" />
 
+        <label class="text-sm">Typ eventu</label>
+        <select v-model="event.event_mode" class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none">
+          <option value="regular">Regular</option>
+          <option value="league">League</option>
+        </select>
+
+        <label class="text-sm flex items-center gap-2">
+          <input type="checkbox" v-model="event.is_award_event" />
+          Award event (vitez dostane oceneni)
+        </label>
+
+        <select
+          v-if="event.is_award_event"
+          v-model="event.winner_award_id"
+          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+        >
+          <option :value="null">Vyber oceneni pro viteze</option>
+          <option v-for="award in awards" :key="award.id" :value="award.id">{{ award.title }}</option>
+        </select>
+
         <button
           type="button"
           @click="showModal = true"
@@ -111,6 +131,10 @@ const event = ref({
   ticket_url: '',
   cover_image: null,
   performers: []
+  ,
+  event_mode: 'regular',
+  is_award_event: false,
+  winner_award_id: null
 })
 
 const awards = ref([])
@@ -176,10 +200,6 @@ const submitEvent = async () => {
     formData.append(`guest_performers[${i}]`, guest)
   })
 
-  selectedAwards.value.forEach(id => {
-    formData.append('awards[]', id)
-  })
-
   try {
     const userRes = await axios.get('/api/me')
     formData.append('user_id', userRes.data.id)
@@ -200,7 +220,10 @@ const submitEvent = async () => {
       location: '',
       ticket_url: '',
       cover_image: null,
-      performers: []
+      performers: [],
+      event_mode: 'regular',
+      is_award_event: false,
+      winner_award_id: null
     }
     guestPerformers.value = []
   } catch (err) {

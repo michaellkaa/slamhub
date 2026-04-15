@@ -22,12 +22,18 @@ class Event extends Model
         'ticket_url',
         'cover_image',
         'guest_performers',
+        'event_mode',
+        'is_award_event',
+        'winner_award_id',
+        'league_data',
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at'   => 'datetime',
         'guest_performers' => 'array',
+        'league_data' => 'array',
+        'is_award_event' => 'boolean',
     ];
 
     public function organizer()
@@ -50,6 +56,11 @@ class Event extends Model
     public function voteSession()
     {
         return $this->hasOne(EventVoteSession::class);
+    }
+
+    public function winnerAward()
+    {
+        return $this->belongsTo(Award::class, 'winner_award_id');
     }
 
 }

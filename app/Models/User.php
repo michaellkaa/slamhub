@@ -22,6 +22,7 @@ class User extends Authenticatable
         'role',
         'google_id',
         'is_banned',
+        'points',
         'last_login_at',
         'email_verified_at',
     ];
@@ -36,6 +37,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'last_login_at'     => 'datetime',
         'is_banned'         => 'boolean',
+        'points'            => 'integer',
     ];
 
     protected $appends = ['profile_pic_url'];

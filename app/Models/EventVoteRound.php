@@ -16,6 +16,9 @@ class EventVoteRound extends Model
         'performer_id',
         'performer_name',
         'state',
+        'include_in_ranking',
+        'total_score',
+        'votes_count',
         'starts_at',
         'ends_at',
     ];
@@ -23,6 +26,7 @@ class EventVoteRound extends Model
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
+        'include_in_ranking' => 'boolean',
     ];
 
     public function session(): BelongsTo

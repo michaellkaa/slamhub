@@ -34,6 +34,9 @@
           <button @click="rotateCode" class="px-4 py-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-200">
             Novy kod
           </button>
+          <button @click="finalizeWinner" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200">
+            Uzavrit + pripsat bod vitezi
+          </button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
@@ -74,8 +77,17 @@
             <div class="min-w-0">
               <div class="font-semibold truncate">{{ r.performer_name }}</div>
               <div class="text-xs text-white/50">{{ r.state }}</div>
+              <div class="text-xs" :class="r.include_in_ranking ? 'text-emerald-300' : 'text-white/45'">
+                {{ r.include_in_ranking ? 'Pocita se do vysledku' : 'Skryto (bez bodu)' }}
+              </div>
             </div>
             <div class="flex gap-2 shrink-0">
+              <button
+                @click="toggleRoundVisibility(r)"
+                class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20"
+              >
+                {{ r.include_in_ranking ? 'Skryt' : 'Zobrazit' }}
+              </button>
               <button @click="startRound(r.id)" class="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-200">
                 Start
               </button>
@@ -136,6 +148,13 @@ const createRound = async () => {
   newPerformerName.value = ''
 }
 
+const toggleRoundVisibility = async (round) => {
+  await axios.patch(`/api/events/${eventId}/voting/rounds/${round.id}/visibility`, {
+    include_in_ranking: !round.include_in_ranking,
+  })
+  await pollLive()
+}
+
 const startRound = async (roundId) => {
   await axios.post(`/api/events/${eventId}/voting/rounds/${roundId}/start`)
   await pollLive()
@@ -143,6 +162,11 @@ const startRound = async (roundId) => {
 
 const closeRound = async (roundId) => {
   await axios.post(`/api/events/${eventId}/voting/rounds/${roundId}/close`)
+  await pollLive()
+}
+
+const finalizeWinner = async () => {
+  await axios.post(`/api/events/${eventId}/voting/finalize`)
   await pollLive()
 }
 

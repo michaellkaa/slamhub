@@ -28,4 +28,9 @@ class Award extends Model
             ->withPivot('event_id')
             ->withTimestamps();
     }
+
+    public function recipients()
+    {
+        return $this->users();
+    }
 }

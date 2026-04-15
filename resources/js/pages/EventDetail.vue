@@ -29,6 +29,9 @@
           <p v-if="event.starts_at">
             {{ formatDate(event.starts_at) }}
           </p>
+          <p>
+            Typ: {{ event.event_mode === 'league' ? 'League' : 'Regular' }}
+          </p>
           <p v-if="event.location">
             {{ event.location }}
           </p>
@@ -100,6 +103,13 @@
               class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
             >
               Host panel
+            </button>
+            <button
+              v-if="canManageVoting && event.event_mode === 'league'"
+              @click="$router.push({ name: 'EventLeagueHost', params: { id: props.id } })"
+              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
+            >
+              League spider
             </button>
           </div>
         </div>

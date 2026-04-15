@@ -21,6 +21,7 @@ use App\Http\Controllers\EventVotingController;
 use App\Http\Controllers\EventVotingHostController;
 use App\Http\Controllers\PostInteractionController;
 use App\Http\Controllers\VideoInteractionController;
+use App\Http\Controllers\EventLeagueController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -75,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('/awards', [AwardController::class, 'index']);
 Route::get('/awards/leaderboard', [AwardController::class, 'leaderboard']);
+Route::get('/awards/league-progress', [AwardController::class, 'leagueProgress']);
 Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
 Route::get('/search', [SearchController::class, 'index']);
@@ -134,6 +136,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{event}/voting/rounds', [EventVotingHostController::class, 'createRound']);
     Route::post('/events/{event}/voting/rounds/{round}/start', [EventVotingHostController::class, 'startRound']);
     Route::post('/events/{event}/voting/rounds/{round}/close', [EventVotingHostController::class, 'closeRound']);
+    Route::patch('/events/{event}/voting/rounds/{round}/visibility', [EventVotingHostController::class, 'updateRoundVisibility']);
+    Route::post('/events/{event}/voting/finalize', [EventVotingHostController::class, 'finalizeEventVoting']);
     Route::get('/events/{event}/voting/results/live', [EventVotingHostController::class, 'liveResults']);
+    Route::get('/events/{event}/league', [EventLeagueController::class, 'show']);
+    Route::put('/events/{event}/league', [EventLeagueController::class, 'update']);
 });
 

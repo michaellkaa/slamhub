@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Award;
 use App\Models\EventVoteRound;
 use App\Models\EventVoteSession;
 use Illuminate\Http\Request;
@@ -11,6 +12,59 @@ use Illuminate\Support\Str;
 
 class EventVotingHostController extends Controller
 {
+    private function autoSeedRounds(Event $event, EventVoteSession $session): void
+    {
+        $existingKeys = $session->rounds()
+            ->get(['performer_id', 'performer_name'])
+            ->map(fn ($r) => ($r->performer_id ? 'u:' . $r->performer_id : 'n:' . mb_strtolower(trim((string) $r->performer_name))))
+            ->all();
+
+        $toInsert = [];
+        foreach ($event->performers as $performer) {
+            $key = 'u:' . $performer->id;
+            if (in_array($key, $existingKeys, true)) {
+                continue;
+            }
+
+            $toInsert[] = [
+                'event_vote_session_id' => $session->id,
+                'performer_id' => $performer->id,
+                'performer_name' => $performer->name ?: $performer->username,
+                'state' => 'pending',
+                'include_in_ranking' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            $existingKeys[] = $key;
+        }
+
+        foreach ((array) $event->guest_performers as $guestName) {
+            $normalized = trim((string) $guestName);
+            if ($normalized === '') {
+                continue;
+            }
+            $key = 'n:' . mb_strtolower($normalized);
+            if (in_array($key, $existingKeys, true)) {
+                continue;
+            }
+
+            $toInsert[] = [
+                'event_vote_session_id' => $session->id,
+                'performer_id' => null,
+                'performer_name' => $normalized,
+                'state' => 'pending',
+                'include_in_ranking' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            $existingKeys[] = $key;
+        }
+
+        if (!empty($toInsert)) {
+            EventVoteRound::insert($toInsert);
+        }
+    }
+
     public function upsertSession(Request $request, Event $event)
     {
         $user = $request->user();
@@ -25,6 +79,9 @@ class EventVotingHostController extends Controller
                 'created_by' => $user->id,
             ]
         );
+
+        $event->loadMissing('performers');
+        $this->autoSeedRounds($event, $session);
 
         return response()->json($session->fresh()->load(['currentRound', 'rounds' => function ($query) {
             $query->latest('id');
@@ -92,6 +149,7 @@ class EventVotingHostController extends Controller
             'performer_id' => $payload['performer_id'] ?? null,
             'performer_name' => $payload['performer_name'],
             'state' => 'pending',
+            'include_in_ranking' => true,
         ]);
 
         return response()->json($round, 201);
@@ -133,8 +191,13 @@ class EventVotingHostController extends Controller
         abort_if((int) $round->event_vote_session_id !== (int) $session->id, 422, 'Round does not belong to event session');
 
         if ($round->state !== 'closed') {
+            $totals = $round->votes()
+                ->selectRaw('COUNT(*) as votes, COALESCE(SUM(vote_value), 0) as score')
+                ->first();
             $round->state = 'closed';
             $round->ends_at = now();
+            $round->votes_count = (int) ($totals->votes ?? 0);
+            $round->total_score = (int) ($totals->score ?? 0);
             $round->save();
         }
 
@@ -144,6 +207,80 @@ class EventVotingHostController extends Controller
         }
 
         return response()->json($round->fresh());
+    }
+
+    public function updateRoundVisibility(Request $request, Event $event, EventVoteRound $round)
+    {
+        $user = $request->user();
+        abort_unless($user && $user->canManageEventVoting($event), 403, 'Forbidden');
+
+        $session = EventVoteSession::where('event_id', $event->id)->firstOrFail();
+        abort_if((int) $round->event_vote_session_id !== (int) $session->id, 422, 'Round does not belong to event session');
+
+        $payload = $request->validate([
+            'include_in_ranking' => ['required', 'boolean'],
+        ]);
+
+        $round->include_in_ranking = (bool) $payload['include_in_ranking'];
+        $round->save();
+
+        return response()->json($round->fresh());
+    }
+
+    public function finalizeEventVoting(Request $request, Event $event)
+    {
+        $user = $request->user();
+        abort_unless($user && $user->canManageEventVoting($event), 403, 'Forbidden');
+
+        $session = EventVoteSession::where('event_id', $event->id)->firstOrFail();
+
+        if ($session->finalized_at) {
+            return response()->json([
+                'message' => 'Event voting already finalized.',
+                'winner_user_id' => $session->winner_user_id,
+            ]);
+        }
+
+        $candidate = $session->rounds()
+            ->where('state', 'closed')
+            ->where('include_in_ranking', true)
+            ->orderByDesc('total_score')
+            ->orderByDesc('votes_count')
+            ->orderBy('id')
+            ->first();
+
+        abort_if(!$candidate, 422, 'No closed visible rounds to finalize.');
+
+        DB::transaction(function () use ($event, $session, $candidate) {
+            $winnerUserId = $candidate->performer_id ?: null;
+
+            if ($winnerUserId) {
+                DB::table('users')->where('id', $winnerUserId)->increment('points', 1);
+            }
+
+            if ($winnerUserId && $event->is_award_event && $event->winner_award_id) {
+                $award = Award::find($event->winner_award_id);
+                if ($award) {
+                    $award->recipients()->syncWithoutDetaching([
+                        $winnerUserId => ['event_id' => $event->id],
+                    ]);
+                }
+            }
+
+            $session->winner_round_id = $candidate->id;
+            $session->winner_user_id = $winnerUserId;
+            $session->finalized_at = now();
+            $session->status = 'closed';
+            $session->enabled = false;
+            $session->current_round_id = null;
+            $session->save();
+        });
+
+        return response()->json([
+            'message' => 'Winner finalized.',
+            'winner' => $candidate->fresh(),
+            'winner_user_id' => $session->fresh()->winner_user_id,
+        ]);
     }
 
     public function liveResults(Request $request, Event $event)
@@ -174,6 +311,8 @@ class EventVotingHostController extends Controller
                 'votes' => (int) ($totals->votes ?? 0),
                 'score' => (int) ($totals->score ?? 0),
             ],
+            'winner_user_id' => $session->winner_user_id,
+            'finalized_at' => $session->finalized_at,
         ]);
     }
 }

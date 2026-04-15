@@ -18,6 +18,10 @@ class EventFactory extends Factory
             'location' => fake()->city(),
             'ticket_url' => fake()->url(),
             'cover_image' => null,
+            'event_mode' => 'regular',
+            'is_award_event' => false,
+            'winner_award_id' => null,
+            'league_data' => null,
         ];
     }
 }
