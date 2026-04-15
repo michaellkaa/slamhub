@@ -85,12 +85,12 @@
             </button>
 
             <button
-              v-if="showUnfollowFor(u)"
+              v-if="showActionFor(u)"
               class="shrink-0 px-3 py-1.5 rounded-lg text-sm bg-white/10 hover:bg-white/15 text-white transition disabled:opacity-60"
               :disabled="pendingUsernames.has(u.username)"
-              @click="unfollow(u.username)"
+              @click="toggleRelationship(u)"
             >
-              Odebrat
+              {{ actionLabel(u) }}
             </button>
           </div>
         </div>
@@ -111,6 +111,7 @@ const props = defineProps({
   username: { type: String, required: true },
   initialTab: { type: String, default: 'following' }, // 'followers' | 'following'
   canUnfollow: { type: Boolean, default: false },
+  authUser: { type: Object, default: null },
 })
 
 const emit = defineEmits(['close', 'open-profile', 'following-changed'])
@@ -121,12 +122,31 @@ const error = ref('')
 const followers = ref([])
 const following = ref([])
 const pendingUsernames = ref(new Set())
+const followedUsernames = ref(new Set())
 
 const followersCount = computed(() => followers.value.length)
 const followingCount = computed(() => following.value.length)
 
 const title = computed(() => (activeTab.value === 'followers' ? 'Sledující' : 'Sleduje'))
-const activeList = computed(() => (activeTab.value === 'followers' ? followers.value : following.value))
+
+const rolePriority = (role) => {
+  if (role === 'organizer') return 0
+  if (role === 'performer') return 1
+  return 2
+}
+
+const sortByPriority = (list) => {
+  return [...list].sort((a, b) => {
+    const roleDiff = rolePriority(a?.role) - rolePriority(b?.role)
+    if (roleDiff !== 0) return roleDiff
+    return String(a?.name || a?.username || '').localeCompare(String(b?.name || b?.username || ''))
+  })
+}
+
+const activeList = computed(() => {
+  const list = activeTab.value === 'followers' ? followers.value : following.value
+  return sortByPriority(list)
+})
 
 const load = async () => {
   loading.value = true
@@ -138,6 +158,18 @@ const load = async () => {
     ])
     followers.value = Array.isArray(f1.data) ? f1.data : []
     following.value = Array.isArray(f2.data) ? f2.data : []
+
+    if (props.authUser?.username) {
+      const ownFollowing = await axios.get(`/api/users/${props.authUser.username}/following`)
+      const ownFollowingList = Array.isArray(ownFollowing.data) ? ownFollowing.data : []
+      followedUsernames.value = new Set(
+        ownFollowingList
+          .map((u) => u?.username)
+          .filter(Boolean)
+      )
+    } else {
+      followedUsernames.value = new Set()
+    }
   } catch (e) {
     error.value = e?.response?.data?.message || 'Nepodařilo se načíst seznam.'
   } finally {
@@ -145,33 +177,71 @@ const load = async () => {
   }
 }
 
-const showUnfollowFor = (u) => {
-  if (!props.canUnfollow) return false
-  if (activeTab.value !== 'following') return false
-  return !!u?.username
+const isFollowableRole = (u) => ['performer', 'organizer'].includes(u?.role)
+
+const showActionFor = (u) => {
+  if (!u?.username) return false
+  if (props.authUser?.id && props.authUser.id === u.id) return false
+
+  if (activeTab.value === 'following') {
+    return props.canUnfollow
+  }
+
+  if (activeTab.value === 'followers') {
+    return !!props.authUser && isFollowableRole(u)
+  }
+
+  return false
 }
 
-const unfollow = async (targetUsername) => {
+const actionLabel = (u) => {
+  if (activeTab.value === 'following') return 'Odebrat'
+  return followedUsernames.value.has(u.username) ? 'Odebrat' : 'Sledovat'
+}
+
+const toggleRelationship = async (targetUser) => {
+  const targetUsername = targetUser?.username
   if (!targetUsername || pendingUsernames.value.has(targetUsername)) return
   pendingUsernames.value.add(targetUsername)
   error.value = ''
 
-  const prev = following.value
-  following.value = following.value.filter((u) => u.username !== targetUsername)
-  emit('following-changed', following.value.length)
+  const wasFollowing = followedUsernames.value.has(targetUsername)
+  const prevFollowingList = following.value
+  const prevFollowedSet = new Set(followedUsernames.value)
+
+  if (activeTab.value === 'following' && props.canUnfollow) {
+    following.value = following.value.filter((u) => u.username !== targetUsername)
+    emit('following-changed', following.value.length)
+  }
+
+  if (wasFollowing) {
+    followedUsernames.value.delete(targetUsername)
+  } else {
+    followedUsernames.value.add(targetUsername)
+  }
 
   try {
     const { data } = await axios.post(`/api/users/${targetUsername}/follow`)
-    if (data?.following !== false) {
-      // API toggles; we expect "false" for an unfollow in this modal.
-      following.value = prev
-      emit('following-changed', following.value.length)
-      error.value = 'Nepodařilo se odebrat sledování.'
+    if (typeof data?.following !== 'boolean') {
+      throw new Error('Invalid follow response')
+    }
+
+    if (data.following !== !wasFollowing) {
+      following.value = prevFollowingList
+      followedUsernames.value = prevFollowedSet
+      if (activeTab.value === 'following' && props.canUnfollow) {
+        emit('following-changed', following.value.length)
+      }
+      error.value = 'Nepodařilo se změnit sledování.'
+      return
     }
   } catch (e) {
-    following.value = prev
-    emit('following-changed', following.value.length)
-    error.value = e?.response?.data?.message || 'Nepodařilo se odebrat sledování.'
+    following.value = prevFollowingList
+    followedUsernames.value = prevFollowedSet
+    if (activeTab.value === 'following' && props.canUnfollow) {
+      emit('following-changed', following.value.length)
+    }
+    error.value = e?.response?.data?.message || 'Nepodařilo se změnit sledování.'
   } finally {
     pendingUsernames.value.delete(targetUsername)
   }

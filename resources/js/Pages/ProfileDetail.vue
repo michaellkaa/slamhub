@@ -62,14 +62,22 @@
             <div class="text-white/40 text-sm">@{{ user.username }}</div>
 
             <div class="flex gap-6 mt-2 text-white/70 text-sm">
-              <div>
+              <button
+                type="button"
+                class="hover:text-white transition text-left"
+                @click="openFollowModal('followers')"
+              >
                 <span class="font-semibold text-white">{{ user.followers_count }}</span>
                 <span class="text-white/60"> sledujících</span>
-              </div>
-              <div>
+              </button>
+              <button
+                type="button"
+                class="hover:text-white transition text-left"
+                @click="openFollowModal('following')"
+              >
                 <span class="font-semibold text-white">{{ user.following_count }}</span>
                 <span class="text-white/60"> sleduje</span>
-              </div>
+              </button>
             </div>
 
             <div v-if="uploadError" class="mt-2 text-sm text-red-300">
@@ -124,6 +132,17 @@
       @create="handleCreate"
     />
 
+    <FollowListModal
+      v-if="showFollowModal && user?.username"
+      :username="user.username"
+      :initial-tab="followModalTab"
+      :can-unfollow="isOwnProfile"
+      :auth-user="loggedUser"
+      @close="showFollowModal = false"
+      @open-profile="openProfileFromModal"
+      @following-changed="handleFollowingCountChanged"
+    />
+
   </div>
 </template>
 
@@ -137,6 +156,7 @@ import VideosTab from '../components/profile/VideosTab.vue'
 import PostsTab from '../components/profile/PostsTab.vue'
 import AwardsTab from '../components/profile/AwardsTab.vue'
 import EventsTab from '../components/profile/EventsTab.vue'
+import FollowListModal from '../components/profile/FollowListModal.vue'
 import CreateButton from '../components/CreateButton.vue'
 import FollowButton from '../components/FollowButton.vue'
 
@@ -156,6 +176,8 @@ const activeTab = ref('videos')
 
 const fileInput = ref(null)
 const uploadError = ref('')
+const showFollowModal = ref(false)
+const followModalTab = ref('following')
 
 const loadProfile = async () => {
   isLoading.value = true
@@ -197,6 +219,17 @@ const handleFollow = (following, count) => {
   if (!user.value) return
   user.value.is_following = following
   user.value.followers_count = count
+}
+
+const openFollowModal = (tab) => {
+  if (!user.value?.username) return
+  followModalTab.value = tab
+  showFollowModal.value = true
+}
+
+const handleFollowingCountChanged = (count) => {
+  if (!user.value) return
+  user.value.following_count = count
 }
 
 onMounted(loadProfile)
@@ -247,4 +280,8 @@ const uploadPhoto = async (e) => {
 
 const handleCreate = (type) => console.log('Create clicked:', type)
 const goToSettings = () => router.push('/settings')
+const openProfileFromModal = (username) => {
+  showFollowModal.value = false
+  router.push(`/profile/${username}`)
+}
 </script>

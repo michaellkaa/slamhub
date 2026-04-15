@@ -131,9 +131,28 @@ axios.defaults.baseURL = window.location.origin
 axios.defaults.withCredentials = true
 axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest"
 
+const ensureAuthHeader = () => {
+  const token = localStorage.getItem('token')
+  if (!token) return false
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`
+  return true
+}
+
+const handleUnauthorized = (err) => {
+  if (err?.response?.status !== 401) return
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  window.location.href = '/login'
+}
+
 onMounted(async () => {
-  //await axios.get('/sanctum/csrf-cookie')
+  if (!ensureAuthHeader()) {
+    window.location.href = '/login'
+    return
+  }
+
   await fetchMe()
+  if (!currentUser.value) return
   await fetchFollowing()
   await fetchUsers()
   startRealtimePolling()
@@ -176,6 +195,7 @@ async function fetchMe() {
     currentUser.value = response.data
   } catch (err) {
     console.error('Error fetching current user:', err)
+    handleUnauthorized(err)
   }
 }
 
@@ -198,6 +218,7 @@ async function fetchUsers() {
 
   } catch (err) {
     console.error('Error fetching users:', err)
+    handleUnauthorized(err)
   }
 }
 
@@ -216,6 +237,7 @@ async function selectUser(user) {
     scrollToBottom()
   } catch (err) {
     console.error('Error selecting user / fetching conversation:', err)
+    handleUnauthorized(err)
   }
 }
 
@@ -243,6 +265,7 @@ async function sendMessage() {
     scrollToBottom()
   } catch (err) {
     console.error('Error sending message:', err)
+    handleUnauthorized(err)
   }
 }
 
@@ -270,6 +293,7 @@ async function loadConversationMessages(conversationId, options = {}) {
     messages.value = [...messages.value, ...incoming]
   } catch (err) {
     console.error('Error loading messages:', err)
+    handleUnauthorized(err)
   }
 }
 
@@ -279,6 +303,7 @@ async function fetchFollowing() {
     suggestedUsers.value = response.data  
   } catch (err) {
     console.error(err)
+    handleUnauthorized(err)
   }
 }
 
@@ -296,6 +321,7 @@ async function refreshOpenConversation() {
     }
   } catch (err) {
     console.error('Error refreshing conversation:', err)
+    handleUnauthorized(err)
   } finally {
     refreshInFlight = false
   }
