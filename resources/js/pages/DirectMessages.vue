@@ -104,15 +104,24 @@
             </div>
           </div>
 
-          <div class="h-20 shrink-0 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
+          <form
+            class="h-20 shrink-0 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4"
+            @submit.prevent="sendMessage"
+          >
             <input 
               v-model="newMessage" 
-              @keyup.enter="sendMessage" 
               placeholder="Type a message..." 
-              class="flex-1 h-12 px-4 rounded-lg bg-[#1d1d21] text-white focus:outline-none" 
+              :disabled="sendingMessage"
+              class="flex-1 h-12 px-4 rounded-lg bg-[#1d1d21] text-white focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed" 
             />
-            <button @click="sendMessage" class="h-12 px-4 lg:w-24 bg-[#1d1d21] rounded-lg text-white shrink-0">Send</button>
-          </div>
+            <button
+              type="submit"
+              :disabled="sendingMessage"
+              class="h-12 px-4 lg:w-24 bg-[#1d1d21] rounded-lg text-white shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {{ sendingMessage ? 'Sending…' : 'Send' }}
+            </button>
+          </form>
 
         </div>
 
@@ -181,6 +190,7 @@ const selectedUser = ref(null)
 const messages = ref([])
 const newMessage = ref('')
 const showNewChat = ref(false)
+const sendingMessage = ref(false)
 
 const chatContainer = ref(null)
 let realtimeTimer = null
@@ -251,12 +261,15 @@ function backToList() {
 }
 
 async function sendMessage() {
-  if (!newMessage.value.trim() || !selectedUser.value || !selectedUser.value.conversation_id) return
+  const trimmedBody = newMessage.value.trim()
+  if (!trimmedBody || !selectedUser.value || !selectedUser.value.conversation_id || sendingMessage.value) return
+
+  sendingMessage.value = true
 
   try {
     const response = await axios.post(
       `/api/conversations/${selectedUser.value.conversation_id}/messages`,
-      { body: newMessage.value }
+      { body: trimmedBody }
     )
 
     messages.value.push(response.data)
@@ -266,6 +279,8 @@ async function sendMessage() {
   } catch (err) {
     console.error('Error sending message:', err)
     handleUnauthorized(err)
+  } finally {
+    sendingMessage.value = false
   }
 }
 

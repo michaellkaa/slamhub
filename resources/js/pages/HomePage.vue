@@ -9,6 +9,10 @@
         class="flex-1 rounded-xl lg:p-4 overflow-y-auto lg:max-h-[90vh] max-h-full no-scrollbar snap-y snap-mandatory touch-pan-y overscroll-y-contain pb-28 lg:pb-0"
         style="scroll-snap-type: y mandatory;"
       >
+        <div class="px-4 pt-4 pb-2 lg:hidden">
+          <TopSearch />
+        </div>
+
         <div
           v-for="item in feedItems"
           :key="item.type + '-' + item.id"
