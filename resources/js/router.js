@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
     
     { path: "/", name: "home", component: () => import("./pages/HomePage.vue"), meta: { requiresAuth: true } },
-    { path: "/awards", name: "awards", component: () => import("../js/pages/AwardPages.vue"), meta: { requiresAuth: true } },
+    { path: "/awards", name: "awards", component: () => import("./pages/AwardPages.vue"), meta: { requiresAuth: true } },
     { path: "/login", name: "login", component: () => import("./pages/LoginPage.vue"), meta: { guestOnly: true } },
     { path: "/register", name: "register", component: () => import("./pages/RegisterPage.vue"), meta: { guestOnly: true } },
     { path: "/auth/google/callback", name: "auth.google.callback", component: () => import("./pages/AuthGoogleCallback.vue"), meta: { guestOnly: true } },
@@ -31,7 +31,7 @@ const routes = [
     { path: "/events/:id", name: "EventDetail", component: () => import("./pages/EventDetail.vue"), props: true, meta: { requiresAuth: true } },
     { path: "/events/:id/vote", name: "EventVote", component: () => import("./pages/EventVote.vue"), props: true, meta: { requiresAuth: true } },
     { path: "/events/:id/voting/host", name: "EventVoteHost", component: () => import("./pages/EventVoteHost.vue"), props: true, meta: { requiresAuth: true } },
-    { path: "/posts/create", name: "CreatePost", component: () => import("./Pages/CreatePost.vue"), meta: { requiresAuth: true } },
+    { path: "/posts/create", name: "CreatePost", component: () => import("./pages/CreatePost.vue"), meta: { requiresAuth: true } },
     { path: "/awards/create", name: "CreateAward", component: () => import("./pages/CreateAward.vue"), meta: { requiresAuth: true } },
     { path: "/videos/create", name: "UploadVideo", component: () => import("./pages/UploadVideo.vue"), meta: { requiresAuth: true } },
 
