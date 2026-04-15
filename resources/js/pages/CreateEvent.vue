@@ -187,14 +187,19 @@ const submitEvent = async () => {
   const formData = new FormData()
 
   for (const key in event.value) {
-    if (key === 'performers') {
-      event.value.performers.forEach(id => formData.append('performers[]', id))
-    } else if (key === 'cover_image' && event.value.cover_image) {
-      formData.append('cover_image', event.value.cover_image)
-    } else {
-      formData.append(key, event.value[key] ?? '')
-    }
+  if (key === 'performers') {
+    event.value.performers.forEach(id => formData.append('performers[]', id))
+
+  } else if (key === 'cover_image' && event.value.cover_image) {
+    formData.append('cover_image', event.value.cover_image)
+
+  } else if (key === 'is_award_event') {
+    formData.append('is_award_event', event.value.is_award_event ? 1 : 0)
+
+  } else {
+    formData.append(key, event.value[key] ?? '')
   }
+}
 
   guestPerformers.value.forEach((guest, i) => {
     formData.append(`guest_performers[${i}]`, guest)

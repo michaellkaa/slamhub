@@ -18,8 +18,11 @@
       </div>
 
       <div v-else class="text-center">
-        <img :src="coverSrc" class="w-full max-w-md h-80 object-cover rounded mx-auto mb-6" />
-
+        <img
+          v-if="event.cover_image"
+          :src="`/storage/${event.cover_image}`"
+          class="w-full max-w-md h-80 object-cover rounded mx-auto mb-6"
+        />
 
         <h1 class="text-2xl font-bold mb-2">
           {{ event.title || 'Bez názvu' }}
