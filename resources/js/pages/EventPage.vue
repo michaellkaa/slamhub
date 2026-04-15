@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] w-screen min-h-screen flex flex-col lg:flex-row">
+  <div class="bg-[#0f0f12] w-full min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
     
     <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
@@ -40,25 +40,28 @@
               </template>
             </section>
 
-            <div v-if="!loading && pastEvents.length" class="my-8 text-center text-white/60 text-sm tracking-wide">
-              ------------ past events ------------
-            </div>
+            <section
+              v-if="!loading && pastEvents.length"
+              class="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-3 md:p-4"
+            >
+              <button
+                type="button"
+                class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-center hover:bg-white/10"
+                @click="showPastEvents = !showPastEvents"
+              >
+                <div class="text-white text-base md:text-lg font-semibold">Minulé události</div>
+                <div class="mt-0.5 text-white/55 text-sm">{{ pastEvents.length }} záznamů</div>
+                <div class="mt-1 text-white/70 text-sm">{{ showPastEvents ? '▲ Skrýt' : '▼ Zobrazit' }}</div>
+              </button>
 
-            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              
-              <template v-if="loading">
-                <EventCard v-for="i in 3" :key="'skeleton-past-' + i" :loading="true" />
-              </template>
-
-              <template v-else>
+              <section v-if="showPastEvents" class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <EventCard
                   v-for="event in pastEvents"
                   :key="event.id"
                   :event="event"
                   @click="$router.push({ name: 'EventDetail', params: { id: event.id }})"
                 />
-              </template>
-
+              </section>
             </section>
 
             <div v-if="!loading && !upcomingEvents.length && !pastEvents.length" class="text-center text-white/60 mt-6">
@@ -83,6 +86,7 @@ const activeNav = ref('events')
 const events = ref([])
 const loading = ref(true)
 const loadError = ref(false)
+const showPastEvents = ref(false)
 
 function handleNavigate(nav) {
   activeNav.value = nav
