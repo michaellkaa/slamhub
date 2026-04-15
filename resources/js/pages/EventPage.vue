@@ -15,6 +15,16 @@
           </section>
 
           <div class="pb-6">
+            <div v-if="loadError" class="mb-6 rounded-xl border border-red-400/30 bg-red-500/10 p-4 text-center text-red-200">
+              <p class="font-semibold">Nepodarilo se nacist udalosti.</p>
+              <button
+                class="mt-3 rounded-lg bg-red-500/80 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+                @click="loadEvents"
+              >
+                Zkusit znovu
+              </button>
+            </div>
+
             <section v-if="upcomingEvents.length || loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <template v-if="loading">
                 <EventCard v-for="i in 3" :key="'skeleton-upcoming-' + i" :loading="true" />
@@ -72,21 +82,35 @@ import axios from 'axios'
 const activeNav = ref('events')
 const events = ref([])
 const loading = ref(true)
+const loadError = ref(false)
 
 function handleNavigate(nav) {
   activeNav.value = nav
 }
 
-onMounted(async () => {
+const normalizeEvents = (payload) => {
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload?.data)) return payload.data
+  return []
+}
+
+const loadEvents = async () => {
+  loading.value = true
+  loadError.value = false
+
   try {
     const res = await axios.get('/api/events')
-    events.value = res.data
+    events.value = normalizeEvents(res.data)
   } catch (err) {
     console.error('Chyba při načítání eventů:', err)
+    events.value = []
+    loadError.value = true
   } finally {
     loading.value = false
   }
-})
+}
+
+onMounted(loadEvents)
 
 const upcomingEvents = computed(() => {
   const now = new Date()
