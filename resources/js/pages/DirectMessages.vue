@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-[#0f0f12] w-screen min-h-screen flex flex-col lg:flex-row overflow-hidden">
+  <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
 
     <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex flex-col overflow-y-auto pb-28 lg:pb-0 min-h-0">
+    <div class="flex-1 flex flex-col overflow-hidden pb-28 lg:pb-0 min-h-0">
       <div class="flex w-full h-full overflow-hidden min-h-0">
 
         <div
@@ -71,7 +71,7 @@
           </div>
         </div>
 
-        <div :class="['flex-1 flex flex-col min-h-0', selectedUser ? 'flex' : 'hidden lg:flex']">
+        <div :class="['flex-1 flex flex-col min-h-0 h-full', selectedUser ? 'flex' : 'hidden lg:flex']">
 
           <div class="h-16 border-b border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
             <button
@@ -104,7 +104,7 @@
             </div>
           </div>
 
-          <div class="h-20 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
+          <div class="h-20 shrink-0 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
             <input 
               v-model="newMessage" 
               @keyup.enter="sendMessage" 

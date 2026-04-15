@@ -999,6 +999,10 @@ video {
   max-width: 36rem;
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1174,6 +1178,10 @@ video {
 
 .overflow-y-auto {
   overflow-y: auto;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
 }
 
 .truncate {
@@ -1583,6 +1591,10 @@ video {
 
 .pb-6 {
   padding-bottom: 1.5rem;
+}
+
+.pt-4 {
+  padding-top: 1rem;
 }
 
 .text-left {
@@ -2207,6 +2219,10 @@ video {
     height: 100%;
   }
 
+  .md\:h-screen {
+    height: 100vh;
+  }
+
   .md\:w-28 {
     width: 7rem;
   }
@@ -2248,6 +2264,10 @@ video {
 
   .md\:pb-8 {
     padding-bottom: 2rem;
+  }
+
+  .md\:pt-20 {
+    padding-top: 5rem;
   }
 
   .md\:text-xl {
