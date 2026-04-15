@@ -1,16 +1,14 @@
 <template>
-  <div class="w-full flex justify-center mt-8 px-4 pb-28 md:pb-8">
-    <div class="w-full max-w-4xl">
-      <div class="mb-3 px-1 flex items-center justify-between text-sm">
-        <span class="text-white/60">Leaderboard</span>
-        <span class="text-white/60">Awards</span>
+  <div class="w-full flex justify-center mt-10 px-4 pb-24">
+    <div class="w-full max-w-3xl">
+
+
+      <div v-if="loading" class="text-white/60 py-6 text-center">
+        <LeaderboardRow v-for="i in 6" :key="i" loading />      
       </div>
 
-      <div v-if="loading" class="text-white/60 py-6">Načítám leaderboard…</div>
-      <div v-else-if="error" class="text-red-300 py-6">{{ error }}</div>
-      <div v-else-if="rows.length === 0" class="text-white/60 py-6">Zatím žádní performeři.</div>
 
-      <div v-else class="flex flex-col items-center gap-3">
+      <div v-else class="flex flex-col gap-3">
         <LeaderboardRow
           v-for="row in rows"
           :key="row.id"
@@ -18,6 +16,7 @@
           @select="goToProfile"
         />
       </div>
+
     </div>
   </div>
 </template>

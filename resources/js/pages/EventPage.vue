@@ -1,38 +1,41 @@
 <template>
   <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
-    <div class="lg:h-full lg:w-28 w-full  fixed bottom-0 lg:static z-10">
+    
+    <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex flex-col mt-4 lg:mt-28 overflow-hidden min-h-0 pb-28 lg:pb-0 h-full">
-      <div class="w-full flex-1 min-h-0 flex justify-center px-4 overflow-hidden">
-        <div class="max-w-5xl w-full flex flex-col flex-1 min-h-0 overflow-hidden">
+    <div class="flex-1 flex flex-col mt-4 lg:mt-28 min-h-0 pb-28 lg:pb-0">
+      
+      <div class="w-full flex-1 min-h-0 flex justify-center px-4">
+        <div class="max-w-5xl w-full flex flex-col flex-1 min-h-0">
 
           <section class="mt-4 mb-2 text-center space-y-3">
             <h1 class="text-white text-2xl font-bold">Události</h1>
           </section>
 
-          <div class="flex-1 overflow-y-auto min-h-0 pb-6">
+          <div class="flex-1 overflow-y-auto min-h-0 pb-6 scrollbar-hide">
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              
               <template v-if="loading">
                 <EventCard v-for="i in 3" :key="'skeleton-' + i" :loading="true" />
               </template>
 
               <template v-else>
                 <EventCard
-                  v-for="i in loading ? 3 : events.length"
-                  :key="loading ? i : events[i-1].id"
-                  :event="loading ? {} : events[i-1]"
-                  :loading="loading"
-                  @click="!loading && $router.push({ name: 'EventDetail', params: { id: events[i-1].id }})"
+                  v-for="event in events"
+                  :key="event.id"
+                  :event="event"
+                  @click="$router.push({ name: 'EventDetail', params: { id: event.id }})"
                 />
-
               </template>
+
             </section>
           </div>
 
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -62,3 +65,13 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style>
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

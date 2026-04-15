@@ -1,31 +1,76 @@
 <template>
+  <div
+    v-if="loading"
+    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4 
+           bg-[#18181d]/60 border border-white/10
+           animate-pulse"
+  >
+    <div class="w-10 h-5 bg-white/10 rounded"></div>
+    <div class="h-12 w-12 rounded-full bg-white/10"></div>
+
+    <div class="flex-1 space-y-2">
+      <div class="h-4 w-1/3 bg-white/10 rounded"></div>
+      <div class="h-3 w-1/4 bg-white/10 rounded"></div>
+    </div>
+
+    <div class="h-5 w-10 bg-white/10 rounded"></div>
+  </div>
+
   <button
+    v-else
     type="button"
-    class="rounded-xl border border-[#BF2679] h-20 lg:h-24 px-4 lg:px-6 flex items-center w-full bg-[#141418] hover:bg-[#18181d] transition shadow-[0_0_0_1px_rgba(191,38,121,0.2)]"
+    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4 
+           bg-[#18181d]/80 backdrop-blur-md
+           border border-white/10
+           hover:border-[#BF2679]/40 hover:bg-[#1c1c22]
+           transition-all duration-200
+           shadow-md hover:shadow-lg"
     @click="$emit('select', row)"
   >
-    <div class="w-full grid grid-cols-[48px_56px_1fr_auto] items-center gap-3 text-[#FFF7CC]">
-      <h1 class="text-lg lg:text-xl font-bold text-center">{{ row.rank }}</h1>
-      <img :src="row.profile_pic_url || '/images/default-avatar.png'" alt="" class="h-12 w-12 lg:h-14 lg:w-14 rounded-full object-cover" />
-      <div class="min-w-0">
-        <h1 class="text-base lg:text-xl truncate font-semibold">{{ row.name }}</h1>
-        <p class="text-xs lg:text-sm text-white/60 truncate">@{{ row.username }}</p>
-      </div>
-      <div class="text-right">
-        <h1 class="text-lg lg:text-xl font-bold leading-tight">{{ row.awards_count }}</h1>
-        <p class="text-[11px] text-white/55 leading-tight">awards</p>
-      </div>
+    <div class="w-10 text-center text-lg font-bold" :class="rankColor">
+      {{ row.rank }}
+    </div>
+
+    <img
+      :src="row.profile_pic_url || '/images/default-avatar.png'"
+      class="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+    />
+
+    <div class="flex-1 min-w-0">
+      <h1 class="text-base lg:text-lg font-semibold truncate text-white">
+        {{ row.name }}
+      </h1>
+      <p class="text-xs text-white/50 truncate">
+        @{{ row.username }}
+      </p>
+    </div>
+
+    <div class="text-right">
+      <h1 class="text-lg font-bold text-[#BF2679]">
+        {{ row.awards_count }}
+      </h1>
     </div>
   </button>
 </template>
 
 <script setup>
-defineProps({
-  row: {
-    type: Object,
-    required: true,
+import { computed } from 'vue'
+
+const props = defineProps({
+  row: Object,
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 
 defineEmits(['select'])
+
+const rankColor = computed(() => {
+  if (!props.row) return 'text-white/30'
+  if (props.row.rank === 1) return 'text-yellow-400'
+  if (props.row.rank === 2) return 'text-gray-300'
+  if (props.row.rank === 3) return 'text-orange-400'
+  return 'text-white/70'
+})
 </script>
