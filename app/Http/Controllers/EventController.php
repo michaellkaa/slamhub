@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\User;
+use App\Notifications\EventPublishedNotification;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -52,7 +53,14 @@ public function store(Request $request)
         $event->guest_performers = $data['guest_performers'];
         $event->save();
     }
-    
+
+    $organizer = Auth::user();
+    if ($organizer) {
+        $followers = $organizer->followers()->get();
+        foreach ($followers as $follower) {
+            $follower->notify(new EventPublishedNotification($event, $organizer));
+        }
+    }
 
 
     return response()->json($event, 201);

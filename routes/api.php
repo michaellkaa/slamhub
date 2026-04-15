@@ -21,6 +21,7 @@ use App\Http\Controllers\EventVotingController;
 use App\Http\Controllers\EventVotingHostController;
 use App\Http\Controllers\PostInteractionController;
 use App\Http\Controllers\VideoInteractionController;
+use App\Http\Controllers\NotificationController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -116,6 +117,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/conversations/{id}/messages', [MessageController::class, 'getMessages']);
     Route::post('/conversations/{id}/messages', [MessageController::class, 'sendMessage']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
 });
 
 Route::middleware('auth:sanctum')->get('/users', [ApiUserController::class, 'index']);

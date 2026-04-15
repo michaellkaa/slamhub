@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Award;
 use App\Models\Event;
 use App\Models\User;
+use App\Notifications\LeaderboardMovementNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,22 +19,7 @@ class AwardController extends Controller
 
     public function leaderboard()
     {
-        $performers = User::query()
-            ->select([
-                'users.id',
-                'users.username',
-                'users.name',
-                'users.profile_pic',
-                DB::raw('COUNT(DISTINCT award_user.id) as awards_count'),
-                DB::raw('COUNT(DISTINCT event_performer.event_id) as events_count'),
-            ])
-            ->leftJoin('award_user', 'award_user.user_id', '=', 'users.id')
-            ->leftJoin('event_performer', 'event_performer.user_id', '=', 'users.id')
-            ->whereIn('users.role', ['performer', 'organizer', 'user'])
-            ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic')
-            ->orderByDesc('awards_count')
-            ->orderByDesc('events_count')
-            ->orderBy('users.name')
+        $performers = $this->leaderboardBaseQuery()
             ->get()
             ->map(function ($user, $index) {
                 return [
@@ -97,10 +83,23 @@ class AwardController extends Controller
         }
 
         $award = Award::findOrFail($data['award_id']);
+        $beforeRanks = $this->leaderboardRankMap();
 
         $award->recipients()->syncWithoutDetaching([
             $data['user_id'] => ['event_id' => $data['event_id']]
         ]);
+
+        $afterRanks = $this->leaderboardRankMap();
+        $recipientId = (int) $data['user_id'];
+        $before = $beforeRanks[$recipientId] ?? null;
+        $after = $afterRanks[$recipientId] ?? null;
+
+        if ($before !== null && $after !== null && $before !== $after) {
+            $recipient = User::find($recipientId);
+            if ($recipient) {
+                $recipient->notify(new LeaderboardMovementNotification($before, $after));
+            }
+        }
 
         return response()->json(['message' => 'Award assigned']);
     }
@@ -112,5 +111,36 @@ class AwardController extends Controller
         }])->findOrFail($id);
 
         return response()->json($user->awards);
+    }
+
+    private function leaderboardBaseQuery()
+    {
+        return User::query()
+            ->select([
+                'users.id',
+                'users.username',
+                'users.name',
+                'users.profile_pic',
+                DB::raw('COUNT(DISTINCT award_user.id) as awards_count'),
+                DB::raw('COUNT(DISTINCT event_performer.event_id) as events_count'),
+            ])
+            ->leftJoin('award_user', 'award_user.user_id', '=', 'users.id')
+            ->leftJoin('event_performer', 'event_performer.user_id', '=', 'users.id')
+            ->whereIn('users.role', ['performer', 'organizer', 'user'])
+            ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic')
+            ->orderByDesc('awards_count')
+            ->orderByDesc('events_count')
+            ->orderBy('users.name');
+    }
+
+    private function leaderboardRankMap(): array
+    {
+        return $this->leaderboardBaseQuery()
+            ->pluck('users.id')
+            ->values()
+            ->mapWithKeys(function ($userId, $index) {
+                return [(int) $userId => $index + 1];
+            })
+            ->all();
     }
 }

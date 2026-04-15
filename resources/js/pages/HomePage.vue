@@ -6,19 +6,19 @@
 
     <div class="flex-1 flex gap-6 lg:p-6 overflow-hidden no-scrollbar">
       <div
-        class="flex-1 rounded-xl lg:p-4 overflow-y-auto lg:max-h-[90vh] max-h-full no-scrollbar snap-y snap-mandatory touch-pan-y overscroll-y-contain pb-28 lg:pb-0"
-        style="scroll-snap-type: y mandatory;"
+        class="flex-1 rounded-xl lg:p-4 overflow-y-auto lg:max-h-[90vh] max-h-full no-scrollbar touch-pan-y overscroll-y-contain pb-36 lg:pb-0"
       >
-        <div class="px-4 pt-4 pb-2 lg:hidden">
+        <div class="px-4 pt-4 pb-3 lg:hidden">
           <TopSearch />
         </div>
 
-        <div
-          v-for="item in feedItems"
-          :key="item.type + '-' + item.id"
-          class="mb-4 lg:mb-6 flex flex-col items-center justify-center gap-3 snap-start min-h-[calc(100svh-8rem)] lg:min-h-0"
-          style="scroll-snap-align: start; scroll-snap-stop: always;"
-        >
+        <div class="snap-y snap-mandatory lg:snap-none" style="scroll-snap-type: y mandatory;">
+          <div
+            v-for="item in feedItems"
+            :key="item.type + '-' + item.id"
+            class="mb-4 lg:mb-6 flex flex-col items-center justify-center gap-3 snap-start min-h-[calc(100svh-10rem)] lg:min-h-0"
+            style="scroll-snap-align: start; scroll-snap-stop: always;"
+          >
           <div
             v-if="item.type === 'video'"
             class="w-full max-w-md text-left rounded-2xl overflow-hidden bg-[#121216] group"
@@ -43,19 +43,19 @@
                 >
                   <img
                   :src="item.user?.profile_pic_url || '/images/default-avatar.png'"
-                  class="w-9 h-9 rounded-full border border-white/30 object-cover shadow"
+                  class="w-10 h-10 lg:w-9 lg:h-9 rounded-full border border-white/30 object-cover shadow"
                   :alt="item.user?.username || 'user'"
                   />
                 </button>
 
                 <button
                   type="button"
-                  class="inline-flex flex-col items-center text-white transition"
-                  :class="item.liked_by_me ? 'text-red-400' : 'text-white'"
+                  class="inline-flex flex-col items-center transition"
+                  :class="item.liked_by_me ? 'text-red-500' : 'text-white'"
                   @click="toggleLike(item)"
                   aria-label="Like"
                 >
-                  <svg viewBox="0 0 24 24" class="w-6 h-6" fill="currentColor" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="w-7 h-7 lg:w-6 lg:h-6" fill="currentColor" aria-hidden="true">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/>
                   </svg>
                   <span class="text-xs">{{ item.likes_count || 0 }}</span>
@@ -67,7 +67,7 @@
                   @click="openCommentsModal(item)"
                   aria-label="Comments"
                 >
-                  <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="w-7 h-7 lg:w-6 lg:h-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
                   </svg>
                   <span class="text-xs">{{ item.comments_count || 0 }}</span>
@@ -79,7 +79,7 @@
                   @click="shareVideo(item)"
                   aria-label="Share"
                 >
-                  <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" class="w-7 h-7 lg:w-6 lg:h-6" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
                     <path d="M16 6l-4-4-4 4"/>
                     <path d="M12 2v14"/>
@@ -104,7 +104,7 @@
               <button
                 type="button"
                 class="rounded-lg px-3 py-1.5 transition inline-flex items-center gap-1.5"
-                :class="item.liked_by_me ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-white/70 hover:bg-white/10'"
+                :class="item.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
                 @click="toggleLike(item)"
                 aria-label="Like"
               >
@@ -153,6 +153,7 @@
           <div v-if="item.type === 'video' && item.showComments" class="w-full max-w-md rounded-xl bg-[#121216] px-3 py-2 space-y-2">
             <!-- comments moved to modal -->
           </div>
+        </div>
         </div>
 
         <div v-if="!loading && !feedItems.length" class="text-center text-white/60 py-10">

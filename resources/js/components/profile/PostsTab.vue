@@ -31,7 +31,7 @@
         <button
           type="button"
           class="rounded-lg px-3 py-1.5 transition inline-flex items-center gap-1.5"
-          :class="post.liked_by_me ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-white/70 hover:bg-white/10'"
+          :class="post.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
           @click="toggleLike(post)"
           aria-label="Like"
         >

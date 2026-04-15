@@ -48,7 +48,7 @@
               <button
                 type="button"
                 class="rounded-md px-2 py-1 transition inline-flex items-center gap-1.5"
-                :class="video.liked_by_me ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-white/70 hover:bg-white/10'"
+                :class="video.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
                 @click="toggleLike(video)"
                 aria-label="Like"
               >
@@ -113,8 +113,8 @@
           </button>
           <button
             type="button"
-            class="inline-flex flex-col items-center text-white transition"
-            :class="selectedVideo.liked_by_me ? 'text-red-400' : 'text-white'"
+            class="inline-flex flex-col items-center transition"
+            :class="selectedVideo.liked_by_me ? 'text-red-500' : 'text-white'"
             @click="toggleLike(selectedVideo)"
             aria-label="Like"
           >
@@ -193,8 +193,8 @@
             </button>
             <button
               type="button"
-              class="inline-flex flex-col items-center text-white transition"
-              :class="video.liked_by_me ? 'text-red-400' : 'text-white'"
+              class="inline-flex flex-col items-center transition"
+              :class="video.liked_by_me ? 'text-red-500' : 'text-white'"
               @click="toggleLike(video)"
               aria-label="Like"
             >

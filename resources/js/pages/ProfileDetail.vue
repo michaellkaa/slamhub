@@ -5,16 +5,18 @@
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
 
-    <div class="flex-1 flex flex-col px-6 py-10 lg:px-12 lg:py-10 overflow-auto no-scrollbar">
+    <div class="flex-1 flex flex-col px-6 py-10 lg:px-12 lg:py-10 overflow-auto no-scrollbar pb-36 lg:pb-10">
 
-      <div v-if="isLoading" class="flex items-center gap-8 animate-pulse">
-        <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
-        <div class="flex flex-col gap-3 flex-1">
-          <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
-          <div class="h-4 w-40 bg-[#1d1d21] rounded"></div>
+      <div v-if="isLoading" class="flex flex-col gap-4">
+        <div class="flex items-center gap-8 animate-pulse">
+          <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
+          <div class="flex flex-col gap-3 flex-1">
+            <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
+            <div class="h-4 w-40 bg-[#1d1d21] rounded"></div>
+            <div class="h-4 w-56 bg-[#1d1d21] rounded"></div>
+          </div>
         </div>
       </div>
-
       <div v-else-if="user" class="flex flex-col gap-4">
         <div class="flex items-center gap-8">
           <img
@@ -88,7 +90,7 @@
       </div>
 
       <div class="border-b border-white/10 pb-4 mt-8">
-        <div v-if="!user" class="flex gap-10">
+        <div v-if="isLoading" class="flex gap-10">
           <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
         </div>
 
@@ -112,14 +114,14 @@
         </div>
       </div>
 
-      <div class="mt-8" v-if="user">
+      <div class="mt-8" v-if="!isLoading && user">
         <component :is="activeComponent" :username="user.username" />
       </div>
 
     </div>
 
     <div
-      v-if="!user"
+      v-if="isLoading"
       class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4"
     >
       <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>

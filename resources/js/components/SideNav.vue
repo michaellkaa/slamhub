@@ -1,7 +1,7 @@
 <template>
   <div
-    class="bg-[#BF2679] z-10 flex justify-center items-center  w-screen h-18 lg:static lg:w-28 lg:flex-col lg:h-screen">
-    <div class="flex lg:flex-col flex-row justify-center items-center gap-10 lg:gap-16 p-5">
+    class="bg-[#BF2679] z-10 flex justify-center items-center w-screen h-20 pb-3 lg:pb-0 lg:static lg:w-28 lg:flex-col lg:h-screen">
+    <div class="flex lg:flex-col flex-row justify-center items-center gap-10 lg:gap-16 px-5 pt-4 pb-2 lg:p-5">
 
       <!-- HOME -->
       <svg 
