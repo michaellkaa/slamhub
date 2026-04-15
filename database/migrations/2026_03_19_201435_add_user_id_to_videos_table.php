@@ -8,19 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('videos', function (Blueprint $table) {
-            $table->foreignId('user_id')
-                  ->after('id')
-                  ->constrained()
-                  ->cascadeOnDelete();
-        });
+        if (!Schema::hasColumn('videos', 'user_id')) {
+            Schema::table('videos', function (Blueprint $table) {
+                $table->foreignId('user_id')
+                    ->after('id')
+                    ->constrained()
+                    ->cascadeOnDelete();
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('videos', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');
-        });
+        if (Schema::hasColumn('videos', 'user_id')) {
+            Schema::table('videos', function (Blueprint $table) {
+                $table->dropForeign(['user_id']);
+                $table->dropColumn('user_id');
+            });
+        }
     }
 };

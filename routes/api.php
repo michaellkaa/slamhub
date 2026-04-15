@@ -19,6 +19,8 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\EventVotingController;
 use App\Http\Controllers\EventVotingHostController;
+use App\Http\Controllers\PostInteractionController;
+use App\Http\Controllers\VideoInteractionController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -52,11 +54,15 @@ Route::middleware('auth:sanctum')->get(
 );
 
 Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/{post}/comments', [PostInteractionController::class, 'comments']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts', [PostController::class, 'store']);
     Route::get('/profile/posts', [PostController::class, 'profilePosts']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+    Route::post('/posts/{post}/like', [PostInteractionController::class, 'toggleLike']);
+    Route::post('/posts/{post}/comments', [PostInteractionController::class, 'storeComment']);
+    Route::delete('/posts/comments/{comment}', [PostInteractionController::class, 'destroyComment']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -83,12 +89,16 @@ Route::middleware('auth:sanctum')->post('/videos', [VideoController::class,'stor
 Route::get('/videos', [VideoController::class,'index']);
 Route::get('/users/{username}/videos', [VideoController::class,'userVideos']);
 Route::get('/videos/{slug}', [VideoController::class,'showBySlug']);
+Route::get('/videos/{video}/comments', [VideoInteractionController::class, 'comments']);
 
 //Route::get('/users/{username}', action: [ApiUserController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{username}/follow-status', [FollowController::class, 'followStatus']);
     Route::post('/users/{username}/follow', [FollowController::class, 'toggleFollow']);
+    Route::post('/videos/{video}/like', [VideoInteractionController::class, 'toggleLike']);
+    Route::post('/videos/{video}/comments', [VideoInteractionController::class, 'storeComment']);
+    Route::delete('/videos/comments/{comment}', [VideoInteractionController::class, 'destroyComment']);
 });
 
 Route::get('/login', function () {

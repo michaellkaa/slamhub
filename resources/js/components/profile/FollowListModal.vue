@@ -51,7 +51,20 @@
 
       <div class="max-h-[70vh] overflow-y-auto">
         <div v-if="loading" class="p-4 space-y-3">
-          <div v-for="n in 6" :key="n" class="h-12 rounded-xl bg-white/5 animate-pulse" />
+          <div
+            v-for="n in 6"
+            :key="n"
+            class="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-3 py-2 animate-pulse"
+          >
+            <div class="flex items-center gap-3 flex-1">
+              <div class="w-10 h-10 rounded-full bg-white/10"></div>
+              <div class="space-y-2 flex-1">
+                <div class="h-3 w-1/3 rounded bg-white/10"></div>
+                <div class="h-2.5 w-1/4 rounded bg-white/10"></div>
+              </div>
+            </div>
+            <div class="h-8 w-20 rounded-lg bg-white/10"></div>
+          </div>
         </div>
 
         <div v-else class="p-2">

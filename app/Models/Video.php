@@ -35,6 +35,16 @@ class Video extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function likes()
+    {
+        return $this->hasMany(VideoLike::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(VideoComment::class);
+    }
+
     public function getVideoUrlAttribute()
     {
         return asset('storage/' . $this->video_path);

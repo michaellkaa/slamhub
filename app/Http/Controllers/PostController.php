@@ -12,19 +12,39 @@ class PostController extends Controller
 {
     public function index()
     {
+        $likedByUserId = Auth::id() ?: 0;
+
         $posts = Post::with('user')
+            ->withCount([
+                'likes',
+                'comments',
+                'likes as liked_by_me' => fn ($q) => $q->where('user_id', $likedByUserId),
+            ])
             ->where('status', 1)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->each(function ($post) {
+                $post->liked_by_me = (bool) $post->liked_by_me;
+            });
 
         return response()->json($posts);
     }
 
     public function profilePosts()
     {
+        $likedByUserId = Auth::id() ?: 0;
+
         $posts = Post::where('user_id', Auth::id())
+            ->withCount([
+                'likes',
+                'comments',
+                'likes as liked_by_me' => fn ($q) => $q->where('user_id', $likedByUserId),
+            ])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->each(function ($post) {
+                $post->liked_by_me = (bool) $post->liked_by_me;
+            });
 
         return response()->json($posts);
     }
@@ -48,7 +68,18 @@ class PostController extends Controller
 
     public function show($id)
     {
-        $post = Post::with('user')->findOrFail($id);
+        $likedByUserId = Auth::id() ?: 0;
+
+        $post = Post::with('user')
+            ->withCount([
+                'likes',
+                'comments',
+                'likes as liked_by_me' => fn ($q) => $q->where('user_id', $likedByUserId),
+            ])
+            ->findOrFail($id);
+
+        $post->liked_by_me = (bool) $post->liked_by_me;
+
         return response()->json($post);
     }
 
@@ -68,10 +99,19 @@ class PostController extends Controller
     public function userPosts($username)
     {
         $user = User::where('username', $username)->firstOrFail();
+        $likedByUserId = Auth::id() ?: 0;
 
         $posts = $user->posts()
+            ->withCount([
+                'likes',
+                'comments',
+                'likes as liked_by_me' => fn ($q) => $q->where('user_id', $likedByUserId),
+            ])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->each(function ($post) {
+                $post->liked_by_me = (bool) $post->liked_by_me;
+            });
 
         return response()->json($posts);
     }

@@ -7,9 +7,14 @@
       </button>
 
       <div v-if="loading" class="animate-pulse space-y-4">
-        <div class="h-40 bg-[#2a2a2e] rounded"></div>
-        <div class="h-7 bg-[#2a2a2e] rounded w-3/4 mx-auto"></div>
+        <div class="w-full max-w-md h-80 bg-[#2a2a2e] rounded mx-auto"></div>
+        <div class="h-8 bg-[#2a2a2e] rounded w-3/4 mx-auto"></div>
         <div class="h-4 bg-[#2a2a2e] rounded w-1/2 mx-auto"></div>
+        <div class="h-12 bg-[#2a2a2e] rounded w-64 mx-auto"></div>
+        <div class="space-y-2 pt-2">
+          <div class="h-4 bg-[#2a2a2e] rounded w-full"></div>
+          <div class="h-4 bg-[#2a2a2e] rounded w-5/6"></div>
+        </div>
       </div>
 
       <div v-else class="text-center">

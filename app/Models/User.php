@@ -98,6 +98,16 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function postLikes()
+    {
+        return $this->hasMany(PostLike::class);
+    }
+
+    public function postComments()
+    {
+        return $this->hasMany(PostComment::class);
+    }
+
     public function following()
     {
         return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
@@ -111,6 +121,16 @@ class User extends Authenticatable
     public function videos()
     {
         return $this->hasMany(Video::class);
+    }
+
+    public function videoLikes()
+    {
+        return $this->hasMany(VideoLike::class);
+    }
+
+    public function videoComments()
+    {
+        return $this->hasMany(VideoComment::class);
     }
 
     

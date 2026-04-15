@@ -5,11 +5,11 @@
       <div
         v-for="n in 3"
         :key="n"
-        class="p-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-2"
+        class="p-4 my-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-2"
       >
-        <div class="h-4 w-40 bg-white/10 rounded"></div>
-        <div class="h-3 w-32 bg-white/10 rounded"></div>
-        <div class="h-3 w-24 bg-white/10 rounded"></div>
+        <div class="h-5 w-48 bg-white/10 rounded"></div>
+        <div class="h-4 w-36 bg-white/10 rounded"></div>
+        <div class="h-3 w-28 bg-white/10 rounded"></div>
       </div>
     </div>
 
