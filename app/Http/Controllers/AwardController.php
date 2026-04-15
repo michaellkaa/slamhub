@@ -31,7 +31,7 @@ class AwardController extends Controller
             ])
             ->leftJoin('award_user', 'award_user.user_id', '=', 'users.id')
             ->leftJoin('event_performer', 'event_performer.user_id', '=', 'users.id')
-            ->whereIn('users.role', ['performer', 'organizer', 'user'])
+            ->where('users.role', 'performer')
             ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_pic', 'users.points')
             ->orderByDesc('users.points')
             ->orderByDesc('awards_count')

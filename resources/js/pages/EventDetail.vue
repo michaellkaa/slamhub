@@ -105,7 +105,7 @@
               Host panel
             </button>
             <button
-              v-if="canManageVoting && event.event_mode === 'league'"
+              v-if="canManageLeagueSpider && event.event_mode === 'league'"
               @click="$router.push({ name: 'EventLeagueHost', params: { id: props.id } })"
               class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
             >
@@ -170,6 +170,13 @@ const canManageVoting = computed(() => {
   if (role === 'admin' || role === 'moderator') return true
   const userId = currentUser.value?.id || cachedUser.value?.id
   return role === 'organizer' && Number(userId) === Number(event.value?.user_id)
+})
+
+const canManageLeagueSpider = computed(() => {
+  const role = currentUser.value?.role || cachedUser.value?.role
+  if (role !== 'organizer') return false
+  const userId = currentUser.value?.id || cachedUser.value?.id
+  return Number(userId) === Number(event.value?.user_id)
 })
 
 const formatDate = (value) => {

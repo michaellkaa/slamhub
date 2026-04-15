@@ -10,7 +10,12 @@ class EventLeagueController extends Controller
     private function canManage(Request $request, Event $event): bool
     {
         $user = $request->user();
-        return $user && $user->canManageEventVoting($event);
+        if (!$user) {
+            return false;
+        }
+
+        // League spider is editable only by the organizer who owns the event.
+        return $user->role === 'organizer' && (int) $event->user_id === (int) $user->id;
     }
 
     private function defaultLeagueData(Event $event): array
