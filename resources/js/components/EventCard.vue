@@ -27,7 +27,7 @@
 <script setup>
 const props = defineProps({
   event: { type: Object, default: () => ({}) },
-  loading: { type: Boolean, default: true }
+  loading: { type: Boolean, default: false }
 })
 
 const formatDate = (value) => {
