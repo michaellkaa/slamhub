@@ -1,81 +1,87 @@
 <template>
-  <div class="rounded-2xl bg-[#141418] border border-[#1f1f22] p-4">
-    <div class="text-sm text-white/60 mb-4">League flow</div>
+  <div class="rounded-2xl bg-[#141418] border border-[#1f1f22] p-5 space-y-4">
 
-    <div v-if="rows.length" class="space-y-3">
+    <div class="text-sm text-white/60">
+      League flow
+    </div>
+
+    <div v-if="rows.length" class="space-y-4">
 
       <div
         v-for="row in rows"
         :key="row.event_id"
-        class="rounded-xl bg-[#0f0f12] border border-[#1f1f22] p-3"
+        class="border border-[#1f1f22] rounded-xl bg-[#0f0f12] overflow-hidden"
       >
 
-        <!-- HEADER -->
-        <div class="flex justify-between items-start">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-white/5">
+
           <div>
-            <div class="text-xs text-white/50">League event</div>
-            <div class="font-semibold text-white">
+            <div class="text-xs text-white/40">Event</div>
+            <div class="text-white font-medium">
               {{ row.event_title }}
             </div>
           </div>
 
           <div class="text-right">
-            <div class="text-xs text-white/50">Winner</div>
-            <div class="text-[#FFF7CC] font-bold">
+            <div class="text-xs text-white/40">Winner</div>
+            <div class="text-[#FFF7CC] font-semibold">
               {{ row.winner || '—' }}
             </div>
           </div>
+
         </div>
 
-        <!-- PROGRESS -->
-        <div class="mt-3 cursor-pointer" @click="toggle(row.event_id)">
-          <div class="h-2 bg-white/10 rounded overflow-hidden">
+        <div class="px-4 py-3 cursor-pointer" @click="toggle(row.event_id)">
+
+          <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
               class="h-full bg-pink-500 transition-all"
               :style="{ width: (row.progress || 0) + '%' }"
             />
           </div>
 
-          <div class="text-xs text-white/50 mt-1">
-            Progress: {{ row.progress || 0 }}% (click to view spider)
+          <div class="text-xs text-white/40 mt-2 flex justify-between">
+            <span>Progress</span>
+            <span>{{ row.progress || 0 }}%</span>
           </div>
+
         </div>
 
-        <!-- SPIDER -->
         <div
           v-if="openId === row.event_id"
-          class="mt-4 border-t border-white/10 pt-3 space-y-2"
+          class="border-t border-white/5 px-4 py-4 space-y-3"
         >
 
-          <div class="text-xs text-white/50 mb-2">
+          <div class="text-xs text-white/40">
             Spider breakdown
           </div>
 
-          <div
-            v-for="m in getSpider(row)"
-            :key="m.id"
-            class="bg-[#141418] border border-[#1f1f22] rounded px-3 py-2 text-sm"
-          >
+          <div class="grid gap-2">
 
-            <div class="flex justify-between text-white/40 items-center">
+            <div
+              v-for="m in getSpider(row)"
+              :key="m.id"
+              class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#141418] border border-[#1f1f22]"
+            >
 
-              <span :class="{ 'text-pink-400 font-bold': m.winner === m.left }">
-                {{ m.left }}
-              </span>
+              <div class="flex items-center gap-3">
 
-              <span class="text-white/40">vs</span>
+                <span :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-white/60'">
+                  {{ m.left }}
+                </span>
 
-              <span :class="{ 'text-pink-400 font-bold': m.winner === m.right }">
-                {{ m.right }}
-              </span>
+                <span class="text-white/30 text-xs">vs</span>
 
-            </div>
+                <span :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-white/60'">
+                  {{ m.right }}
+                </span>
 
-            <div class="text-xs text-white/50 mt-1">
-              Winner:
-              <span class="text-[#FFF7CC] font-bold">
+              </div>
+
+              <div class="text-xs text-[#FFF7CC] font-semibold">
                 {{ m.winner || '—' }}
-              </span>
+              </div>
+
             </div>
 
           </div>
@@ -86,9 +92,10 @@
 
     </div>
 
-    <div v-else class="text-sm text-white/40 text-center">
+    <div v-else class="text-sm text-white/40 text-center py-6">
       No league events yet
     </div>
+
   </div>
 </template>
 
