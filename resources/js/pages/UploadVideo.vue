@@ -13,7 +13,6 @@
                     Video <span class="text-pink-400">*</span>
                 </label>
 
-                <!-- DROP ZONE -->
                 <div class="border-2 border-dashed border-white/20 rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
                     @click="triggerFile" @dragover.prevent @drop.prevent="handleDrop">
 
@@ -39,12 +38,27 @@
                 <input v-model="title" required placeholder="Např. Slam poetry vystoupení"
                     class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
 
-                <label class="text-sm">
-                    Popis videa
-                </label>
+<label class="text-sm">
+  Popis videa (max {{ DESC_LIMIT }} znaků)
+</label>
 
-                <textarea v-model="description" rows="4" placeholder="Krátký popis videa"
-                    class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"></textarea>
+<textarea
+  v-model="description"
+  rows="4"
+  :maxlength="DESC_LIMIT"
+  placeholder="Krátký popis videa"
+  class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+></textarea>
+
+<div class="text-xs text-white/40 mt-1 flex justify-between">
+  <span>{{ description.length }}/{{ DESC_LIMIT }}</span>
+
+  <span v-if="description.length >= DESC_LIMIT" class="text-pink-400">
+    Limit dosažen
+  </span>
+</div>
+
+
 
                 <label class="text-sm text-white/70">
                     Viditelnost
@@ -98,10 +112,9 @@
 </template>
 
 <script setup>
-import { ref, onUnmounted } from "vue"
 import { useRouter } from "vue-router"
 import axios from "axios"
-
+import { ref, onUnmounted, computed } from "vue"
 const file = ref(null)
 const filePreview = ref(null)
 const title = ref("")
@@ -118,6 +131,15 @@ const baseUrl = window.location.origin
 const router = useRouter()
 
 const MAX_SIZE = 200 * 1024 * 1024 // 200MB
+
+const DESC_LIMIT = 150
+const expanded = ref(false)
+
+const shortDescription = computed(() => {
+    if (!description.value) return ''
+    if (description.value.length <= DESC_LIMIT) return description.value
+    return description.value.slice(0, DESC_LIMIT) + '...'
+})
 
 const triggerFile = () => {
     fileInput.value.value = null

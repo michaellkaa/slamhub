@@ -6,6 +6,7 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@tailwindcss/line-clamp": "^0.4.4",
         "autoprefixer": "^10.4.21",
         "axios": "^1.6.4",
         "baseline-browser-mapping": "^2.9.11",
