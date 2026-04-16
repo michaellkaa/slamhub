@@ -14,8 +14,7 @@ class EventLeagueController extends Controller
             return false;
         }
 
-        // League spider is editable only by the organizer who owns the event.
-        return $user->role === 'organizer' && (int) $event->user_id === (int) $user->id;
+        return $user->role === 'organizer' || $user->role === 'admin';
     }
 
     private function defaultLeagueData(Event $event): array
@@ -36,7 +35,6 @@ class EventLeagueController extends Controller
     public function show(Request $request, Event $event)
     {
         abort_if($event->event_mode !== 'league', 422, 'Event is not a league event.');
-        abort_unless($this->canManage($request, $event), 403, 'Forbidden');
 
         $event->loadMissing('performers');
 

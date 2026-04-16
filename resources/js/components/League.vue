@@ -130,7 +130,7 @@ const getSpider = (row) => {
 
   const getName = (id) => {
     const slot = slots.find(s => s.id === id)
-    return slot?.performer_name || slot?.value || `Slot ${id}`
+    return slot?.performer_name || slot?.value || `${id}`
   }
 
   const matches = [
