@@ -3,7 +3,7 @@
     <div class="w-full max-w-2xl">
       <div class="flex items-center justify-between mb-6">
         <button @click="$router.back()" class="text-pink-500 hover:underline text-lg">
-          ← Zpet
+          ←
         </button>
         <div class="text-sm text-white/60">
           Host panel
@@ -13,18 +13,16 @@
       <div class="p-5">
         <div class="flex items-start justify-between gap-4 mb-5">
           <div>
-            <h1 class="text-2xl font-extrabold tracking-wide">Hlasovani (host)</h1>
+            <h1 class="text-2xl font-extrabold tracking-wide">Hlasování (host)</h1>
           </div>
           <div class="text-right">
-            <div class="text-xs text-white/50">Kod</div>
+            <div class="text-xs text-white/50">Kód</div>
             <div class="font-mono text-lg font-bold">{{ session.code || '—' }}</div>
           </div>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-6">
-          <button @click="ensureSession" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10">
-            Nacist session
-          </button>
+
           <button @click="toggleVoting(true)" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200">
             Zapnout
           </button>
@@ -32,10 +30,10 @@
             Vypnout
           </button>
           <button @click="rotateCode" class="px-4 py-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-200">
-            Novy kod
+            Nový kod
           </button>
           <button @click="finalizeWinner" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200">
-            Uzavrit + pripsat bod vitezi
+            Připsat bod vítězi a vypnout
           </button>
         </div>
 
@@ -45,11 +43,11 @@
             <div class="font-bold">{{ session.enabled ? 'Aktivni' : 'Neaktivni' }}</div>
           </div>
           <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-            <div class="text-xs text-white/50 mb-1">Hlasu (live)</div>
+            <div class="text-xs text-white/50 mb-1">Hlasů (live)</div>
             <div class="font-extrabold text-xl">{{ liveTotals.votes }}</div>
           </div>
           <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-            <div class="text-xs text-white/50 mb-1">Soucet bodu (live)</div>
+            <div class="text-xs text-white/50 mb-1">Součet bodů (live)</div>
             <div class="font-extrabold text-xl">{{ liveTotals.score }}</div>
           </div>
         </div>
@@ -57,14 +55,14 @@
         <div class="flex gap-2 mb-4">
           <input
             v-model="newPerformerName"
-            placeholder="Jmeno performera"
+            placeholder="Jméno performera"
             class="flex-1 bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]"
           />
           <button
             @click="createRound"
             class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-semibold"
           >
-            Pridat kolo
+            Přidat kolo
           </button>
         </div>
 
@@ -99,7 +97,7 @@
         </div>
 
         <div v-else class="text-sm text-white/60">
-          Zatim zadna kola. Pridat prvni performer.
+          Zatím žádná kola. Přidat prvního performera.
         </div>
       </div>
     </div>

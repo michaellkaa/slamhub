@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-[#0f0f12] text-white px-4 py-6 flex justify-center">
     <div class="w-full max-w-md">
       <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline text-lg">
-        ← Zpet
+        ←
       </button>
 
       <div class="bg-[#121218] rounded-2xl p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">

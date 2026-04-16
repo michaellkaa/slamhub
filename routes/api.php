@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
-use App\Http\Controllers\ProfileController; 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\PerformerController;
 use App\Http\Controllers\PostController;
@@ -70,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/awards', [AwardController::class, 'store']);
-    
+
     Route::post('/awards/assign', [AwardController::class, 'assign']);
     Route::get('/users/{id}/awards', [AwardController::class, 'userAwards']);
 
@@ -144,7 +144,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/events/{event}/voting/rounds/{round}/visibility', [EventVotingHostController::class, 'updateRoundVisibility']);
     Route::post('/events/{event}/voting/finalize', [EventVotingHostController::class, 'finalizeEventVoting']);
     Route::get('/events/{event}/voting/results/live', [EventVotingHostController::class, 'liveResults']);
-    Route::get('/events/{event}/league', [EventLeagueController::class, 'show']);
-    Route::put('/events/{event}/league', [EventLeagueController::class, 'update']);
+
 });
 
+    Route::get('/events/{event}/league', [EventLeagueController::class, 'show']);
+    Route::put('/events/{event}/league', [EventLeagueController::class, 'update']);
