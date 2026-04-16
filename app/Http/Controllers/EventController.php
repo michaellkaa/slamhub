@@ -38,7 +38,11 @@ public function store(Request $request)
         'is_award_event' => 'nullable|boolean',
         'winner_award_id' => 'nullable|exists:awards,id',
     ]);
+$data['starts_at'] = \Carbon\Carbon::parse($data['starts_at'])->utc();
 
+if (!empty($data['ends_at'])) {
+    $data['ends_at'] = \Carbon\Carbon::parse($data['ends_at'])->utc();
+}
     $data['user_id'] = Auth::id();
     $data['event_mode'] = $data['event_mode'] ?? 'regular';
     $data['is_award_event'] = (bool) ($data['is_award_event'] ?? false);

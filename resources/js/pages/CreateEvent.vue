@@ -193,6 +193,9 @@ const selectedAwardsLabel = computed(() => {
 const submitEvent = async () => {
   const formData = new FormData()
 
+  formData.append('starts_at', event.value.starts_at)
+  formData.append('ends_at', event.value.ends_at || '')
+
   for (const key in event.value) {
     if (key === 'performers') {
       event.value.performers.forEach(id =>
@@ -208,6 +211,9 @@ const submitEvent = async () => {
         event.value.is_award_event ? 1 : 0
       )
 
+    } else if (key === 'starts_at' || key === 'ends_at') {
+      continue
+
     } else {
       formData.append(key, event.value[key] ?? '')
     }
@@ -220,12 +226,10 @@ const submitEvent = async () => {
   try {
     const userRes = await axios.get('/api/me')
     formData.append('user_id', userRes.data.id)
-  } catch {
-    console.warn('User není přihlášený, user_id nebude odesláno.')
-  }
+  } catch {}
 
   try {
-    const res = await axios.post('/api/events', formData, {
+    await axios.post('/api/events', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
 
