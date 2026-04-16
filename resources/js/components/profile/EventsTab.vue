@@ -30,7 +30,7 @@
               {{ event.title || 'Bez nazvu' }}
             </div>
             <div class="mt-1 text-sm text-white/60 truncate">
-              {{ event.location || 'Misto neni uvedeno' }}
+              {{ event.location || 'Místo není uvedeno' }}
             </div>
           </div>
 
@@ -38,7 +38,7 @@
             class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
             :class="isUpcoming(event.starts_at) ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-white/70'"
           >
-            {{ isUpcoming(event.starts_at) ? 'Nadchazejici' : 'Probehlo' }}
+            {{ isUpcoming(event.starts_at) ? 'Nadcházející' : 'Proběhlo' }}
           </span>
         </div>
 
@@ -53,7 +53,7 @@
           class="text-[11px] text-white/30 hover:text-white/50 transition"
           @click="showPastEvents = !showPastEvents"
         >
-          {{ showPastEvents ? 'Skryt probehle akce' : `Zobrazit probehle akce (${pastEvents.length})` }}
+          {{ showPastEvents ? 'Skrýt proběhlé akce' : `Zobrazit proběhle akce (${pastEvents.length})` }}
         </button>
       </div>
 

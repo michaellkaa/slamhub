@@ -1,15 +1,15 @@
 <template>
   <div
     class="bg-[#BF2679] z-10 flex justify-center items-center w-screen h-20 pb-3 lg:pb-0 lg:static lg:w-28 lg:flex-col lg:h-screen">
-    <div class="flex lg:flex-col flex-row justify-center items-center gap-10 lg:gap-16 px-5 pt-4 pb-2 lg:p-5">
+    <div class="flex lg:flex-col flex-row justify-center items-center gap-10 lg:gap-16 px-5 pt-4 pb-4 lg:p-5">
 
       <!-- HOME -->
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         fill="none"
-        stroke-width="2" 
-        stroke-linecap="round" 
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
         class="feather feather-home cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/')"
@@ -20,12 +20,12 @@
       </svg>
 
       <!-- EVENT -->
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         fill="none"
-        stroke-width="2" 
-        stroke-linecap="round" 
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
         class="feather feather-calendar cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/events')"
@@ -38,12 +38,12 @@
       </svg>
 
       <!-- AWARD -->
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         fill="none"
-        stroke-width="2" 
-        stroke-linecap="round" 
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
         class="feather feather-award cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/awards')"
@@ -54,12 +54,12 @@
       </svg>
 
       <!-- SEND -->
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         fill="none"
-        stroke-width="2" 
-        stroke-linecap="round" 
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
         class="feather feather-send cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/messages')"
@@ -70,12 +70,12 @@
       </svg>
 
       <!-- USER -->
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
         fill="none"
-        stroke-width="2" 
-        stroke-linecap="round" 
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
         class="feather feather-user cursor-pointer w-8 h-8 lg:w-7 lg:h-7"
         :class="isActive('/profile')"
@@ -102,7 +102,7 @@ const goTo = (path) => {
 
 // barví ikonky podle aktuální URL
 const isActive = (path) => {
-  return route.path === path 
+  return route.path === path
     ? 'stroke-[#E1FF00]'  // active
     : 'stroke-[#FFF7CC]'  // neactive
 }

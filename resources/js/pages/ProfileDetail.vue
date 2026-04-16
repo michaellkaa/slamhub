@@ -120,13 +120,7 @@
 
     </div>
 
-    <div
-      v-if="isLoading"
-      class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4"
-    >
-      <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
-      <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
-    </div>
+    
 
     <CreateButton
       v-if="isOwnProfile"
@@ -163,7 +157,7 @@ import CreateButton from '../components/CreateButton.vue'
 import FollowButton from '../components/FollowButton.vue'
 
 const activeNav = ref('profile')
-  
+
 const handleNavigate = (nav) => {
   activeNav.value = nav
 }

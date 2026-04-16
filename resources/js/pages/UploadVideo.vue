@@ -1,100 +1,81 @@
 <template>
-  <div class="w-screen h-screen flex items-center justify-center bg-[#0f0f12] text-white p-4">
-    
-    <div class="bg-[#141418] rounded-xl shadow-xl p-8 w-full max-w-lg">
+    <div class="w-screen h-screen flex items-center justify-center bg-[#0f0f12] text-white p-4">
 
-      <h1 class="text-2xl font-bold mb-6 text-center">
-        Nahrát video
-      </h1>
+        <div class="bg-[#141418] rounded-xl shadow-xl p-8 w-full max-w-lg">
 
-      <form @submit.prevent="upload" class="flex flex-col gap-4">
+            <h1 class="text-2xl font-bold mb-6 text-center">
+                Nahrát video
+            </h1>
 
-        <label class="text-sm">
-          Video <span class="text-pink-400">*</span>
-        </label>
+            <form @submit.prevent="upload" class="flex flex-col gap-4">
 
-        <!-- DROP ZONE -->
-        <div
-          class="border-2 border-dashed border-white/20 rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
-          @click="triggerFile"
-          @dragover.prevent
-          @drop.prevent="handleDrop"
-        >
+                <label class="text-sm">
+                    Video <span class="text-pink-400">*</span>
+                </label>
 
-          <span v-if="!filePreview" class="text-white/60 text-sm">
-            Klikni nebo přetáhni video
-          </span>
+                <!-- DROP ZONE -->
+                <div class="border-2 border-dashed border-white/20 rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
+                    @click="triggerFile" @dragover.prevent @drop.prevent="handleDrop">
 
-          <video
-            v-if="filePreview"
-            :src="filePreview"
-            controls
-            class="absolute inset-0 w-full h-full object-contain"
-          ></video>
+                    <span v-if="!filePreview" class="text-white/60 text-sm">
+                        Klikni nebo přetáhni video
+                    </span>
 
-        </div>
+                    <video v-if="filePreview" :src="filePreview" controls
+                        class="absolute inset-0 w-full h-full object-contain"></video>
 
-        <div v-if="file" class="text-xs text-white/60 truncate">
-          {{ file.name }}
-        </div>
+                </div>
 
-        <input
-          type="file"
-          ref="fileInput"
-          class="hidden"
-          @change="handleFile"
-          accept="video/*"
-        />
+                <div v-if="file" class="text-xs text-white/60 truncate">
+                    {{ file.name }}
+                </div>
 
-        <label class="text-sm">
-          Název videa <span class="text-pink-400">*</span>
-        </label>
+                <input type="file" ref="fileInput" class="hidden" @change="handleFile" accept="video/*" />
 
-        <input
-          v-model="title"
-          required
-          placeholder="Např. Slam poetry vystoupení"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
+                <label class="text-sm">
+                    Název videa <span class="text-pink-400">*</span>
+                </label>
 
-        <label class="text-sm">
-          Popis videa
-        </label>
+                <input v-model="title" required placeholder="Např. Slam poetry vystoupení"
+                    class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
 
-        <textarea
-          v-model="description"
-          rows="4"
-          placeholder="Krátký popis videa"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        ></textarea>
+                <label class="text-sm">
+                    Popis videa
+                </label>
 
-        <label class="text-sm">
-          Viditelnost
-        </label>
+                <textarea v-model="description" rows="4" placeholder="Krátký popis videa"
+                    class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"></textarea>
 
-        <select
+                <label class="text-sm text-white/70">
+                    Viditelnost
+                </label>
+
+                <!--<select
           v-model="status"
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
         >
-          <option value="public">Public</option>
+          <option value="public">Toto video bude nastaveno jako veřejné</option>
           <option value="unlisted">Unlisted</option>
           <option value="private">Private</option>
-        </select>
+        </select>-->
+                <div class="flex flex-col">
+                    <span class="text-sm text-white">
+                        Veřejné
+                    </span>
+                    <span class="text-xs text-white/40">
+                        Video bude viditelné pro všechny uživatele
+                    </span>
+                </div>
+                <div v-if="uploading" class="text-sm text-center">
+                    {{ progress }} %
+                </div>
 
-        <!-- PROGRESS -->
-        <div v-if="uploading" class="text-sm text-center">
-          {{ progress }} %
-        </div>
+                <button type="submit" :disabled="!file || uploading"
+                    class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-2 disabled:opacity-50">
+                    {{ uploading ? 'Nahrávám...' : 'Nahrát video' }}
+                </button>
 
-        <button
-          type="submit"
-          :disabled="!file || uploading"
-          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-2 disabled:opacity-50"
-        >
-          {{ uploading ? 'Nahrávám...' : 'Nahrát video' }}
-        </button>
-
-        <div v-if="videoSlug" class="text-white/70 text-sm mt-2 text-center break-all">
+                <!--<div v-if="videoSlug" class="text-white/70 text-sm mt-2 text-center break-all">
           Sdílecí link:
           <a
             :href="baseUrl + '/videos/' + videoSlug"
@@ -103,124 +84,127 @@
           >
             {{ baseUrl + '/videos/' + videoSlug }}
           </a>
-        </div>
+        </div>-->
 
-        <div v-if="error" class="text-red-500 text-sm text-center">
-          {{ error }}
-        </div>
+                <div v-if="error" class="text-red-500 text-sm text-center">
+                    {{ error }}
+                </div>
 
-      </form>
+            </form>
+
+        </div>
 
     </div>
-
-  </div>
 </template>
 
 <script setup>
 import { ref, onUnmounted } from "vue"
+import { useRouter } from "vue-router"
 import axios from "axios"
 
 const file = ref(null)
 const filePreview = ref(null)
 const title = ref("")
 const description = ref("")
-const status = ref("public")
+
 const uploading = ref(false)
 const progress = ref(0)
 const error = ref(null)
 const videoSlug = ref(null)
 const fileInput = ref(null)
+
 const baseUrl = window.location.origin
+
+const router = useRouter()
 
 const MAX_SIZE = 200 * 1024 * 1024 // 200MB
 
 const triggerFile = () => {
-  fileInput.value.value = null
-  fileInput.value.click()
+    fileInput.value.value = null
+    fileInput.value.click()
 }
 
 const setFile = (newFile) => {
-  if (!newFile) return
+    if (!newFile) return
 
-  // validace
-  if (!newFile.type.startsWith("video/")) {
-    error.value = "Soubor není video"
-    return
-  }
+    if (!newFile.type.startsWith("video/")) {
+        error.value = "Soubor není video"
+        return
+    }
 
-  if (newFile.size > MAX_SIZE) {
-    error.value = "Video je příliš velké (max 200 MB)"
-    return
-  }
+    if (newFile.size > MAX_SIZE) {
+        error.value = "Video je příliš velké (max 200 MB)"
+        return
+    }
 
-  error.value = null
+    error.value = null
 
-  // cleanup starého preview
-  if (filePreview.value) {
-    URL.revokeObjectURL(filePreview.value)
-  }
+    if (filePreview.value) {
+        URL.revokeObjectURL(filePreview.value)
+    }
 
-  file.value = newFile
-  filePreview.value = URL.createObjectURL(newFile)
+    file.value = newFile
+    filePreview.value = URL.createObjectURL(newFile)
 }
 
 const handleFile = (e) => {
-  const newFile = e.target.files[0]
-  setFile(newFile)
+    const newFile = e.target.files[0]
+    setFile(newFile)
 }
 
 const handleDrop = (e) => {
-  const droppedFile = e.dataTransfer.files[0]
-  setFile(droppedFile)
+    const droppedFile = e.dataTransfer.files[0]
+    setFile(droppedFile)
 }
 
 const upload = async () => {
-  if (!file.value) return
+    if (!file.value) return
 
-  uploading.value = true
-  error.value = null
-  progress.value = 0
+    uploading.value = true
+    error.value = null
+    progress.value = 0
 
-  const formData = new FormData()
-  formData.append("video", file.value)
-  formData.append("title", title.value)
-  formData.append("description", description.value)
-  formData.append("status", status.value)
+    const formData = new FormData()
+    formData.append("video", file.value)
+    formData.append("title", title.value)
+    formData.append("description", description.value)
 
-  try {
-    const token = localStorage.getItem("token")
+    formData.append("status", "public")
 
-    const res = await axios.post("/api/videos", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      onUploadProgress: (e) => {
-        if (e.total) {
-          progress.value = Math.round((e.loaded * 100) / e.total)
-        }
-      }
-    })
+    try {
+        const token = localStorage.getItem("token")
 
-    videoSlug.value = res.data.slug
+        const res = await axios.post("/api/videos", formData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            onUploadProgress: (e) => {
+                if (e.total) {
+                    progress.value = Math.round((e.loaded * 100) / e.total)
+                }
+            }
+        })
 
-    // reset
-    file.value = null
-    filePreview.value = null
-    title.value = ""
-    description.value = ""
-    status.value = "public"
+        videoSlug.value = res.data.slug
 
-  } catch (e) {
-    console.error(e)
-    error.value = e.response?.data?.message || "Chyba při nahrávání"
-  } finally {
-    uploading.value = false
-  }
+        file.value = null
+        filePreview.value = null
+        title.value = ""
+        description.value = ""
+        setTimeout(() => {
+            router.push("/")
+        }, 500)
+    } catch (e) {
+        console.error(e)
+        error.value = e.response?.data?.message || "Chyba při nahrávání"
+    } finally {
+        uploading.value = false
+    }
 }
 
 onUnmounted(() => {
-  if (filePreview.value) {
-    URL.revokeObjectURL(filePreview.value)
-  }
+    if (filePreview.value) {
+        URL.revokeObjectURL(filePreview.value)
+    }
 })
 </script>

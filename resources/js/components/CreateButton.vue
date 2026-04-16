@@ -93,7 +93,6 @@ const triggerVideoUpload = () => {
         }
       })
 
-      alert(`Video nahráno! Link: ${res.data.shareable_link}`)
     } catch (err) {
       console.error(err)
       alert('Nahrání videa selhalo')

@@ -1,95 +1,101 @@
 <template>
-  <div class="w-screen h-screen flex items-center justify-center bg-[#0f0f12] text-white p-4">
-    <div class="bg-[#141418] rounded-xl shadow-xl p-8 w-full max-w-lg">
-      <h1 class="text-2xl font-bold mb-6 text-center">Přidat Event</h1>
-      
-      <form @submit.prevent="submitEvent" class="flex flex-col gap-4">
-        <label class="text-sm">Název eventu <span class="text-pink-400">*</span></label>
-        <input
-          v-model="event.title"
-          required
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
+  <div class="w-screen min-h-screen flex items-center justify-center bg-[#0f0f12] text-white p-6">
 
-        <label class="text-sm">Datum začátku <span class="text-pink-400">*</span></label>
-        <input
-          type="datetime-local"
-          v-model="event.starts_at"
-          required
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
+    <div class="bg-[#141418] rounded-2xl shadow-2xl p-8 w-full max-w-2xl space-y-8">
 
-        <label class="text-sm">Místo <span class="text-pink-400">*</span></label>
-        <input
-          v-model="event.location"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
+      <div class="text-center">
+        <h1 class="text-3xl font-bold">Přidat Event</h1>
+        <p class="text-white/40 text-sm mt-1">Vytvoř nový event a nastav jeho detaily</p>
+      </div>
 
-        <label class="text-sm">Popis</label>
-        <textarea
-          v-model="event.description"
-          rows="2"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        ></textarea>
+      <form @submit.prevent="submitEvent" class="space-y-8">
 
-        <label class="text-sm">Odkaz na lístky</label>
-        <input
-          v-model="event.ticket_url"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        />
+        <div class="space-y-4">
 
-        <label class="text-sm">Obrázek eventu</label>
-        <input type="file" @change="uploadCover" class="p-3 rounded bg-[#1d1d21]" />
+          <input
+            v-model="event.title"
+            required
+            placeholder="Název eventu"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          />
 
-        <label class="text-sm">Typ eventu</label>
-        <select v-model="event.event_mode" class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none">
-          <option value="regular">Regular</option>
-          <option value="league">League</option>
-        </select>
+          <input
+            type="datetime-local"
+            v-model="event.starts_at"
+            required
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          />
 
-        <label class="text-sm flex items-center gap-2">
-          <input type="checkbox" v-model="event.is_award_event" />
-          Award event (vitez dostane oceneni)
-        </label>
+          <input
+            v-model="event.location"
+            placeholder="Místo konání"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          />
 
-        <select
-          v-if="event.is_award_event"
-          v-model="event.winner_award_id"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-        >
-          <option :value="null">Vyber oceneni pro viteze</option>
-          <option v-for="award in awards" :key="award.id" :value="award.id">{{ award.title }}</option>
-        </select>
+          <textarea
+            v-model="event.description"
+            rows="3"
+            placeholder="Popis eventu"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          />
+        </div>
 
-        <button
-          type="button"
-          @click="showModal = true"
-          class="p-3 rounded bg-[#1d1d21] text-left hover:ring-2 hover:ring-pink-500"
-        >
-          Vybrat performery
-          <span v-if="selectedPerformersLabel" class="text-white/60 text-sm">
-            – {{ selectedPerformersLabel }}
-          </span>
-        </button>
+        <div class="space-y-1">
 
-        <button
-        type="button"
-        @click="showAwardModal = true"
-        class="p-3 rounded bg-[#1d1d21] text-left hover:ring-2 hover:ring-pink-500"
-        >
-        Přidat ocenění
-        <span v-if="selectedAwardsLabel" class="text-white/60 text-sm">
-            – {{ selectedAwardsLabel }}
-        </span>
-        </button>
+          <input
+            type="file"
+            @change="uploadCover"
+            class="w-full p-3 rounded-lg bg-[#1d1d21]"
+          />
+        </div>
 
+        <div class="space-y-4">
+
+          <select
+            v-model="event.event_mode"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          >
+            <option value="regular">Regular</option>
+            <option value="league">League</option>
+          </select>
+
+
+
+
+        </div>
+
+        <div class="space-y-3">
+
+          <button
+            type="button"
+            @click="showModal = true"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition"
+          >
+            Vybrat performery
+            <div v-if="selectedPerformersLabel" class="text-xs text-white/40 mt-1">
+              {{ selectedPerformersLabel }}
+            </div>
+          </button>
+
+          <button
+            type="button"
+            @click="showAwardModal = true"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition"
+          >
+            Přidat ocenění
+            <div v-if="selectedAwardsLabel" class="text-xs text-white/40 mt-1">
+              {{ selectedAwardsLabel }}
+            </div>
+          </button>
+        </div>
 
         <button
           type="submit"
-          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md"
+          class="w-full bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded-xl shadow-lg"
         >
           Vytvořit event
         </button>
+
       </form>
 
       <PerfModal
@@ -106,21 +112,21 @@
         :awards="awards"
         :selected-awards="selectedAwards"
         @update:selectedAwards="val => selectedAwards = val"
-        />
+      />
 
     </div>
   </div>
 </template>
 
 <script setup>
-  //opravit enter
-  //pridat pocet znaku kdyz pisu popisek
-  //presmerovani
-  // Column 'location' cannot be null
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
+
 import PerfModal from '../components/PerfModal.vue'
 import AwardModal from '../components/AwardModal.vue'
+
+const router = useRouter()
 
 const event = ref({
   title: '',
@@ -130,8 +136,7 @@ const event = ref({
   location: '',
   ticket_url: '',
   cover_image: null,
-  performers: []
-  ,
+  performers: [],
   event_mode: 'regular',
   is_award_event: false,
   winner_award_id: null
@@ -140,6 +145,7 @@ const event = ref({
 const awards = ref([])
 const selectedAwards = ref([])
 const showAwardModal = ref(false)
+
 const performers = ref([])
 const guestPerformers = ref([])
 const showModal = ref(false)
@@ -173,6 +179,7 @@ const selectedPerformersLabel = computed(() => {
   const names = performers.value
     .filter(p => event.value.performers.includes(p.id))
     .map(p => p.name)
+
   return [...names, ...guestPerformers.value].join(', ')
 })
 
@@ -187,19 +194,24 @@ const submitEvent = async () => {
   const formData = new FormData()
 
   for (const key in event.value) {
-  if (key === 'performers') {
-    event.value.performers.forEach(id => formData.append('performers[]', id))
+    if (key === 'performers') {
+      event.value.performers.forEach(id =>
+        formData.append('performers[]', id)
+      )
 
-  } else if (key === 'cover_image' && event.value.cover_image) {
-    formData.append('cover_image', event.value.cover_image)
+    } else if (key === 'cover_image' && event.value.cover_image) {
+      formData.append('cover_image', event.value.cover_image)
 
-  } else if (key === 'is_award_event') {
-    formData.append('is_award_event', event.value.is_award_event ? 1 : 0)
+    } else if (key === 'is_award_event') {
+      formData.append(
+        'is_award_event',
+        event.value.is_award_event ? 1 : 0
+      )
 
-  } else {
-    formData.append(key, event.value[key] ?? '')
+    } else {
+      formData.append(key, event.value[key] ?? '')
+    }
   }
-}
 
   guestPerformers.value.forEach((guest, i) => {
     formData.append(`guest_performers[${i}]`, guest)
@@ -213,10 +225,10 @@ const submitEvent = async () => {
   }
 
   try {
-    await axios.post('/api/events', formData, {
+    const res = await axios.post('/api/events', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-    alert('Event vytvořen!')
+
     event.value = {
       title: '',
       description: '',
@@ -230,11 +242,14 @@ const submitEvent = async () => {
       is_award_event: false,
       winner_award_id: null
     }
+
     guestPerformers.value = []
+
+    router.push('/events')
+
   } catch (err) {
     console.error(err.response?.data)
     alert(JSON.stringify(err.response?.data))
   }
 }
-
 </script>

@@ -17,7 +17,7 @@
           placeholder="Např. Best Performer"
         />
 
-        <label class="text-sm">
+        <!--<label class="text-sm">
           Popis
         </label>
         <textarea
@@ -25,7 +25,7 @@
           rows="4"
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
           placeholder="Krátký popis ocenění"
-        ></textarea>
+        ></textarea>-->
 
         <label class="text-sm">
           Ikona / logo ocenění
