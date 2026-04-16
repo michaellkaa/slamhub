@@ -1,10 +1,6 @@
 <template>
   <div class="rounded-2xl bg-[#141418] border border-[#1f1f22] p-5 space-y-4">
 
-    <div class="text-sm text-white/60">
-      League flow
-    </div>
-
     <div v-if="rows.length" class="space-y-4">
 
       <div
@@ -52,10 +48,6 @@
           class="border-t border-white/5 px-4 py-4 space-y-3"
         >
 
-          <div class="text-xs text-white/40">
-            Spider breakdown
-          </div>
-
           <div class="grid gap-2">
 
             <div
@@ -100,12 +92,34 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import axios from 'axios'
 
 const rows = ref([])
 const openId = ref(null)
 
+const leagueCache = ref({})
+const loadingSpider = ref({})
+let interval = null
+
+
+const fetchData = async () => {
+  try {
+    const res = await axios.get('/api/awards/league-progress', {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
+      params: {
+        t: Date.now()
+      }
+    })
+
+    rows.value = Array.isArray(res.data) ? res.data : []
+  } catch (e) {
+    console.error('Failed to load league progress', e)
+  }
+}
 
 
 const getSpider = (row) => {
@@ -133,8 +147,6 @@ const getSpider = (row) => {
   }))
 }
 
-const leagueCache = ref({})
-const loadingSpider = ref({})
 
 const fetchLeagueDetail = async (eventId) => {
   if (leagueCache.value[eventId]) return leagueCache.value[eventId]
@@ -142,7 +154,10 @@ const fetchLeagueDetail = async (eventId) => {
   loadingSpider.value[eventId] = true
 
   try {
-    const res = await axios.get(`/api/events/${eventId}/league`)
+    const res = await axios.get(`/api/events/${eventId}/league`, {
+      params: { t: Date.now() }
+    })
+
     leagueCache.value[eventId] = res.data?.league_data || {}
     return leagueCache.value[eventId]
   } catch (e) {
@@ -152,6 +167,7 @@ const fetchLeagueDetail = async (eventId) => {
     loadingSpider.value[eventId] = false
   }
 }
+
 
 const toggle = async (id) => {
   if (openId.value === id) {
@@ -163,10 +179,14 @@ const toggle = async (id) => {
   await fetchLeagueDetail(id)
 }
 
-onMounted(async () => {
-  const res = await axios.get('/api/awards/league-progress')
-  console.log('API RESPONSE:', res.data)
 
-  rows.value = Array.isArray(res.data) ? res.data : []
+onMounted(async () => {
+  await fetchData()
+
+  interval = setInterval(fetchData, 5000)
+})
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval)
 })
 </script>
