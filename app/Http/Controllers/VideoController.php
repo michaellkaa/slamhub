@@ -26,14 +26,17 @@ class VideoController extends Controller
         $path = $request->file('video')->store('videos', 'public');
 
         $video = Video::create([
-            'user_id' => Auth::id(),
+            'user_id' => $request->user()->id,
             'video_path' => $path,
             'title' => $request->title,
             'description' => $request->description,
             'status' => $request->status ?? 'public',
         ]);
 
-        return response()->json($video, 201);
+        return response()->json([
+            'slug' => $video->slug,
+            'video_url' => $video->video_url,
+        ], 201);
     }
 
     public function index()

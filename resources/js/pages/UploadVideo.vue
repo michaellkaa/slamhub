@@ -13,10 +13,12 @@
           Video <span class="text-pink-400">*</span>
         </label>
 
-        <!-- VIDEO PREVIEW -->
+        <!-- DROP ZONE -->
         <div
           class="border-2 border-dashed border-white/20 rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
           @click="triggerFile"
+          @dragover.prevent
+          @drop.prevent="handleDrop"
         >
 
           <span v-if="!filePreview" class="text-white/60 text-sm">
@@ -79,10 +81,15 @@
           <option value="private">Private</option>
         </select>
 
+        <!-- PROGRESS -->
+        <div v-if="uploading" class="text-sm text-center">
+          {{ progress }} %
+        </div>
+
         <button
           type="submit"
           :disabled="!file || uploading"
-          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-4 disabled:opacity-50"
+          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-2 disabled:opacity-50"
         >
           {{ uploading ? 'Nahrávám...' : 'Nahrát video' }}
         </button>
@@ -110,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onUnmounted } from "vue"
 import axios from "axios"
 
 const file = ref(null)
@@ -119,19 +126,52 @@ const title = ref("")
 const description = ref("")
 const status = ref("public")
 const uploading = ref(false)
+const progress = ref(0)
 const error = ref(null)
 const videoSlug = ref(null)
 const fileInput = ref(null)
 const baseUrl = window.location.origin
 
-const triggerFile = () => fileInput.value.click()
+const MAX_SIZE = 200 * 1024 * 1024 // 200MB
+
+const triggerFile = () => {
+  fileInput.value.value = null
+  fileInput.value.click()
+}
+
+const setFile = (newFile) => {
+  if (!newFile) return
+
+  // validace
+  if (!newFile.type.startsWith("video/")) {
+    error.value = "Soubor není video"
+    return
+  }
+
+  if (newFile.size > MAX_SIZE) {
+    error.value = "Video je příliš velké (max 200 MB)"
+    return
+  }
+
+  error.value = null
+
+  // cleanup starého preview
+  if (filePreview.value) {
+    URL.revokeObjectURL(filePreview.value)
+  }
+
+  file.value = newFile
+  filePreview.value = URL.createObjectURL(newFile)
+}
 
 const handleFile = (e) => {
-  file.value = e.target.files[0]
+  const newFile = e.target.files[0]
+  setFile(newFile)
+}
 
-  if (file.value) {
-    filePreview.value = URL.createObjectURL(file.value)
-  }
+const handleDrop = (e) => {
+  const droppedFile = e.dataTransfer.files[0]
+  setFile(droppedFile)
 }
 
 const upload = async () => {
@@ -139,6 +179,7 @@ const upload = async () => {
 
   uploading.value = true
   error.value = null
+  progress.value = 0
 
   const formData = new FormData()
   formData.append("video", file.value)
@@ -153,11 +194,21 @@ const upload = async () => {
       headers: {
         Authorization: `Bearer ${token}`
       },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
+      onUploadProgress: (e) => {
+        if (e.total) {
+          progress.value = Math.round((e.loaded * 100) / e.total)
+        }
+      }
     })
 
     videoSlug.value = res.data.slug
+
+    // reset
+    file.value = null
+    filePreview.value = null
+    title.value = ""
+    description.value = ""
+    status.value = "public"
 
   } catch (e) {
     console.error(e)
@@ -166,4 +217,10 @@ const upload = async () => {
     uploading.value = false
   }
 }
+
+onUnmounted(() => {
+  if (filePreview.value) {
+    URL.revokeObjectURL(filePreview.value)
+  }
+})
 </script>
