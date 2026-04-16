@@ -9,8 +9,8 @@
         class="flex-1 rounded-xl lg:p-4 overflow-y-auto lg:max-h-[90vh] max-h-full no-scrollbar touch-pan-y overscroll-y-contain snap-y snap-mandatory pb-36 lg:pb-0"
         style="scroll-snap-type: y mandatory;"
       >
-        <div class="px-4 pt-4 pb-3 lg:hidden">
-          <TopSearch />
+        <div class="sticky top-0 z-20 bg-[#0f0f12] px-4 pt-4 pb-3 lg:hidden">
+            <TopSearch />
         </div>
 
         <div
@@ -407,7 +407,7 @@ const startReply = (comment) => {
 }
 
 const activeNav = ref('home')
-  
+
   const handleNavigate = (nav) => {
     activeNav.value = nav
   }

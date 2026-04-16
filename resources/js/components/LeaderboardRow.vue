@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="loading"
-    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4 
+    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
            bg-[#18181d]/60 border border-white/10
            animate-pulse"
   >
@@ -19,7 +19,7 @@
   <button
     v-else
     type="button"
-    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4 
+    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
            bg-[#18181d]/80 backdrop-blur-md
            border border-white/10
            hover:border-[#BF2679]/40 hover:bg-[#1c1c22]
@@ -49,7 +49,6 @@
       <h1 class="text-lg font-bold text-[#BF2679]">
         {{ row.points ?? 0 }}
       </h1>
-      <p class="text-[11px] text-white/45 -mt-1">pts</p>
     </div>
   </button>
 </template>
