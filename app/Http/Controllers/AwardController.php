@@ -54,7 +54,7 @@ class AwardController extends Controller
         return response()->json($performers);
     }
 
-    public function leagueProgress()
+   public function leagueProgress()
     {
         $events = Event::query()
             ->where('event_mode', 'league')
@@ -82,6 +82,7 @@ class AwardController extends Controller
 
         return response()->json($events->values());
     }
+
 
 
     public function store(Request $request)
