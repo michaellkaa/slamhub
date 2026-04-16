@@ -53,7 +53,7 @@
             <div
               v-for="m in getSpider(row)"
               :key="m.id"
-              class="flex items-center justify-between px-3 py-2 rounded-lg bg-[#141418] border border-[#1f1f22]"
+              class="hidden lg:flex items-center justify-between px-3 py-2 rounded-lg bg-[#141418] border border-[#1f1f22]"
             >
 
               <div class="flex items-center gap-3">
@@ -75,7 +75,41 @@
               </div>
 
             </div>
+            <div
+            v-for="m in getSpider(row)"
+            :key="m.id"
+            class="lg:hidden flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-3 py-3 rounded-lg bg-[#141418] border border-[#1f1f22]"
+            >
 
+            <!-- MATCH ROW -->
+            <div class="flex items-center justify-between md:justify-start gap-2 w-full md:w-auto">
+
+                <span
+                class="text-sm truncate max-w-[40%]"
+                :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-white/60'"
+                >
+                {{ m.left }}
+                </span>
+
+                <span class="text-white/30 text-xs shrink-0 px-2">
+                vs
+                </span>
+
+                <span
+                class="text-sm truncate max-w-[40%]"
+                :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-white/60'"
+                >
+                {{ m.right }}
+                </span>
+
+            </div>
+
+            <!-- WINNER -->
+            <div class="text-xs text-[#FFF7CC] font-semibold md:text-right shrink-0">
+                {{ m.winner || '—' }}
+            </div>
+
+            </div>
           </div>
 
         </div>
