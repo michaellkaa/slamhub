@@ -28,7 +28,7 @@ class EventLeagueController extends Controller
             'round_robin' => ['ab' => null, 'bc' => null, 'ca' => null],
             'second_round_winner' => null,
             'final_winner' => null,
-            'updated_at' => now()->toISOString(),
+            'updated_at' => now(),
         ];
     }
 
@@ -60,7 +60,7 @@ class EventLeagueController extends Controller
         ]);
 
         $leagueData = $data['league_data'];
-        $leagueData['updated_at'] = now()->toISOString();
+        $leagueData['updated_at'] = now();
         $event->league_data = $leagueData;
         $event->save();
 
