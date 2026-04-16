@@ -15,29 +15,35 @@ class VideoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'video' => 'required|file|mimes:mp4,mov,avi,webm|max:204800', 
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'status' => 'nullable|in:public,private,unlisted'
-        ]);
+{
+    $request->validate([
+        'video' => 'required|file|mimes:mp4,mov,avi,webm|max:204800',
+        'title' => 'nullable|string|max:255',
+        'description' => 'nullable|string|max:1000',
+        'status' => 'nullable|in:public,private,unlisted'
+    ]);
 
-        $path = $request->file('video')->store('videos', 'public');
-
-        $video = Video::create([
-            'user_id' => $request->user()->id,
-            'video_path' => $path,
-            'title' => $request->title,
-            'description' => $request->description,
-            'status' => $request->status ?? 'public',
-        ]);
-
-        return response()->json([
-            'slug' => $video->slug,
-            'video_url' => $video->video_url,
-        ], 201);
+    if (!$request->hasFile('video')) {
+        return response()->json(['message' => 'NO FILE RECEIVED'], 422);
     }
+
+    $file = $request->file('video');
+
+    $path = $file->store('videos', 'public');
+
+    $video = Video::create([
+        'user_id' => Auth::id(),
+        'video_path' => $path,
+        'title' => $request->title,
+        'description' => $request->description,
+        'status' => $request->status ?? 'public',
+    ]);
+
+    return response()->json([
+        'slug' => $video->slug,
+        'video_url' => asset('storage/' . $path),
+    ], 201);
+}
 
     public function index()
     {
