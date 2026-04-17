@@ -29,8 +29,8 @@
         </h1>
         <button
   v-if="canManageVoting"
-  @click="router.push({ name: "EditEvent", params: { id } })"
-  class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl"
+  @click="router.push({ name: 'EditEvent', params: { id } })"
+    class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl"
 >
   Edit event
 </button>
@@ -39,7 +39,7 @@
             {{ formatDate(event.starts_at) }}
           </p>
           <p>
-            Typ: {{ event.event_mode === 'league' ? 'Liga' : '' }}
+            Typ: {{ event.event_mode === 'league' ? 'Liga' : 'Exhibice' }}
           </p>
           <p v-if="event.location">
             {{ event.location }}

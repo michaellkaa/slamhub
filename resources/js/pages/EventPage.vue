@@ -9,7 +9,7 @@
         <div class="max-w-5xl w-full flex-1 min-h-0 flex flex-col">
 
           <section class="mt-4 mb-4 flex items-center justify-between gap-4">
-            <h1 class="text-white text-2xl font-bold">Udalosti</h1>
+            <h1 class="text-white text-2xl font-bold">Události</h1>
 
             <div class="relative">
               <button
@@ -58,7 +58,7 @@
                   v-if="!filteredEvents.length"
                   class="col-span-full rounded-xl border border-white/10 bg-[#17171b] p-4 text-sm text-white/50"
                 >
-                  Pro tento filtr nejsou zadne udalosti.
+                  Pro tento filtr nejsou žádné události.
                 </div>
 
               </template>
@@ -83,9 +83,9 @@ const loading = ref(true)
 const isFilterOpen = ref(false)
 const activeFilter = ref('all')
 const filterOptions = [
-  { value: 'all', label: 'Vsechny udalosti' },
-  { value: 'upcoming', label: 'Nadchazejici' },
-  { value: 'past', label: 'Probehle' },
+  { value: 'all', label: 'Všechny události' },
+  { value: 'upcoming', label: 'Nadcházející' },
+  { value: 'past', label: 'Minulé' },
 ]
 
 function handleNavigate(nav) {

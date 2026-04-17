@@ -190,4 +190,17 @@ class AwardController extends Controller
             })
             ->all();
     }
+
+    public function profileAwards()
+{
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json([]);
+    }
+
+    return $user->awards()
+        ->withPivot('event_id')
+        ->get();
+}
 }
