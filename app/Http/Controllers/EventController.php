@@ -9,6 +9,7 @@ use App\Notifications\EventPublishedNotification;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -142,7 +143,7 @@ public function update(Request $request, $id)
 
     $user = Auth::user();
 
-    if (!$user || ($event->user_id !== $user->id && $user->role !== 'admin')) {
+    if (!$user || ($user->role !== 'admin' && $user->id !== $event->user_id)) {
         return response()->json(['message' => 'Forbidden'], 403);
     }
     $data = $request->validate([
@@ -185,6 +186,36 @@ public function update(Request $request, $id)
 
     return response()->json($event);
 }
+public function giveAward(Event $event, Request $request)
+{
+    $event->load('performers');
 
+    if (!$event->is_award_event) {
+        return response()->json(['message' => 'Not an award event'], 422);
+    }
+
+    if (!$request->award_id) {
+        return response()->json(['message' => 'Missing award_id'], 422);
+    }
+
+    foreach ($event->performers as $user) {
+        DB::table('award_user')->updateOrInsert(
+            [
+                'user_id' => $user->id,
+                'award_id' => $request->award_id,
+                'event_id' => $event->id,
+            ],
+            [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+    }
+
+    return response()->json([
+        'message' => 'Awards given',
+        'count' => $event->performers->count() 
+    ]);
+}
 
 }

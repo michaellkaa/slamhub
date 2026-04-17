@@ -108,12 +108,11 @@
       />
 
       <AwardModal
-        v-model="showAwardModal"
-        :awards="awards"
-        :selected-awards="selectedAwards"
-        @update:selectedAwards="val => selectedAwards = val"
-      />
-
+  v-model="showAwardModal"
+  :awards="awards"
+  :selected-awards="selectedAwards"
+  @update:selectedAwards="handleAwardUpdate" 
+/>
     </div>
   </div>
 </template>
@@ -124,6 +123,8 @@ import axios from 'axios'
 
 import PerfModal from '../components/PerfModal.vue'
 import AwardModal from '../components/AwardModal.vue'
+
+axios.defaults.withCredentials = true
 
 const router = useRouter()
 const route = useRoute()
@@ -148,6 +149,7 @@ const event = ref({
 const performers = ref([])
 const awards = ref([])
 const guestPerformers = ref([])
+
 const selectedAwards = ref([])
 
 const showModal = ref(false)
@@ -168,6 +170,8 @@ watch(
 
 onMounted(async () => {
   try {
+    await axios.get('/sanctum/csrf-cookie')
+
     const [pRes, aRes] = await Promise.all([
       axios.get('/api/performers'),
       axios.get('/api/awards')
@@ -185,7 +189,8 @@ onMounted(async () => {
         ...data,
         starts_at: data.starts_at?.slice(0, 16) || '',
         ends_at: data.ends_at?.slice(0, 16) || '',
-        performers: data.performers?.map(p => p.id) || []
+        performers: data.performers?.map(p => p.id) || [],
+        winner_award_id: data.winner_award_id || null
       }
 
       guestPerformers.value = data.guest_performers || []
@@ -212,6 +217,13 @@ const updateGuests = (guests) => {
   guestPerformers.value = guests
 }
 
+const handleAwardUpdate = (val) => {
+  selectedAwards.value = val;
+  if (val.length > 0) {
+    event.value.is_award_event = true;
+  }
+};
+
 const selectedPerformersLabel = computed(() => {
   const names = performers.value
     .filter(p => event.value.performers.includes(p.id))
@@ -228,63 +240,61 @@ const selectedAwardsLabel = computed(() => {
 })
 
 const submitEvent = async () => {
-  if (isSubmitting.value) return
-  isSubmitting.value = true
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
 
   try {
-    const formData = new FormData()
+    const awardId = selectedAwards.value.length > 0 ? selectedAwards.value[0] : null;
+    event.value.winner_award_id = awardId;
+    
+    event.value.is_award_event = !!awardId;
 
-    formData.append('starts_at', event.value.starts_at)
-    formData.append('ends_at', event.value.ends_at || '')
+    const formData = new FormData();
+
+    formData.append('starts_at', event.value.starts_at);
+    formData.append('ends_at', event.value.ends_at || '');
+    formData.append('is_award_event', event.value.is_award_event ? '1' : '0');
+    formData.append('winner_award_id', event.value.winner_award_id ?? '');
 
     for (const key in event.value) {
-      if (key === 'performers') continue
-      if (key === 'cover_image' && !event.value.cover_image) continue
-      if (key === 'starts_at' || key === 'ends_at') continue
-      if (key === 'is_award_event') continue
-
-      formData.append(key, event.value[key] ?? '')
+      const skipKeys = [
+        'performers', 'cover_image', 'starts_at', 'ends_at', 
+        'is_award_event', 'winner_award_id'
+      ];
+      
+      if (!skipKeys.includes(key)) {
+        formData.append(key, event.value[key] ?? '');
+      }
     }
 
-    event.value.performers.forEach(id =>
-      formData.append('performers[]', id)
-    )
+    event.value.performers.forEach(id => formData.append('performers[]', id));
 
-    guestPerformers.value.forEach((g, i) =>
-      formData.append(`guest_performers[${i}]`, g)
-    )
+    guestPerformers.value.forEach((g, i) => formData.append(`guest_performers[${i}]`, g));
 
-    formData.append(
-      'is_award_event',
-      event.value.is_award_event ? 1 : 0
-    )
-
-    if (event.value.cover_image) {
-      formData.append('cover_image', event.value.cover_image)
+    if (event.value.cover_image instanceof File) {
+      formData.append('cover_image', event.value.cover_image);
     }
-
-    const url = isEdit.value
-      ? `/api/events/${eventId}`
-      : '/api/events'
 
     if (isEdit.value) {
-      formData.append('_method', 'PUT')
+      formData.append('_method', 'PUT');
     }
+
+    const url = isEdit.value ? `/api/events/${eventId}` : '/api/events';
 
     await axios.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    });
 
-    isDirty.value = false
-    router.push('/events')
+    isDirty.value = false;
+    router.push('/events');
 
   } catch (err) {
-    console.error(err.response?.data)
-    alert(JSON.stringify(err.response?.data))
+    console.error("Chyba při ukládání:", err.response?.data);
+    alert("Chyba: " + JSON.stringify(err.response?.data?.errors || err.response?.data?.message));
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
 onBeforeRouteLeave(() => {
   if (!isDirty.value) return true

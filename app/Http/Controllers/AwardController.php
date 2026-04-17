@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\LeaderboardMovementNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AwardController extends Controller
 {
@@ -151,14 +152,14 @@ class AwardController extends Controller
         return response()->json(['message' => 'Award assigned']);
     }
 
-    public function userAwards($id)
-    {
-        $user = User::with(['awards' => function ($q) {
-            $q->with('creator');
-        }])->findOrFail($id);
+    public function userAwards($username)
+{
+    $user = User::where('username', $username)->firstOrFail();
 
-        return response()->json($user->awards);
-    }
+    $awards = $user->awards()->get();
+
+    return response()->json($awards);
+}
 
     private function leaderboardBaseQuery()
     {
@@ -192,15 +193,15 @@ class AwardController extends Controller
     }
 
     public function profileAwards()
-{
-    $user = auth()->user();
-
-    if (!$user) {
-        return response()->json([]);
+    {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return response()->json([], 401);
+        }
+    
+        return $user->awards()->withPivot('event_id')->get();
     }
 
-    return $user->awards()
-        ->withPivot('event_id')
-        ->get();
-}
+    
 }

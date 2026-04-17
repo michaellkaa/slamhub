@@ -103,7 +103,7 @@
                             </div>
 
                             <!-- TITLE + DESCRIPTION INSIDE VIDEO -->
-                            <div class="absolute bottom-6 left-4 right-16 z-20 text-white">
+                            <div class="absolute bottom-32 left-4 right-16 z-20 text-white">
                                 <p class="font-semibold text-lg leading-tight line-clamp-1">
                                     {{ video.title || '' }}
                                 </p>

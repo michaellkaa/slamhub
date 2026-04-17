@@ -43,6 +43,8 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events', [EventController::class, 'store']);
+    Route::put('/events/{id}', [EventController::class, 'update']);
+
 });
 
 Route::get('/performers', [PerformerController::class, 'index']);
@@ -73,12 +75,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/awards/assign', [AwardController::class, 'assign']);
     Route::get('/users/{id}/awards', [AwardController::class, 'userAwards']);
+Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
 });
 Route::get('/awards', [AwardController::class, 'index']);
 Route::get('/awards/leaderboard', [AwardController::class, 'leaderboard']);
 Route::get('/awards/league-progress', [AwardController::class, 'leagueProgress']);
-Route::get('/profile/awards', [AwardController::class, 'profileAwards']);
 
 Route::get('/search', [SearchController::class, 'index']);
 
@@ -150,4 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/events/{event}/league', [EventLeagueController::class, 'show']);
     Route::put('/events/{event}/league', [EventLeagueController::class, 'update']);
 
-    Route::put('/events/{id}', [EventController::class, 'update']);
+
+    Route::post('/events/{event}/give-award', [EventController::class, 'giveAward']);
+
+    Route::get('/users/{username}/awards', [AwardController::class, 'userAwards']);

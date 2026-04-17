@@ -114,6 +114,13 @@
               Host panel
             </button>
             <button
+  v-if="canManageVoting"
+  @click="giveAward"
+  class="px-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600"
+>
+  Rozdat award
+</button>
+            <button
               v-if="canManageLeagueSpider && event.event_mode === 'league'"
               @click="$router.push({ name: 'EventLeagueHost', params: { id: props.id } })"
               class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
@@ -281,4 +288,21 @@ const ensureSession = async () => {
   await axios.post(`/api/events/${props.id}/voting/session`)
 }
 
+const giveAward = async () => {
+  try {
+    if (!event.value.winner_award_id) {
+      alert('Není vybraná žádná award')
+      return
+    }
+
+    await axios.post(`/api/events/${props.id}/give-award`, {
+      award_id: event.value.winner_award_id
+    })
+
+    alert('Award rozdána všem performerům!')
+  } catch (err) {
+    console.error(err.response?.data || err)
+    alert('Chyba při rozdávání award')
+  }
+}
 </script>
