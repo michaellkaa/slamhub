@@ -55,22 +55,31 @@ public function store(Request $request)
 
     $event = Event::create($data);
 
-    if (!empty($data['performers'])) {
-        $event->performers()->sync($data['performers']);
-    }
+if (!empty($data['performers'])) {
+    $event->performers()->sync($data['performers']);
+}
 
-    if (!empty($data['guest_performers'])) {
-        $event->guest_performers = $data['guest_performers'];
-        $event->save();
-    }
+if (!empty($data['guest_performers'])) {
+    $event->guest_performers = $data['guest_performers'];
+    $event->save();
+}
 
-    $organizer = Auth::user();
-    if ($organizer) {
-        $followers = $organizer->followers()->get();
-        foreach ($followers as $follower) {
-            $follower->notify(new EventPublishedNotification($event, $organizer));
-        }
+
+$organizer = Auth::user();
+
+if ($organizer) {
+    $followers = $organizer->followers()->get();
+
+    foreach ($followers as $follower) {
+        $follower->notify(
+            new EventPublishedNotification($event, $organizer)
+        );
     }
+}
+
+
+
+
 
 
     return response()->json($event, 201);

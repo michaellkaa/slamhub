@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Notifications\ChannelManager;
+use App\Notifications\Channels\PushChannel;
+use Illuminate\Support\Facades\Notification;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -17,8 +19,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+
     public function boot(): void
-    {
-        //
-    }
+{
+    Notification::extend('push', function ($app) {
+        return new PushChannel();
+    });
+}
 }
