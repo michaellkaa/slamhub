@@ -31,7 +31,6 @@ class PushChannel
     ]);
 
     foreach ($subscriptions as $sub) {
-        // Pro jistotu ověříme, že subskripce má potřebná data
         if (!$sub->endpoint || !$sub->p256dh || !$sub->auth) {
             continue;
         }

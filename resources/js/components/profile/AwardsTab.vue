@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-8 w-[70%] space-y-4">
+  <div class="mt-8 w-full lg:w-[70%] space-y-4">
     <div v-if="awards.length > 0">
       <div
         v-for="award in awards"
@@ -22,7 +22,7 @@
     </div>
 
     <div v-else class="text-white/20 text-center py-8">
-      žádná oocenění nenalezena...
+      žádná ocenění nenalezena...
     </div>
   </div>
 </template>
@@ -43,7 +43,7 @@ onMounted(async () => {
   try {
     const username = route.params.username; 
     
-    const res = await axios.get(`http://localhost:8000/api/users/${username}/awards`);
+    const res = await axios.get(`/api/users/${username}/awards`);
     awards.value = res.data;
   } catch (err) {
     console.error("Chyba při načítání ocenění cizího profilu:", err);
