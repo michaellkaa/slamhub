@@ -28,25 +28,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue' 
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
+axios.defaults.baseURL = window.location.origin
 axios.defaults.withCredentials = true
 
 const awards = ref([])
-
-import { useRoute } from 'vue-router'
-
 const route = useRoute()
 
-onMounted(async () => {
+const fetchAwards = async () => {
+  const username = route.params.username; 
+  if (!username) return;
+
   try {
-    const username = route.params.username; 
-    
     const res = await axios.get(`/api/users/${username}/awards`);
     awards.value = res.data;
   } catch (err) {
-    console.error("Chyba při načítání ocenění cizího profilu:", err);
+    console.error("Chyba při načítání ocenění:", err);
+    awards.value = []; 
   }
-});
+}
+
+watch(
+  () => route.params.username,
+  () => fetchAwards()
+)
+
+onMounted(fetchAwards);
 </script>
