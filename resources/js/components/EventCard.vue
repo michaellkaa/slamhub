@@ -44,7 +44,20 @@ const props = defineProps({
 
 const formatDate = (value) => {
   if (!value) return ''
-  return new Date(value).toLocaleString()
+  const d = new Date(value)
+
+  const date = d.toLocaleDateString([], {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
+
+  const time = d.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+
+  return `${date} ${time}`
 }
 </script>
 

@@ -27,13 +27,19 @@
         <h1 class="text-2xl font-bold mb-2">
           {{ event.title || 'Bez názvu' }}
         </h1>
-
+        <button
+  v-if="canManageVoting"
+  @click="router.push({ name: "EditEvent", params: { id } })"
+  class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl"
+>
+  Edit event
+</button>
         <div class="text-white/60 text-sm mb-4 space-y-1">
           <p v-if="event.starts_at">
             {{ formatDate(event.starts_at) }}
           </p>
           <p>
-            Typ: {{ event.event_mode === 'league' ? 'League' : 'Regular' }}
+            Typ: {{ event.event_mode === 'league' ? 'Liga' : '' }}
           </p>
           <p v-if="event.location">
             {{ event.location }}

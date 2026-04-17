@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\EventPublishedNotification;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class EventController extends Controller
 {
@@ -126,7 +127,55 @@ public function userEvents($username)
     return response()->json($events);
 }
 
+public function update(Request $request, $id)
+{
+    $event = Event::findOrFail($id);
 
+    $user = Auth::user();
+
+    if (!$user || ($event->user_id !== $user->id && $user->role !== 'admin')) {
+        return response()->json(['message' => 'Forbidden'], 403);
+    }
+    $data = $request->validate([
+        'title' => 'required|string|max:255',
+        'starts_at' => 'required|date',
+        'description' => 'nullable|string',
+        'ends_at' => 'nullable|date|after_or_equal:starts_at',
+        'location' => 'nullable|string|max:255',
+        'ticket_url' => 'nullable|url',
+        'cover_image' => 'nullable|image|max:2048',
+        'performers' => 'nullable|array',
+        'performers.*' => 'exists:users,id',
+        'guest_performers' => 'nullable|array',
+        'guest_performers.*' => 'string|max:255',
+        'event_mode' => 'nullable|in:regular,league',
+        'is_award_event' => 'nullable|boolean',
+        'winner_award_id' => 'nullable|exists:awards,id',
+    ]);
+
+    $data['starts_at'] = Carbon::parse($data['starts_at']);
+    if (!empty($data['ends_at'])) {
+        $data['ends_at'] = Carbon::parse($data['ends_at']);
+    }
+
+    if ($request->hasFile('cover_image')) {
+        $data['cover_image'] = $request->file('cover_image')
+            ->store('events', 'public');
+    }
+
+    $event->update($data);
+
+    if (!empty($data['performers'])) {
+        $event->performers()->sync($data['performers']);
+    }
+
+    if (isset($data['guest_performers'])) {
+        $event->guest_performers = $data['guest_performers'];
+        $event->save();
+    }
+
+    return response()->json($event);
+}
 
 
 }

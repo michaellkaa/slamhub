@@ -117,16 +117,19 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 import axios from 'axios'
 
 import PerfModal from '../components/PerfModal.vue'
 import AwardModal from '../components/AwardModal.vue'
 
 const router = useRouter()
+const route = useRoute()
+
+const eventId = route.params.id || null
+const isEdit = computed(() => !!eventId)
 
 const event = ref({
   title: '',
@@ -142,23 +145,57 @@ const event = ref({
   winner_award_id: null
 })
 
+const performers = ref([])
 const awards = ref([])
+const guestPerformers = ref([])
 const selectedAwards = ref([])
+
+const showModal = ref(false)
 const showAwardModal = ref(false)
 
-const performers = ref([])
-const guestPerformers = ref([])
-const showModal = ref(false)
+const isDirty = ref(false)
+const isSubmitting = ref(false)
+let initialized = false
+
+watch(
+  event,
+  () => {
+    if (!initialized) return
+    isDirty.value = true
+  },
+  { deep: true }
+)
 
 onMounted(async () => {
   try {
-    const resPerformers = await axios.get('/api/performers')
-    performers.value = resPerformers.data
+    const [pRes, aRes] = await Promise.all([
+      axios.get('/api/performers'),
+      axios.get('/api/awards')
+    ])
 
-    const resAwards = await axios.get('/api/awards')
-    awards.value = resAwards.data
+    performers.value = pRes.data
+    awards.value = aRes.data
+
+    if (isEdit.value) {
+      const res = await axios.get(`/api/events/${eventId}`)
+      const data = res.data
+
+      event.value = {
+        ...event.value,
+        ...data,
+        starts_at: data.starts_at?.slice(0, 16) || '',
+        ends_at: data.ends_at?.slice(0, 16) || '',
+        performers: data.performers?.map(p => p.id) || []
+      }
+
+      guestPerformers.value = data.guest_performers || []
+      selectedAwards.value = data.winner_award_id ? [data.winner_award_id] : []
+    }
+
+    initialized = true
+    isDirty.value = false
   } catch (err) {
-    console.error('Chyba při načítání performerů nebo awards:', err)
+    console.error(err)
   }
 })
 
@@ -191,69 +228,80 @@ const selectedAwardsLabel = computed(() => {
 })
 
 const submitEvent = async () => {
-  const formData = new FormData()
+  if (isSubmitting.value) return
+  isSubmitting.value = true
 
-  formData.append('starts_at', event.value.starts_at)
-  formData.append('ends_at', event.value.ends_at || '')
+  try {
+    const formData = new FormData()
 
-  for (const key in event.value) {
-    if (key === 'performers') {
-      event.value.performers.forEach(id =>
-        formData.append('performers[]', id)
-      )
+    formData.append('starts_at', event.value.starts_at)
+    formData.append('ends_at', event.value.ends_at || '')
 
-    } else if (key === 'cover_image' && event.value.cover_image) {
-      formData.append('cover_image', event.value.cover_image)
+    for (const key in event.value) {
+      if (key === 'performers') continue
+      if (key === 'cover_image' && !event.value.cover_image) continue
+      if (key === 'starts_at' || key === 'ends_at') continue
+      if (key === 'is_award_event') continue
 
-    } else if (key === 'is_award_event') {
-      formData.append(
-        'is_award_event',
-        event.value.is_award_event ? 1 : 0
-      )
-
-    } else if (key === 'starts_at' || key === 'ends_at') {
-      continue
-
-    } else {
       formData.append(key, event.value[key] ?? '')
     }
-  }
 
-  guestPerformers.value.forEach((guest, i) => {
-    formData.append(`guest_performers[${i}]`, guest)
-  })
+    event.value.performers.forEach(id =>
+      formData.append('performers[]', id)
+    )
 
-  try {
-    const userRes = await axios.get('/api/me')
-    formData.append('user_id', userRes.data.id)
-  } catch {}
+    guestPerformers.value.forEach((g, i) =>
+      formData.append(`guest_performers[${i}]`, g)
+    )
 
-  try {
-    await axios.post('/api/events', formData, {
+    formData.append(
+      'is_award_event',
+      event.value.is_award_event ? 1 : 0
+    )
+
+    if (event.value.cover_image) {
+      formData.append('cover_image', event.value.cover_image)
+    }
+
+    const url = isEdit.value
+      ? `/api/events/${eventId}`
+      : '/api/events'
+
+    if (isEdit.value) {
+      formData.append('_method', 'PUT')
+    }
+
+    await axios.post(url, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
 
-    event.value = {
-      title: '',
-      description: '',
-      starts_at: '',
-      ends_at: '',
-      location: '',
-      ticket_url: '',
-      cover_image: null,
-      performers: [],
-      event_mode: 'regular',
-      is_award_event: false,
-      winner_award_id: null
-    }
-
-    guestPerformers.value = []
-
+    isDirty.value = false
     router.push('/events')
 
   } catch (err) {
     console.error(err.response?.data)
     alert(JSON.stringify(err.response?.data))
+  } finally {
+    isSubmitting.value = false
   }
 }
+
+onBeforeRouteLeave(() => {
+  if (!isDirty.value) return true
+  return confirm('Máte neuložené změny. Opravdu odejít?')
+})
+
+const beforeUnloadHandler = (e) => {
+  if (!isDirty.value) return
+  e.preventDefault()
+  e.returnValue = ''
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', beforeUnloadHandler)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', beforeUnloadHandler)
+})
 </script>
