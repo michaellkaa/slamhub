@@ -12,27 +12,19 @@
             <h1 class="text-white text-2xl font-bold">Události</h1>
 
             <div class="relative">
-              <button
-                type="button"
+              <button type="button"
                 class="min-w-[180px] rounded-xl border border-white/10 bg-[#17171b] px-3 py-2 text-left text-sm text-white/90 hover:bg-[#1f1f24] transition"
-                @click="isFilterOpen = !isFilterOpen"
-              >
+                @click="isFilterOpen = !isFilterOpen">
                 {{ activeFilterLabel }}
                 <span class="float-right text-white/50">▾</span>
               </button>
 
-              <div
-                v-if="isFilterOpen"
-                class="absolute right-0 mt-2 w-full rounded-xl border border-white/10 bg-[#141418] p-1 shadow-xl z-30"
-              >
-                <button
-                  v-for="option in filterOptions"
-                  :key="option.value"
-                  type="button"
+              <div v-if="isFilterOpen"
+                class="absolute right-0 mt-2 w-full rounded-xl border border-white/10 bg-[#141418] p-1 shadow-xl z-30">
+                <button v-for="option in filterOptions" :key="option.value" type="button"
                   class="w-full rounded-lg px-3 py-2 text-left text-sm transition"
                   :class="activeFilter === option.value ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'"
-                  @click="selectFilter(option.value)"
-                >
+                  @click="selectFilter(option.value)">
                   {{ option.label }}
                 </button>
               </div>
@@ -46,18 +38,11 @@
               </template>
 
               <template v-else>
-                <EventCard
-                  v-for="event in filteredEvents"
-                  :key="event.id"
-                  :event="event"
-                  :loading="false"
-                  @click="$router.push({ name: 'EventDetail', params: { id: event.id }})"
-                />
+                <EventCard v-for="event in filteredEvents" :key="event.id" :event="event" :loading="false"
+                  @click="$router.push({ name: 'EventDetail', params: { id: event.id } })" />
 
-                <div
-                  v-if="!filteredEvents.length"
-                  class="col-span-full rounded-xl border border-white/10 bg-[#17171b] p-4 text-sm text-white/50"
-                >
+                <div v-if="!filteredEvents.length"
+                  class="col-span-full rounded-xl border border-white/10 bg-[#17171b] p-4 text-sm text-white/50">
                   Pro tento filtr nejsou žádné události.
                 </div>
 

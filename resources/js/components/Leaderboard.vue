@@ -2,7 +2,7 @@
   <div class="w-full flex justify-center mt-8 px-4 md:px-6 pb-24">
     <div class="w-full max-w-3xl">
       <div v-if="loading" class="flex flex-col gap-3 py-6">
-        <LeaderboardRow v-for="i in 6" :key="i" loading />      
+        <LeaderboardRow v-for="i in 6" :key="i" loading />
       </div>
 
       <div v-else-if="error" class="py-8 text-center text-red-200">
@@ -14,12 +14,7 @@
       </div>
 
       <div v-else class="flex flex-col gap-3">
-        <LeaderboardRow
-          v-for="row in rows"
-          :key="row.id"
-          :row="row"
-          @select="goToProfile"
-        />
+        <LeaderboardRow v-for="row in rows" :key="row.id" :row="row" @select="goToProfile" />
       </div>
 
     </div>

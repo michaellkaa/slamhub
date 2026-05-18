@@ -1,15 +1,8 @@
 <template>
   <div class="mt-8 w-full lg:w-[70%] space-y-4">
     <div v-if="awards.length > 0">
-      <div
-        v-for="award in awards"
-        :key="award.id"
-        class="flex items-center gap-4 p-4 bg-[#1d1d21] rounded-xl mb-4"
-      >
-        <img
-          :src="award.icon_url"
-          class="w-10 h-10 object-contain"
-        />
+      <div v-for="award in awards" :key="award.id" class="flex items-center gap-4 p-4 bg-[#1d1d21] rounded-xl mb-4">
+        <img :src="award.icon_url" class="w-10 h-10 object-contain" />
         <div>
           <div class="font-medium text-white">
             {{ award.title }}
@@ -28,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue' 
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 
@@ -39,7 +32,7 @@ const awards = ref([])
 const route = useRoute()
 
 const fetchAwards = async () => {
-  const username = route.params.username; 
+  const username = route.params.username;
   if (!username) return;
 
   try {
@@ -47,7 +40,7 @@ const fetchAwards = async () => {
     awards.value = res.data;
   } catch (err) {
     console.error("Chyba při načítání ocenění:", err);
-    awards.value = []; 
+    awards.value = [];
   }
 }
 

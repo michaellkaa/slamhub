@@ -1,54 +1,32 @@
 <template>
   <div class="flex flex-col gap-4 w-full">
     <label class="text-xs text-white/60">Jméno</label>
-    <input
-      type="text"
-      v-model="name"
-      placeholder="např. Adam Novák"
+    <input type="text" v-model="name" placeholder="např. Adam Novák"
       class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
-      required
-    />
+      required />
 
     <label class="mt-2 text-xs text-white/60">Uživatelské jméno</label>
-    <input
-      type="text"
-      v-model="username"
-      placeholder="např. adam_novak"
+    <input type="text" v-model="username" placeholder="např. adam_novak"
       class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
-      required
-    />
+      required />
 
     <label class="mt-2 text-xs text-white/60">Email</label>
-    <input
-      type="email"
-      v-model="email"
-      placeholder="např. novak@email.cz"
+    <input type="email" v-model="email" placeholder="např. novak@email.cz"
       class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
-      required
-    />
+      required />
 
     <label class="mt-2 text-xs text-white/60">Heslo</label>
-    <input
-      type="password"
-      v-model="password"
-      placeholder="••••••••"
+    <input type="password" v-model="password" placeholder="••••••••"
       class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
-      required
-    />
+      required />
 
     <label class="mt-2 text-xs text-white/60">Potvrzení hesla</label>
-    <input
-      type="password"
-      v-model="password_confirmation"
-      placeholder="••••••••"
+    <input type="password" v-model="password_confirmation" placeholder="••••••••"
       class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
-      required
-    />
+      required />
 
-    <button
-      @click="register"
-      class="mt-4 w-full rounded-2xl bg-pink-500 hover:bg-pink-400 transition text-white font-semibold py-3"
-    >
+    <button @click="register"
+      class="mt-4 w-full rounded-2xl bg-pink-500 hover:bg-pink-400 transition text-white font-semibold py-3">
       Registrovat se
     </button>
 

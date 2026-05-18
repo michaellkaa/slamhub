@@ -41,7 +41,8 @@
             <option v-if="secondRoundWinner" :value="secondRoundWinner">{{ secondRoundWinner }}</option>
           </select>
         </div>
-        <button @click="saveLeague" class="w-full rounded-xl bg-pink-500 hover:bg-pink-600 py-3 font-bold">Uložit</button>
+        <button @click="saveLeague"
+          class="w-full rounded-xl bg-pink-500 hover:bg-pink-600 py-3 font-bold">Uložit</button>
       </div>
     </div>
   </div>

@@ -1,11 +1,7 @@
 <template>
   <div class="mt-8 w-full lg:w-[50%] space-y-6">
     <div v-if="loading" class="space-y-4">
-      <div
-        v-for="n in 3"
-        :key="'post-skeleton-' + n"
-        class="p-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-3"
-      >
+      <div v-for="n in 3" :key="'post-skeleton-' + n" class="p-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-3">
         <div class="h-4 w-full bg-white/10 rounded"></div>
         <div class="h-4 w-5/6 bg-white/10 rounded"></div>
         <div class="h-3 w-24 bg-white/10 rounded"></div>
@@ -13,12 +9,7 @@
       </div>
     </div>
 
-    <div
-      v-else
-      v-for="post in posts"
-      :key="post.id"
-      class="p-4 bg-[#1d1d21] rounded-xl"
-    >
+    <div v-else v-for="post in posts" :key="post.id" class="p-4 bg-[#1d1d21] rounded-xl">
       <p class="text-white/90 leading-relaxed">
         {{ post.body }}
       </p>
@@ -28,26 +19,21 @@
       </div>
 
       <div class="mt-3 flex items-center gap-3 text-sm">
-        <button
-          type="button"
-          class="rounded-lg px-3 py-1.5 transition inline-flex items-center gap-1.5"
+        <button type="button" class="rounded-lg px-3 py-1.5 transition inline-flex items-center gap-1.5"
           :class="post.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
-          @click="toggleLike(post)"
-          aria-label="Like"
-        >
+          @click="toggleLike(post)" aria-label="Like">
           <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/>
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z" />
           </svg>
           <span>{{ post.likes_count || 0 }}</span>
         </button>
-        <button
-          type="button"
+        <button type="button"
           class="rounded-lg px-3 py-1.5 bg-white/5 text-white/70 hover:bg-white/10 transition inline-flex items-center gap-1.5"
-          @click="toggleComments(post)"
-          aria-label="Comments"
-        >
-          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+          @click="toggleComments(post)" aria-label="Comments">
+          <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
           </svg>
           <span>{{ post.comments_count || 0 }}</span>
         </button>
@@ -55,13 +41,11 @@
 
       <div v-if="post.showComments" class="mt-3 space-y-3">
         <form class="flex gap-2" @submit.prevent="submitComment(post)">
-          <input
-            v-model="post.commentDraft"
-            type="text"
+          <input v-model="post.commentDraft" type="text"
             class="flex-1 rounded-lg bg-[#121216] border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-pink-400"
-            placeholder="Write a comment..."
-          />
-          <button type="submit" class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-white hover:bg-pink-600">
+            placeholder="Write a comment..." />
+          <button type="submit"
+            class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-white hover:bg-pink-600">
             Send
           </button>
         </form>

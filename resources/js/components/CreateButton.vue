@@ -1,23 +1,18 @@
 <template>
-  <div v-if="user && (user.role === 'performer' || user.role === 'organizer')" class="fixed lg:bottom-8 lg:right-8 bottom-[6rem] right-[2rem] flex flex-col items-end z-50">
+  <div v-if="user && (user.role === 'performer' || user.role === 'organizer')"
+    class="fixed lg:bottom-8 lg:right-8 bottom-[6rem] right-[2rem] flex flex-col items-end z-50">
     <transition name="slide-fade">
       <div v-if="menuOpen" class="flex flex-col items-end mb-3 gap-3">
-        <button
-        v-for="item in filteredMenuItems"
-        :key="item.type"
-        @click="onCreate(item.type)"
-        class="w-40 text-white text-sm font-semibold border-b border-transparent hover:border-pink-500 hover:text-pink-400 transition-all text-right"
-        >
-        {{ item.label }}
+        <button v-for="item in filteredMenuItems" :key="item.type" @click="onCreate(item.type)"
+          class="w-40 text-white text-sm font-semibold border-b border-transparent hover:border-pink-500 hover:text-pink-400 transition-all text-right">
+          {{ item.label }}
         </button>
 
       </div>
     </transition>
 
-    <button
-      @click="toggleMenu"
-      class="w-20 h-20 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-pink-600 transition-transform transform hover:scale-110"
-    >
+    <button @click="toggleMenu"
+      class="w-20 h-20 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-pink-600 transition-transform transform hover:scale-110">
       <span class="text-3xl font-bold">+</span>
     </button>
   </div>
@@ -108,6 +103,7 @@ const triggerVideoUpload = () => {
 .slide-fade-leave-active {
   transition: all 0.2s ease;
 }
+
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   opacity: 0;

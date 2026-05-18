@@ -10,12 +10,9 @@
         <label class="text-sm">
           Název ocenění <span class="text-pink-400">*</span>
         </label>
-        <input
-          v-model="award.title"
-          required
+        <input v-model="award.title" required
           class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          placeholder="Např. Best Performer"
-        />
+          placeholder="Např. Best Performer" />
 
         <!--<label class="text-sm">
           Popis
@@ -30,16 +27,10 @@
         <label class="text-sm">
           Ikona / logo ocenění
         </label>
-        <input
-          type="file"
-          @change="uploadIcon"
-          class="p-3 rounded bg-[#1d1d21]"
-        />
+        <input type="file" @change="uploadIcon" class="p-3 rounded bg-[#1d1d21]" />
 
-        <button
-          type="submit"
-          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-4"
-        >
+        <button type="submit"
+          class="bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded shadow-md mt-4">
           Vytvořit ocenění
         </button>
 
@@ -85,7 +76,7 @@ const submitAward = async () => {
     })
 
     setTimeout(() => {
-    router.push('/profile')
+      router.push('/profile')
     }, 600)
 
     award.value = {

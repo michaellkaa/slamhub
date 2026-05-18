@@ -13,31 +13,20 @@
         </p>
 
         <div v-if="!joined" class="space-y-3">
-          <input
-            v-model="joinCode"
-            maxlength="6"
-            placeholder="Kod hlasovani"
-            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 uppercase outline-none shadow-[0_0_0_1px_rgba(236,72,153,0.35)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.8)]"
-          />
+          <input v-model="joinCode" maxlength="6" placeholder="Kod hlasovani"
+            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 uppercase outline-none shadow-[0_0_0_1px_rgba(236,72,153,0.35)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.8)]" />
 
           <div v-if="currentUser" class="flex items-center gap-2 text-sm text-white/80">
             <input id="anonVote" type="checkbox" v-model="joinAsAnonymous" />
             <label for="anonVote">Hlasovat anonymne</label>
           </div>
 
-          <input
-            v-if="!currentUser || joinAsAnonymous"
-            v-model="nickname"
-            maxlength="60"
+          <input v-if="!currentUser || joinAsAnonymous" v-model="nickname" maxlength="60"
             placeholder="Prezdivka (volitelne)"
-            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]"
-          />
+            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
 
-          <button
-            @click="joinVoting"
-            :disabled="!sessionStatus.enabled"
-            class="w-full py-3 rounded-xl font-extrabold bg-pink-500 hover:bg-pink-600 transition shadow-[0_0_24px_rgba(236,72,153,0.25)] disabled:opacity-50"
-          >
+          <button @click="joinVoting" :disabled="!sessionStatus.enabled"
+            class="w-full py-3 rounded-xl font-extrabold bg-pink-500 hover:bg-pink-600 transition shadow-[0_0_24px_rgba(236,72,153,0.25)] disabled:opacity-50">
             Vstoupit
           </button>
         </div>
@@ -51,13 +40,8 @@
           </div>
 
           <div class="grid grid-cols-5 gap-2">
-            <button
-              v-for="n in 10"
-              :key="n"
-              @click="castVote(n)"
-              :disabled="disableVote"
-              class="aspect-square rounded-2xl bg-[#0f0f12] font-extrabold text-2xl shadow-[0_0_0_2px_rgba(236,72,153,1)] hover:bg-pink-500/10 active:scale-[0.99] transition disabled:opacity-50"
-            >
+            <button v-for="n in 10" :key="n" @click="castVote(n)" :disabled="disableVote"
+              class="aspect-square rounded-2xl bg-[#0f0f12] font-extrabold text-2xl shadow-[0_0_0_2px_rgba(236,72,153,1)] hover:bg-pink-500/10 active:scale-[0.99] transition disabled:opacity-50">
               {{ n }}
             </button>
           </div>
@@ -143,7 +127,6 @@ const poll = async () => {
       startPolling()
       return
     }
-    // 503 from backend when DB is down
     if (status === 503) {
       cooldownUntil = Date.now() + 15000
       startPolling()

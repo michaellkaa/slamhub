@@ -23,16 +23,19 @@
 
         <div class="flex flex-wrap gap-2 mb-6">
 
-          <button @click="toggleVoting(true)" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200">
+          <button @click="toggleVoting(true)"
+            class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200">
             Zapnout
           </button>
-          <button @click="toggleVoting(false)" class="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200">
+          <button @click="toggleVoting(false)"
+            class="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200">
             Vypnout
           </button>
           <button @click="rotateCode" class="px-4 py-2 rounded-xl bg-pink-500/20 hover:bg-pink-500/30 text-pink-200">
             Nový kod
           </button>
-          <button @click="finalizeWinner" class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200">
+          <button @click="finalizeWinner"
+            class="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200">
             Připsat bod vítězi a vypnout
           </button>
         </div>
@@ -53,25 +56,16 @@
         </div>
 
         <div class="flex gap-2 mb-4">
-          <input
-            v-model="newPerformerName"
-            placeholder="Jméno performera"
-            class="flex-1 bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]"
-          />
-          <button
-            @click="createRound"
-            class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-semibold"
-          >
+          <input v-model="newPerformerName" placeholder="Jméno performera"
+            class="flex-1 bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
+          <button @click="createRound" class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-semibold">
             Přidat kolo
           </button>
         </div>
 
         <div v-if="rounds.length" class="space-y-2">
-          <div
-            v-for="r in rounds"
-            :key="r.id"
-            class="bg-[#0f0f12] rounded-2xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
-          >
+          <div v-for="r in rounds" :key="r.id"
+            class="bg-[#0f0f12] rounded-2xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
             <div class="min-w-0">
               <div class="font-semibold truncate">{{ r.performer_name }}</div>
               <div class="text-xs text-white/50">{{ r.state }}</div>
@@ -80,16 +74,15 @@
               </div>
             </div>
             <div class="flex gap-2 shrink-0">
-              <button
-                @click="toggleRoundVisibility(r)"
-                class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20"
-              >
+              <button @click="toggleRoundVisibility(r)" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20">
                 {{ r.include_in_ranking ? 'Skryt' : 'Zobrazit' }}
               </button>
-              <button @click="startRound(r.id)" class="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-200">
+              <button @click="startRound(r.id)"
+                class="px-3 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-200">
                 Start
               </button>
-              <button @click="closeRound(r.id)" class="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200">
+              <button @click="closeRound(r.id)"
+                class="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200">
                 Close
               </button>
             </div>

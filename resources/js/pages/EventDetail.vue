@@ -3,7 +3,7 @@
     <div class="w-full max-w-3xl">
 
       <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline text-lg">
-        ← 
+        ←
       </button>
 
       <div v-if="loading" class="animate-pulse space-y-4">
@@ -18,22 +18,16 @@
       </div>
 
       <div v-else class="text-center">
-        <img
-          v-if="event.cover_image"
-          :src="`/storage/${event.cover_image}`"
-          class="w-full max-w-md h-80 object-cover rounded mx-auto mb-6"
-        />
+        <img v-if="event.cover_image" :src="`/storage/${event.cover_image}`"
+          class="w-full max-w-md h-80 object-cover rounded mx-auto mb-6" />
 
         <h1 class="text-2xl font-bold mb-2">
           {{ event.title || 'Bez názvu' }}
         </h1>
-        <button
-  v-if="canManageVoting"
-  @click="router.push({ name: 'EditEvent', params: { id } })"
-    class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl"
->
-  Edit event
-</button>
+        <button v-if="canManageVoting" @click="router.push({ name: 'EditEvent', params: { id } })"
+          class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl">
+          Edit event
+        </button>
         <div class="text-white/60 text-sm mb-4 space-y-1">
           <p v-if="event.starts_at">
             {{ formatDate(event.starts_at) }}
@@ -47,14 +41,12 @@
         </div>
 
         <div class="mb-6">
-          <button
-          @click="sessionStatus.enabled && router.push({ name: 'EventVote', params: { id: props.id } })"            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          <button @click="sessionStatus.enabled && router.push({ name: 'EventVote', params: { id: props.id } })"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold transition disabled:opacity-50 disabled:cursor-not-allowed"
             :class="sessionStatus.enabled
               ? 'bg-pink-500 hover:bg-pink-600 shadow-[0_0_24px_rgba(236,72,153,0.25)]'
-              : 'bg-white/10'"
-            :disabled="!sessionStatus.enabled"
-          >
-          
+              : 'bg-white/10'" :disabled="!sessionStatus.enabled">
+
             Hlasovani
             <span v-if="!sessionStatus.enabled" class="text-white/60 text-sm font-semibold">(Neaktivni)</span>
           </button>
@@ -70,17 +62,13 @@
           </h2>
 
           <ul class="space-y-2">
-            <li
-            v-for="performer in event.performers"
-            :key="performer.id"
-            class="flex items-center gap-3 cursor-pointer"
-            @click="goToProfile(performer.username)"
-          >
-            <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
-            <span class="text-white/80">
-              {{ performer.name || performer.username }}
-            </span>
-          </li>
+            <li v-for="performer in event.performers" :key="performer.id" class="flex items-center gap-3 cursor-pointer"
+              @click="goToProfile(performer.username)">
+              <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
+              <span class="text-white/80">
+                {{ performer.name || performer.username }}
+              </span>
+            </li>
           </ul>
         </div>
 
@@ -97,34 +85,24 @@
                 {{ sessionStatus.enabled ? 'Aktivni' : 'Neaktivni' }}
               </p>
               <div class="mt-2">
-                <span
-                  class="inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded-full"
-                  :class="canManageVoting ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-white/5 text-white/50 ring-1 ring-white/10'"
-                >
+                <span class="inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded-full"
+                  :class="canManageVoting ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-white/5 text-white/50 ring-1 ring-white/10'">
                   Host: {{ canManageVoting ? 'On' : 'Off' }}
                 </span>
               </div>
             </div>
 
-            <button
-              v-if="canManageVoting"
-              @click="$router.push({ name: 'EventVoteHost', params: { id: props.id } })"
-              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
-            >
+            <button v-if="canManageVoting" @click="$router.push({ name: 'EventVoteHost', params: { id: props.id } })"
+              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10">
               Host panel
             </button>
-            <button
-  v-if="canManageVoting"
-  @click="giveAward"
-  class="px-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600"
->
-  Rozdat award
-</button>
-            <button
-              v-if="canManageLeagueSpider && event.event_mode === 'league'"
+            <button v-if="canManageVoting" @click="giveAward"
+              class="px-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600">
+              Rozdat award
+            </button>
+            <button v-if="canManageLeagueSpider && event.event_mode === 'league'"
               @click="$router.push({ name: 'EventLeagueHost', params: { id: props.id } })"
-              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10"
-            >
+              class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10">
               League spider
             </button>
           </div>
@@ -136,8 +114,6 @@
 
 
 <script setup>
-  //az event skonci tak organizator muze pridat vyherce pokud nebylo hlasovani pres mobil
-// link na performer profile!! ne na muj
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'

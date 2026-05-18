@@ -19,64 +19,40 @@
       </div>
       <div v-else-if="user" class="flex flex-col gap-4">
         <div class="flex items-center gap-8">
-          <img
-            :src="user.profile_pic_url"
+          <img :src="user.profile_pic_url"
             class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
-            @click="triggerUpload"
-            :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }"
-          />
+            @click="triggerUpload" :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }" />
 
-          <input
-            type="file"
-            ref="fileInput"
-            class="hidden"
-            accept="image/*"
-            @change="uploadPhoto"
-          />
+          <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="uploadPhoto" />
 
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-4">
               <div class="font-bold text-xl">{{ user.name }}</div>
 
-              <button
-                v-if="isOwnProfile"
-                @click="goToSettings"
-                class="p-2 rounded-md bg-[#1d1d21] hover:bg-[#2a2a30] transition"
-                title="Settings"
-                aria-label="Open settings"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                     class="w-4 h-4 text-white">
+              <button v-if="isOwnProfile" @click="goToSettings"
+                class="p-2 rounded-md bg-[#1d1d21] hover:bg-[#2a2a30] transition" title="Settings"
+                aria-label="Open settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white">
                   <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c0 .39.14.76.4 1.04.27.28.64.44 1.04.46H21a2 2 0 1 1 0 4h-.09c-.4.02-.77.18-1.04.46-.26.28-.4.65-.4 1.04z"></path>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c0 .39.14.76.4 1.04.27.28.64.44 1.04.46H21a2 2 0 1 1 0 4h-.09c-.4.02-.77.18-1.04.46-.26.28-.4.65-.4 1.04z">
+                  </path>
                 </svg>
               </button>
 
-              <FollowButton
-                v-if="loggedUser && !isOwnProfile"
-                :profileUser="user"
-                :authUser="loggedUser"
-                @follow-changed="handleFollow"
-              />
+              <FollowButton v-if="loggedUser && !isOwnProfile" :profileUser="user" :authUser="loggedUser"
+                @follow-changed="handleFollow" />
             </div>
 
             <div class="text-white/40 text-sm">@{{ user.username }}</div>
 
             <div class="flex gap-6 mt-2 text-white/70 text-sm">
-              <button
-                type="button"
-                class="hover:text-white transition text-left"
-                @click="openFollowModal('followers')"
-              >
+              <button type="button" class="hover:text-white transition text-left" @click="openFollowModal('followers')">
                 <span class="font-semibold text-white">{{ user.followers_count }}</span>
                 <span class="text-white/60"> sledujících</span>
               </button>
-              <button
-                type="button"
-                class="hover:text-white transition text-left"
-                @click="openFollowModal('following')"
-              >
+              <button type="button" class="hover:text-white transition text-left" @click="openFollowModal('following')">
                 <span class="font-semibold text-white">{{ user.following_count }}</span>
                 <span class="text-white/60"> sleduje</span>
               </button>
@@ -95,21 +71,11 @@
         </div>
 
         <div v-else class="flex gap-10">
-          <button
-            v-for="tab in tabs"
-            :key="tab.key"
-            @click="activeTab = tab.key"
-            class="flex flex-col items-center gap-2"
-          >
-            <img
-              :src="tab.icon"
-              class="w-6 h-6 transition"
-              :class="activeTab === tab.key ? 'opacity-100' : 'opacity-40'"
-            />
-            <div
-              v-if="activeTab === tab.key"
-              class="w-full h-[2px] bg-pink-500 rounded"
-            ></div>
+          <button v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key"
+            class="flex flex-col items-center gap-2">
+            <img :src="tab.icon" class="w-6 h-6 transition"
+              :class="activeTab === tab.key ? 'opacity-100' : 'opacity-40'" />
+            <div v-if="activeTab === tab.key" class="w-full h-[2px] bg-pink-500 rounded"></div>
           </button>
         </div>
       </div>
@@ -120,24 +86,13 @@
 
     </div>
 
-    
 
-    <CreateButton
-      v-if="isOwnProfile"
-      :user="user"
-      @create="handleCreate"
-    />
 
-    <FollowListModal
-      v-if="showFollowModal && user?.username"
-      :username="user.username"
-      :initial-tab="followModalTab"
-      :can-unfollow="isOwnProfile"
-      :auth-user="loggedUser"
-      @close="showFollowModal = false"
-      @open-profile="openProfileFromModal"
-      @following-changed="handleFollowingCountChanged"
-    />
+    <CreateButton v-if="isOwnProfile" :user="user" @create="handleCreate" />
+
+    <FollowListModal v-if="showFollowModal && user?.username" :username="user.username" :initial-tab="followModalTab"
+      :can-unfollow="isOwnProfile" :auth-user="loggedUser" @close="showFollowModal = false"
+      @open-profile="openProfileFromModal" @following-changed="handleFollowingCountChanged" />
 
   </div>
 </template>

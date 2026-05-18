@@ -149,8 +149,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+
     Route::get('/events/{event}/league', [EventLeagueController::class, 'show']);
     Route::put('/events/{event}/league', [EventLeagueController::class, 'update']);
+
+});
 
 
     Route::post('/events/{event}/give-award', [EventController::class, 'giveAward']);

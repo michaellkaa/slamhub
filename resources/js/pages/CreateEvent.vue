@@ -12,49 +12,28 @@
 
         <div class="space-y-4">
 
-          <input
-            v-model="event.title"
-            required
-            placeholder="Název eventu"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          />
+          <input v-model="event.title" required placeholder="Název eventu"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
 
-          <input
-            type="datetime-local"
-            v-model="event.starts_at"
-            required
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          />
+          <input type="datetime-local" v-model="event.starts_at" required
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
 
-          <input
-            v-model="event.location"
-            placeholder="Místo konání"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          />
+          <input v-model="event.location" placeholder="Místo konání"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
 
-          <textarea
-            v-model="event.description"
-            rows="3"
-            placeholder="Popis eventu"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          />
+          <textarea v-model="event.description" rows="3" placeholder="Popis eventu"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
         </div>
 
         <div class="space-y-1">
 
-          <input
-            type="file"
-            @change="uploadCover"
-            class="w-full p-3 rounded-lg bg-[#1d1d21]"
-          />
+          <input type="file" @change="uploadCover" class="w-full p-3 rounded-lg bg-[#1d1d21]" />
         </div>
 
         <div class="space-y-4">
 
-          <select
-            v-model="event.event_mode"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
-          >
+          <select v-model="event.event_mode"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none">
             <option value="regular">Regular</option>
             <option value="league">League</option>
           </select>
@@ -66,22 +45,16 @@
 
         <div class="space-y-3">
 
-          <button
-            type="button"
-            @click="showModal = true"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition"
-          >
+          <button type="button" @click="showModal = true"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition">
             Vybrat performery
             <div v-if="selectedPerformersLabel" class="text-xs text-white/40 mt-1">
               {{ selectedPerformersLabel }}
             </div>
           </button>
 
-          <button
-            type="button"
-            @click="showAwardModal = true"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition"
-          >
+          <button type="button" @click="showAwardModal = true"
+            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition">
             Přidat ocenění
             <div v-if="selectedAwardsLabel" class="text-xs text-white/40 mt-1">
               {{ selectedAwardsLabel }}
@@ -89,30 +62,18 @@
           </button>
         </div>
 
-        <button
-          type="submit"
-          class="w-full bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded-xl shadow-lg"
-        >
+        <button type="submit"
+          class="w-full bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded-xl shadow-lg">
           Vytvořit event
         </button>
 
       </form>
 
-      <PerfModal
-        v-model="showModal"
-        :performers="performers"
-        :selected-performers="event.performers"
-        :guest-performers="guestPerformers"
-        @update:performers="updatePerformers"
-        @update:guests="updateGuests"
-      />
+      <PerfModal v-model="showModal" :performers="performers" :selected-performers="event.performers"
+        :guest-performers="guestPerformers" @update:performers="updatePerformers" @update:guests="updateGuests" />
 
-      <AwardModal
-  v-model="showAwardModal"
-  :awards="awards"
-  :selected-awards="selectedAwards"
-  @update:selectedAwards="handleAwardUpdate" 
-/>
+      <AwardModal v-model="showAwardModal" :awards="awards" :selected-awards="selectedAwards"
+        @update:selectedAwards="handleAwardUpdate" />
     </div>
   </div>
 </template>
@@ -246,7 +207,7 @@ const submitEvent = async () => {
   try {
     const awardId = selectedAwards.value.length > 0 ? selectedAwards.value[0] : null;
     event.value.winner_award_id = awardId;
-    
+
     event.value.is_award_event = !!awardId;
 
     const formData = new FormData();
@@ -258,10 +219,10 @@ const submitEvent = async () => {
 
     for (const key in event.value) {
       const skipKeys = [
-        'performers', 'cover_image', 'starts_at', 'ends_at', 
+        'performers', 'cover_image', 'starts_at', 'ends_at',
         'is_award_event', 'winner_award_id'
       ];
-      
+
       if (!skipKeys.includes(key)) {
         formData.append(key, event.value[key] ?? '');
       }

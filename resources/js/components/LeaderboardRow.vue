@@ -1,10 +1,7 @@
 <template>
-  <div
-    v-if="loading"
-    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
+  <div v-if="loading" class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
            bg-[#18181d]/60 border border-white/10
-           animate-pulse"
-  >
+           animate-pulse">
     <div class="w-10 h-5 bg-white/10 rounded"></div>
     <div class="h-12 w-12 rounded-full bg-white/10"></div>
 
@@ -16,25 +13,18 @@
     <div class="h-5 w-10 bg-white/10 rounded"></div>
   </div>
 
-  <button
-    v-else
-    type="button"
-    class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
+  <button v-else type="button" class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
            bg-[#18181d]/80 backdrop-blur-md
            border border-white/10
            hover:border-[#BF2679]/40 hover:bg-[#1c1c22]
            transition-all duration-200
-           shadow-md hover:shadow-lg"
-    @click="$emit('select', row)"
-  >
+           shadow-md hover:shadow-lg" @click="$emit('select', row)">
     <div class="w-10 text-center text-lg font-bold" :class="rankColor">
       {{ row.rank }}
     </div>
 
-    <img
-      :src="row.profile_pic_url || '/images/default-avatar.png'"
-      class="h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
-    />
+    <img :src="row.profile_pic_url || '/images/default-avatar.png'"
+      class="h-12 w-12 rounded-full object-cover ring-2 ring-white/10" />
 
     <div class="flex-1 min-w-0">
       <h1 class="text-base lg:text-lg font-semibold truncate text-white">

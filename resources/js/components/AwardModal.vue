@@ -5,12 +5,7 @@
 
       <div class="flex flex-col gap-2">
         <label v-for="award in awards" :key="award.id" class="flex items-center gap-2">
-          <input
-            type="radio"
-            name="award-selection"
-            :value="award.id"
-            v-model="selectedAwardLocal"
-          />
+          <input type="radio" name="award-selection" :value="award.id" v-model="selectedAwardLocal" />
           {{ award.title }}
         </label>
       </div>

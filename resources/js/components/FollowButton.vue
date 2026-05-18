@@ -1,13 +1,8 @@
 <template>
-  <button
-    v-if="canFollow"
-    @click="toggleFollow"
-    :disabled="loading"
-    :class="[
-      'px-4 py-2 rounded transition',
-      isFollowing ? 'bg-gray-700 hover:bg-gray-600' : 'bg-[#BF2679] hover:bg-[#9e2668]'
-    ]"
-  >
+  <button v-if="canFollow" @click="toggleFollow" :disabled="loading" :class="[
+    'px-4 py-2 rounded transition',
+    isFollowing ? 'bg-gray-700 hover:bg-gray-600' : 'bg-[#BF2679] hover:bg-[#9e2668]'
+  ]">
     {{ isFollowing ? 'Sleduješ' : 'Sledovat' }}
   </button>
 </template>
