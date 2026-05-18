@@ -4,8 +4,17 @@
     <div class="bg-[#141418] rounded-2xl shadow-2xl p-8 w-full max-w-2xl space-y-8">
 
       <div class="text-center">
-        <h1 class="text-3xl font-bold">Přidat Event</h1>
-        <p class="text-white/40 text-sm mt-1">Vytvoř nový event a nastav jeho detaily</p>
+        <h1 class="text-3xl font-bold">
+  {{ isEdit ? 'Upravit Event' : 'Přidat Event' }}
+</h1>
+
+<p class="text-white/40 text-sm mt-1">
+  {{
+    isEdit
+      ? 'Uprav detaily existujícího eventu'
+      : 'Vytvoř nový event a nastav jeho detaily'
+  }}
+</p>
       </div>
 
       <form @submit.prevent="submitEvent" class="space-y-8">
@@ -62,10 +71,12 @@
           </button>
         </div>
 
-        <button type="submit"
-          class="w-full bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded-xl shadow-lg">
-          Vytvořit event
-        </button>
+        <button
+  type="submit"
+  class="w-full bg-pink-500 hover:bg-pink-600 transition-colors text-white font-bold py-3 rounded-xl shadow-lg"
+>
+  {{ isEdit ? 'Uložit změny' : 'Vytvořit event' }}
+</button>
 
       </form>
 

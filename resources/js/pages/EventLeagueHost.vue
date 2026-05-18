@@ -50,10 +50,11 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
+const router = useRouter()
 const eventId = route.params.id
 const localSlots = ref([{ id: 'A', value: null }, { id: 'B', value: null }, { id: 'C', value: null }])
 const roundRobin = ref({ ab: null, bc: null, ca: null })
@@ -94,12 +95,21 @@ const loadLeague = async () => {
 
 const saveLeague = async () => {
   const payload = {
-    slots: localSlots.value.map((s) => ({ id: s.id, performer_id: null, performer_name: s.value || null })),
+    slots: localSlots.value.map((s) => ({
+      id: s.id,
+      performer_id: null,
+      performer_name: s.value || null
+    })),
     round_robin: roundRobin.value,
     second_round_winner: secondRoundWinner.value,
     final_winner: finalWinner.value,
   }
-  await axios.put(`/api/events/${eventId}/league`, { league_data: payload })
+
+  await axios.put(`/api/events/${eventId}/league`, {
+    league_data: payload
+  })
+
+  router.back()
 }
 
 onMounted(loadLeague)
