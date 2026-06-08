@@ -61,13 +61,19 @@ const register = async () => {
     });
 
     console.log('Registered user:', response.data);
-    router.push('/');
+    router.push({ 
+      name: 'verify-email', 
+      query: { 
+        email: email.value,
+        code: response.data.code || '' 
+      } 
+    });
   } catch (err) {
     if (err.response?.status === 422) {
       const errors = err.response.data.errors;
       error.value = Object.values(errors)[0][0];
     } else {
-      error.value = 'Chyba při registraci';
+      error.value = err.response?.data?.message || 'Chyba při registraci';
     }
   }
 };

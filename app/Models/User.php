@@ -26,6 +26,8 @@ class User extends Authenticatable
         'points',
         'last_login_at',
         'email_verified_at',
+        'email_verification_code',
+        'email_verification_code_sent_at',
     ];
 
     protected $hidden = [
@@ -34,11 +36,12 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'birthdate'         => 'date',
-        'email_verified_at' => 'datetime',
-        'last_login_at'     => 'datetime',
-        'is_banned'         => 'boolean',
-        'points'            => 'integer',
+        'birthdate'                           => 'date',
+        'email_verified_at'                   => 'datetime',
+        'email_verification_code_sent_at'     => 'datetime',
+        'last_login_at'                       => 'datetime',
+        'is_banned'                           => 'boolean',
+        'points'                              => 'integer',
     ];
 
     protected $appends = ['profile_pic_url'];

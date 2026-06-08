@@ -114,6 +114,47 @@
             </div>
           </div>
         </div>
+
+        <div class="rounded-xl bg-[#121216] border border-white/10 p-4">
+          <div class="text-white font-semibold mb-3">Nedávné příspěvky</div>
+
+          <div v-if="sidebarLoading" class="space-y-3">
+            <div v-for="n in 3" :key="'post-skeleton-' + n" class="space-y-2">
+              <div class="h-3 bg-[#1d1d21] rounded w-5/6"></div>
+              <div class="h-2 bg-[#1d1d21] rounded w-1/2"></div>
+            </div>
+          </div>
+
+          <div v-else class="space-y-3">
+            <div v-for="post in recentPosts" :key="post.id" class="flex items-start gap-3">
+              <img :src="post.user?.profile_pic_url || '/images/default-avatar.png'" class="w-8 h-8 rounded-full mt-1" />
+              <button class="text-left flex-1" @click="openProfile(post.user?.username)">
+                <div class="text-sm text-white truncate">{{ post.body }}</div>
+                <div class="text-xs text-white/50 mt-1">{{ formatDate(post.created_at) }}</div>
+              </button>
+            </div>
+            <div v-if="!recentPosts.length" class="text-white/50 text-sm">Žádné příspěvky.</div>
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-[#121216] border border-white/10 p-4">
+          <div class="text-white font-semibold mb-3">Nadcházející akce</div>
+
+          <div v-if="sidebarLoading" class="space-y-3">
+            <div v-for="n in 3" :key="'event-skeleton-' + n" class="h-3 bg-[#1d1d21] rounded"></div>
+          </div>
+
+          <div v-else class="space-y-3">
+            <div v-for="event in upcomingEvents" :key="event.id" class="flex items-center justify-between">
+              <div class="flex-1">
+                <div class="text-sm text-white truncate">{{ event.title }}</div>
+                <div class="text-xs text-white/50">{{ formatDate(event.starts_at) }}</div>
+              </div>
+              <button class="text-xs text-white/60 ml-3" @click="openEvent(event.id)">Otevřít</button>
+            </div>
+            <div v-if="!upcomingEvents.length" class="text-white/50 text-sm">Žádné nadcházející akce.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -130,6 +171,7 @@ const videos = ref([])
 const loading = ref(true)
 const sidebarLoading = ref(true)
 const suggestedUsers = ref([])
+const recentPosts = ref([])
 const upcomingEvents = ref([])
 const activeCommentItem = ref(null)
 const replyTargetId = ref(null)
@@ -149,11 +191,12 @@ const withVideoInteractionState = (item) => ({
 
 onMounted(async () => {
   try {
-    const [videosRes, usersRes, followingRes, eventsRes] = await Promise.all([
+    const [videosRes, usersRes, followingRes, eventsRes, postsRes] = await Promise.all([
       axios.get('/api/videos'),
       axios.get('/api/users'),
       axios.get('/api/following'),
-      axios.get('/api/events')
+      axios.get('/api/events'),
+      axios.get('/api/posts')
     ])
     videos.value = (Array.isArray(videosRes.data) ? videosRes.data : []).map(withVideoInteractionState)
 
@@ -173,6 +216,10 @@ onMounted(async () => {
         return startsAt >= now
       })
       .sort((a, b) => new Date(a.starts_at || 0).getTime() - new Date(b.starts_at || 0).getTime())
+      .slice(0, 3)
+
+    recentPosts.value = (Array.isArray(postsRes.data) ? postsRes.data : [])
+      .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
       .slice(0, 3)
   } catch (err) {
     console.error(err)
