@@ -88,8 +88,7 @@ const resendCode = async () => {
       email: email.value,
     })
 
-    message.value = response.data.message || 'Kód byl znovu odeslán.'
-  } catch (err) {
+    message.value = 'Kód byl odeslán. Zkontroluj prosím i složku Spam / Newsletter.'  } catch (err) {
     error.value = err.response?.data?.message || 'Chyba při odesílání kódu'
   }
 }

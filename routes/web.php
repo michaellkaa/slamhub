@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\EventController;
-
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +19,15 @@ use App\Http\Controllers\EventController;
 /*Route::get('/', function () {
     return view('welcome');
 });*/
+
+Route::get('/test-mail', function () {
+    Mail::raw('Test email ze SlamHubu', function ($message) {
+        $message->to('ptackova@deware.eu')
+            ->subject('SMTP test');
+    });
+
+    return 'Email odeslán';
+});
 
 Route::get('/{any}', function () {
     return view('app');
