@@ -61,12 +61,10 @@ const register = async () => {
     });
 
     console.log('Registered user:', response.data);
-    router.push({ 
-      name: 'verify-email', 
-      query: { 
-        email: email.value,
-        code: response.data.code || '' 
-      } 
+    sessionStorage.setItem('verification_email', email.value);
+
+    router.push({
+      name: 'verify-email'
     });
   } catch (err) {
     if (err.response?.status === 422) {

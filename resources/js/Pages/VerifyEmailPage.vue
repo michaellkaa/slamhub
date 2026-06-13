@@ -51,7 +51,7 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const email = ref(route.query.email || '')
+const email = ref('')
 const code = ref('')
 const message = ref('')
 const error = ref('')
@@ -66,10 +66,14 @@ const verify = async () => {
       code: code.value,
     })
 
+    sessionStorage.removeItem('verification_email')
+
     message.value = 'Email byl úspěšně ověřen. Můžeš se nyní přihlásit.'
+
     setTimeout(() => {
       router.push({ name: 'login' })
     }, 1000)
+
   } catch (err) {
     error.value = err.response?.data?.message || 'Chyba při ověřování e-mailu'
   }
@@ -91,12 +95,10 @@ const resendCode = async () => {
 }
 
 onMounted(() => {
+  email.value = sessionStorage.getItem('verification_email') || ''
+
   if (!email.value) {
-    error.value = 'Zadej e-mail, na který ti byl zaslán ověřovací kód.'
-  }
-  // In dev mode, prefill code if passed in query
-  if (route.query.code) {
-    code.value = route.query.code
+    error.value = 'Nebyl nalezen email pro ověření. Zaregistruj se znovu.'
   }
 })
 </script>
