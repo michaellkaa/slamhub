@@ -124,13 +124,11 @@ public function login(Request $request)
         ], 401);
     }
 
-    // For legacy users (NULL email_verification_code), auto-verify them
     if (is_null($user->email_verification_code)) {
         if (!$user->email_verified_at) {
             $user->update(['email_verified_at' => now()]);
         }
     } elseif (!$user->email_verified_at) {
-        // New users with verification code must verify first
         return response()->json([
             'message' => 'Email není ověřen. Zkontrolujte poštu a ověřte svůj účet pomocí kódu.',
         ], 403);
