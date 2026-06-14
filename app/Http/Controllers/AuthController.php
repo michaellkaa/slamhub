@@ -38,7 +38,9 @@ class AuthController extends Controller
             'username' => $validated['username'],
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make(
+                $validated['password'] . config('app.password_pepper')
+            ),
             'role' => 'user',
             'profile_pic' => 'profile_pics/default-avatar.png',
             'email_verification_code' => $verificationCode,
@@ -118,7 +120,25 @@ public function login(Request $request)
 
     $user = User::where('email', $data['email'])->first();
 
-    if (!$user || !Hash::check($data['password'], $user->password)) {
+    if (!$user) {
+        return response()->json([
+            'message' => 'Nesprávný email nebo heslo'
+        ], 401);
+    }
+    
+    $plainPassword = $data['password'];
+    
+    $valid =
+        Hash::check(
+            $plainPassword . config('app.password_pepper'),
+            $user->password
+        ) ||
+        Hash::check(
+            $plainPassword,
+            $user->password
+        );
+    
+    if (!$valid) {
         return response()->json([
             'message' => 'Nesprávný email nebo heslo'
         ], 401);

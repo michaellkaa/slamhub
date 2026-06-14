@@ -184,4 +184,5 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+'password_pepper' => env('PASSWORD_PEPPER'),
 ];
