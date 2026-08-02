@@ -43,8 +43,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(payload.title || 'SlamHub', {
       body: payload.body || '',
-      icon: '/pwa-icon.svg',
-      badge: '/pwa-icon.svg',
+      icon: '/pwa-icon.png',
+      badge: '/pwa-icon.png',
       data: {
         url: payload.url || '/',
       },

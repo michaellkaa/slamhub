@@ -17,7 +17,7 @@ export default defineConfig({
             srcDir: 'resources/js',
             filename: 'sw.js',
             registerType: 'autoUpdate',
-            includeAssets: ['favicon.png', 'pwa-icon.svg'],
+            includeAssets: ['favicon.png', 'pwa-icon.png'],
             injectRegister: false,
             buildBase: '/build/',
             base: '/',
@@ -34,7 +34,7 @@ export default defineConfig({
                 theme_color: '#0f0f12',
                 icons: [
                     {
-                        src: '/pwa-icon.svg',
+                        src: '/pwa-icon.png',
                         sizes: 'any',
                         type: 'image/svg+xml',
                         purpose: 'any maskable',
