@@ -1,29 +1,29 @@
 <template>
-  <div class="min-h-screen bg-[#0f0f12] text-white px-4 py-6 flex justify-center">
+  <div class="min-h-screen bg-app text-app px-4 py-6 flex justify-center">
     <div class="w-full max-w-md">
       <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline text-lg">
         ←
       </button>
 
-      <div class="bg-[#121218] rounded-2xl p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+      <div class="bg-surface-4 rounded-2xl p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
         <h1 class="text-2xl font-extrabold tracking-wide mb-2">Hlasovani</h1>
 
-        <p class="text-white/70 text-sm mb-4">
+        <p class="text-app-muted text-sm mb-4">
           {{ headerText }}
         </p>
 
         <div v-if="!joined" class="space-y-3">
           <input v-model="joinCode" maxlength="6" placeholder="Kod hlasovani"
-            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 uppercase outline-none shadow-[0_0_0_1px_rgba(236,72,153,0.35)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.8)]" />
+            class="w-full bg-app rounded-xl px-4 py-3 uppercase outline-none shadow-[0_0_0_1px_rgba(236,72,153,0.35)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.8)]" />
 
-          <div v-if="currentUser" class="flex items-center gap-2 text-sm text-white/80">
+          <div v-if="currentUser" class="flex items-center gap-2 text-sm text-app-muted">
             <input id="anonVote" type="checkbox" v-model="joinAsAnonymous" />
             <label for="anonVote">Hlasovat anonymne</label>
           </div>
 
           <input v-if="!currentUser || joinAsAnonymous" v-model="nickname" maxlength="60"
             placeholder="Prezdivka (volitelne)"
-            class="w-full bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
+            class="w-full bg-app rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
 
           <button @click="joinVoting" :disabled="!sessionStatus.enabled"
             class="w-full py-3 rounded-xl font-extrabold bg-pink-500 hover:bg-pink-600 transition shadow-[0_0_24px_rgba(236,72,153,0.25)] disabled:opacity-50">
@@ -32,8 +32,8 @@
         </div>
 
         <div v-else class="space-y-4">
-          <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(236,72,153,0.2)]">
-            <div class="text-xs text-white/60 mb-1">Prave hlasujete pro</div>
+          <div class="bg-app rounded-2xl p-4 shadow-[0_0_0_1px_rgba(236,72,153,0.2)]">
+            <div class="text-xs text-app-muted mb-1">Prave hlasujete pro</div>
             <div class="text-lg font-extrabold">
               {{ liveRound.current_round?.performer_name || '—' }}
             </div>
@@ -41,12 +41,12 @@
 
           <div class="grid grid-cols-5 gap-2">
             <button v-for="n in 10" :key="n" @click="castVote(n)" :disabled="disableVote"
-              class="aspect-square rounded-2xl bg-[#0f0f12] font-extrabold text-2xl shadow-[0_0_0_2px_rgba(236,72,153,1)] hover:bg-pink-500/10 active:scale-[0.99] transition disabled:opacity-50">
+              class="aspect-square rounded-2xl bg-app font-extrabold text-2xl shadow-[0_0_0_2px_rgba(236,72,153,1)] hover:bg-pink-500/10 active:scale-[0.99] transition disabled:opacity-50">
               {{ n }}
             </button>
           </div>
 
-          <div v-if="liveRound.already_voted" class="text-sm text-white/70">
+          <div v-if="liveRound.already_voted" class="text-sm text-app-muted">
             Hlas byl odeslan.
           </div>
         </div>

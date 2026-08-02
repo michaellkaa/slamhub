@@ -1,7 +1,7 @@
 <template>
   <div class="mt-8 w-full lg:w-[50%] space-y-6">
     <div v-if="loading" class="space-y-4">
-      <div v-for="n in 3" :key="'post-skeleton-' + n" class="p-4 bg-[#1d1d21] rounded-xl animate-pulse space-y-3">
+      <div v-for="n in 3" :key="'post-skeleton-' + n" class="p-4 bg-surface rounded-xl animate-pulse space-y-3">
         <div class="h-4 w-full bg-white/10 rounded"></div>
         <div class="h-4 w-5/6 bg-white/10 rounded"></div>
         <div class="h-3 w-24 bg-white/10 rounded"></div>
@@ -9,18 +9,18 @@
       </div>
     </div>
 
-    <div v-else v-for="post in posts" :key="post.id" class="p-4 bg-[#1d1d21] rounded-xl">
-      <p class="text-white/90 leading-relaxed">
+    <div v-else v-for="post in posts" :key="post.id" class="p-4 bg-surface rounded-xl">
+      <p class="text-app leading-relaxed">
         {{ post.body }}
       </p>
 
-      <div class="text-xs text-white/40 mt-2">
+      <div class="text-xs text-app-subtle mt-2">
         {{ timeAgo(post.created_at) }}
       </div>
 
       <div class="mt-3 flex items-center gap-3 text-sm">
         <button type="button" class="rounded-lg px-3 py-1.5 transition inline-flex items-center gap-1.5"
-          :class="post.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
+          :class="post.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-app-muted hover:bg-white/10'"
           @click="toggleLike(post)" aria-label="Like">
           <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true">
             <path
@@ -29,7 +29,7 @@
           <span>{{ post.likes_count || 0 }}</span>
         </button>
         <button type="button"
-          class="rounded-lg px-3 py-1.5 bg-white/5 text-white/70 hover:bg-white/10 transition inline-flex items-center gap-1.5"
+          class="rounded-lg px-3 py-1.5 bg-white/5 text-app-muted hover:bg-white/10 transition inline-flex items-center gap-1.5"
           @click="toggleComments(post)" aria-label="Comments">
           <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
             aria-hidden="true">
@@ -42,7 +42,7 @@
       <div v-if="post.showComments" class="mt-3 space-y-3">
         <form class="flex gap-2" @submit.prevent="submitComment(post)">
           <input v-model="post.commentDraft" type="text"
-            class="flex-1 rounded-lg bg-[#121216] border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-pink-400"
+            class="flex-1 rounded-lg bg-surface-4 border border-app px-3 py-2 text-sm text-app outline-none focus:border-pink-400"
             placeholder="Write a comment..." />
           <button type="submit"
             class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-white hover:bg-pink-600">
@@ -50,18 +50,18 @@
           </button>
         </form>
 
-        <div v-if="post.commentsLoading" class="text-xs text-white/50">Loading comments...</div>
-        <div v-else-if="!post.comments?.length" class="text-xs text-white/50">No comments yet.</div>
+        <div v-if="post.commentsLoading" class="text-xs text-app-faint">Loading comments...</div>
+        <div v-else-if="!post.comments?.length" class="text-xs text-app-faint">No comments yet.</div>
         <div v-else class="space-y-2">
           <div v-for="comment in post.comments" :key="comment.id" class="rounded-lg bg-black/20 px-3 py-2">
-            <div class="text-xs text-white/50">@{{ comment.user?.username || 'user' }}</div>
-            <div class="text-sm text-white/85">{{ comment.body }}</div>
+            <div class="text-xs text-app-faint">@{{ comment.user?.username || 'user' }}</div>
+            <div class="text-sm text-app">{{ comment.body }}</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="!loading && !posts.length" class="text-sm text-white/50">
+    <div v-if="!loading && !posts.length" class="text-sm text-app-faint">
       No posts yet.
     </div>
   </div>

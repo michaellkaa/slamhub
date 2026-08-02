@@ -1,28 +1,28 @@
 <template>
   <div class="flex flex-col gap-4 w-full">
-    <label class="text-xs text-white/60">Jméno</label>
+    <label class="text-xs text-app-muted">Jméno</label>
     <input type="text" v-model="name" placeholder="např. Adam Novák"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required />
 
-    <label class="mt-2 text-xs text-white/60">Uživatelské jméno</label>
+    <label class="mt-2 text-xs text-app-muted">Uživatelské jméno</label>
     <input type="text" v-model="username" placeholder="např. adam_novak"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required />
 
-    <label class="mt-2 text-xs text-white/60">Email</label>
+    <label class="mt-2 text-xs text-app-muted">Email</label>
     <input type="email" v-model="email" placeholder="např. novak@email.cz"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required />
 
-    <label class="mt-2 text-xs text-white/60">Heslo</label>
+    <label class="mt-2 text-xs text-app-muted">Heslo</label>
     <input type="password" v-model="password" placeholder="••••••••"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required />
 
-    <label class="mt-2 text-xs text-white/60">Potvrzení hesla</label>
+    <label class="mt-2 text-xs text-app-muted">Potvrzení hesla</label>
     <input type="password" v-model="password_confirmation" placeholder="••••••••"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
       required />
 
     <button @click="register"

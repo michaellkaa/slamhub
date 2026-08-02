@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen flex bg-[#0f0f12] text-white overflow-hidden">
+  <div class="w-screen h-screen flex bg-app text-app overflow-hidden">
 
     <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
@@ -9,18 +9,18 @@
 
       <div v-if="isLoading" class="flex flex-col gap-4">
         <div class="flex items-center gap-8 animate-pulse">
-          <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
+          <div class="w-28 h-28 rounded-full bg-surface border border-app"></div>
           <div class="flex flex-col gap-3 flex-1">
-            <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
-            <div class="h-4 w-40 bg-[#1d1d21] rounded"></div>
-            <div class="h-4 w-56 bg-[#1d1d21] rounded"></div>
+            <div class="h-6 w-48 bg-surface rounded"></div>
+            <div class="h-4 w-40 bg-surface rounded"></div>
+            <div class="h-4 w-56 bg-surface rounded"></div>
           </div>
         </div>
       </div>
       <div v-else-if="user" class="flex flex-col gap-4">
         <div class="flex items-center gap-8">
           <img :src="user.profile_pic_url"
-            class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl cursor-pointer"
+            class="w-28 h-28 rounded-full object-cover border border-app shadow-xl cursor-pointer"
             @click="triggerUpload" :class="{ 'cursor-not-allowed opacity-60': !isOwnProfile }" />
 
           <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="uploadPhoto" />
@@ -30,10 +30,10 @@
               <div class="font-bold text-xl">{{ user.name }}</div>
 
               <button v-if="isOwnProfile" @click="goToSettings"
-                class="p-2 rounded-md bg-[#1d1d21] hover:bg-[#2a2a30] transition" title="Settings"
+                class="p-2 rounded-md bg-surface hover:bg-surface-hover transition" title="Settings"
                 aria-label="Open settings">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white">
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-app">
                   <circle cx="12" cy="12" r="3"></circle>
                   <path
                     d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-.33-1A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1-.33A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-.6 1.65 1.65 0 0 0 .33-1V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 .33 1A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c0 .39.14.76.4 1.04.27.28.64.44 1.04.46H21a2 2 0 1 1 0 4h-.09c-.4.02-.77.18-1.04.46-.26.28-.4.65-.4 1.04z">
@@ -45,16 +45,16 @@
                 @follow-changed="handleFollow" />
             </div>
 
-            <div class="text-white/40 text-sm">@{{ user.username }}</div>
+            <div class="text-app-subtle text-sm">@{{ user.username }}</div>
 
-            <div class="flex gap-6 mt-2 text-white/70 text-sm">
-              <button type="button" class="hover:text-white transition text-left" @click="openFollowModal('followers')">
-                <span class="font-semibold text-white">{{ user.followers_count }}</span>
-                <span class="text-white/60"> sledujících</span>
+            <div class="flex gap-6 mt-2 text-app-muted text-sm">
+              <button type="button" class="hover:text-app transition text-left" @click="openFollowModal('followers')">
+                <span class="font-semibold text-app">{{ user.followers_count }}</span>
+                <span class="text-app-muted"> sledujících</span>
               </button>
-              <button type="button" class="hover:text-white transition text-left" @click="openFollowModal('following')">
-                <span class="font-semibold text-white">{{ user.following_count }}</span>
-                <span class="text-white/60"> sleduje</span>
+              <button type="button" class="hover:text-app transition text-left" @click="openFollowModal('following')">
+                <span class="font-semibold text-app">{{ user.following_count }}</span>
+                <span class="text-app-muted"> sleduje</span>
               </button>
             </div>
 
@@ -65,9 +65,9 @@
         </div>
       </div>
 
-      <div class="border-b border-white/10 pb-4 mt-8">
+      <div class="border-b border-app pb-4 mt-8">
         <div v-if="isLoading" class="flex gap-10">
-          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded"></div>
+          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-surface rounded"></div>
         </div>
 
         <div v-else class="flex gap-10">

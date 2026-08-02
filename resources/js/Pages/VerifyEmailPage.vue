@@ -1,28 +1,28 @@
 <template>
-  <div class="min-h-screen bg-[#0f0f12] text-white flex items-center justify-center px-6 py-10">
+  <div class="min-h-screen bg-app text-app flex items-center justify-center px-6 py-10">
     <div class="w-full max-w-sm">
       <div class="mb-8">
-        <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+        <div class="inline-flex items-center gap-2 rounded-full border border-app bg-white/5 px-3 py-1 text-xs text-app-muted">
           SlamHub
         </div>
         <h1 class="mt-4 text-3xl font-black tracking-tight">
           Ověření e-mailu
         </h1>
-        <p class="mt-2 text-sm text-white/70">
+        <p class="mt-2 text-sm text-app-muted">
           Zadej kód, který jsme ti poslali na e-mail.
         </p>
       </div>
 
-      <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
+      <div class="rounded-3xl border border-app bg-white/5 backdrop-blur p-6">
         <div class="flex flex-col gap-4 w-full">
-          <label class="text-xs text-white/60">Email</label>
+          <label class="text-xs text-app-muted">Email</label>
           <input type="email" v-model="email" placeholder="např. novak@email.cz"
-            class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+            class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
             required />
 
-          <label class="mt-2 text-xs text-white/60">Ověřovací kód</label>
+          <label class="mt-2 text-xs text-app-muted">Ověřovací kód</label>
           <input type="text" v-model="code" placeholder="123456"
-            class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+            class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
             required />
 
           <button @click="verify"
@@ -31,7 +31,7 @@
           </button>
 
           <button @click="resendCode"
-            class="w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition text-white font-semibold py-3">
+            class="w-full rounded-2xl border border-app bg-white/5 hover:bg-white/10 transition text-app font-semibold py-3">
             Poslat znovu kód
           </button>
 

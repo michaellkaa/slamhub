@@ -3,12 +3,12 @@
     @keydown.esc.prevent="emit('close')">
     <button class="absolute inset-0 bg-black/60" aria-label="Close" @click="emit('close')" />
 
-    <div class="relative w-[92vw] max-w-lg rounded-2xl border border-white/10 bg-[#121216] shadow-2xl overflow-hidden">
-      <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
-        <div class="text-white font-semibold">
+    <div class="relative w-[92vw] max-w-lg rounded-2xl border border-app bg-surface-4 shadow-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-app">
+        <div class="text-app font-semibold">
           {{ title }}
         </div>
-        <button class="p-2 rounded-lg hover:bg-white/5 transition text-white/70 hover:text-white" aria-label="Close"
+        <button class="p-2 rounded-lg hover:bg-white/5 transition text-app-muted hover:text-app" aria-label="Close"
           @click="emit('close')">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
@@ -18,18 +18,18 @@
         </button>
       </div>
 
-      <div class="flex border-b border-white/10">
+      <div class="flex border-b border-app">
         <button class="flex-1 px-4 py-3 text-sm transition"
-          :class="activeTab === 'followers' ? 'text-white bg-white/5' : 'text-white/60 hover:text-white'"
+          :class="activeTab === 'followers' ? 'text-app bg-white/5' : 'text-app-muted hover:text-app'"
           @click="activeTab = 'followers'">
           Sledující
-          <span class="text-white/40">({{ followersCount }})</span>
+          <span class="text-app-subtle">({{ followersCount }})</span>
         </button>
         <button class="flex-1 px-4 py-3 text-sm transition"
-          :class="activeTab === 'following' ? 'text-white bg-white/5' : 'text-white/60 hover:text-white'"
+          :class="activeTab === 'following' ? 'text-app bg-white/5' : 'text-app-muted hover:text-app'"
           @click="activeTab = 'following'">
           Sleduje
-          <span class="text-white/40">({{ followingCount }})</span>
+          <span class="text-app-subtle">({{ followingCount }})</span>
         </button>
       </div>
 
@@ -49,7 +49,7 @@
         </div>
 
         <div v-else class="p-2">
-          <div v-if="activeList.length === 0" class="p-6 text-center text-white/50 text-sm">
+          <div v-if="activeList.length === 0" class="p-6 text-center text-app-faint text-sm">
             Nic tu není.
           </div>
 
@@ -58,19 +58,19 @@
             <button class="flex items-center gap-3 text-left min-w-0 flex-1" @click="emit('open-profile', u.username)"
               :aria-label="`Open profile ${u.username}`">
               <img :src="u.profile_pic_url || '/images/default-avatar.png'"
-                class="w-10 h-10 rounded-full object-cover border border-white/10" alt="" />
+                class="w-10 h-10 rounded-full object-cover border border-app" alt="" />
               <div class="min-w-0">
-                <div class="text-white text-sm font-medium truncate">
+                <div class="text-app text-sm font-medium truncate">
                   {{ u.name || u.username }}
                 </div>
-                <div class="text-white/50 text-xs truncate">
+                <div class="text-app-faint text-xs truncate">
                   @{{ u.username }}
                 </div>
               </div>
             </button>
 
             <button v-if="showActionFor(u)"
-              class="shrink-0 px-3 py-1.5 rounded-lg text-sm bg-white/10 hover:bg-white/15 text-white transition disabled:opacity-60"
+              class="shrink-0 px-3 py-1.5 rounded-lg text-sm bg-white/10 hover:bg-white/15 text-app transition disabled:opacity-60"
               :disabled="pendingUsernames.has(u.username)" @click="toggleRelationship(u)">
               {{ actionLabel(u) }}
             </button>
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <div v-if="error" class="px-4 py-3 border-t border-white/10 text-sm text-red-300 bg-red-500/10">
+      <div v-if="error" class="px-4 py-3 border-t border-app text-sm text-red-300 bg-red-500/10">
         {{ error }}
       </div>
     </div>

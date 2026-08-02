@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-[#1a1a1d] border border-[#26262b] rounded-xl overflow-hidden flex flex-col cursor-pointer"
+  <div class="bg-surface border border-app-strong rounded-xl overflow-hidden flex flex-col cursor-pointer"
     @click="$emit('click')">
     <template v-if="loading">
-      <div class="h-28 bg-[#2a2a2e] animate-pulse"></div>
+      <div class="h-28 bg-surface-hover animate-pulse"></div>
       <div class="p-4 space-y-3 flex-1">
-        <div class="w-3/4 h-4 bg-[#2a2a2e] rounded animate-pulse"></div>
-        <div class="w-1/2 h-3 bg-[#2a2a2e] rounded animate-pulse"></div>
-        <div class="w-1/3 h-3 bg-[#2a2a2e] rounded animate-pulse"></div>
+        <div class="w-3/4 h-4 bg-surface-hover rounded animate-pulse"></div>
+        <div class="w-1/2 h-3 bg-surface-hover rounded animate-pulse"></div>
+        <div class="w-1/3 h-3 bg-surface-hover rounded animate-pulse"></div>
       </div>
     </template>
 
@@ -22,10 +22,10 @@
         <h2 class="text-white font-bold text-lg truncate">
           {{ event.title || 'Bez názvu' }}
         </h2>
-        <p class="text-white/60 text-sm truncate">
+        <p class="text-app-muted text-sm truncate">
           {{ formatDate(event.starts_at) || '-' }}
         </p>
-        <p class="text-white/70 text-sm truncate">
+        <p class="text-app-muted text-sm truncate">
           {{ event.location || '-' }}
         </p>
       </div>

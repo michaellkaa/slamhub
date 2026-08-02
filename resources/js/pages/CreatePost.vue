@@ -1,14 +1,14 @@
 <template>
-  <div class="w-screen h-screen flex items-center justify-center bg-[#0f0f12] text-white p-4">
-    <div class="bg-[#141418] rounded-xl shadow-xl p-8 w-full max-w-lg">
+  <div class="w-screen h-screen flex items-center justify-center bg-app text-app p-4">
+    <div class="bg-surface-2 rounded-xl shadow-xl p-8 w-full max-w-lg">
       <h1 class="text-2xl font-bold mb-6 text-center">Přidat Post</h1>
 
       <form @submit.prevent="submitPost" class="flex flex-col gap-4">
         <label class="text-sm">Obsah příspěvku <span class="text-pink-400">*</span></label>
         <textarea v-model="post.body" required rows="6"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          class="p-3 rounded bg-surface focus:ring-2 focus:ring-pink-500 outline-none"
           placeholder="Napiš něco..."></textarea>
-        <div class="text-xs flex justify-between" :class="isTooLong ? 'text-red-500' : 'text-white/50'">
+        <div class="text-xs flex justify-between" :class="isTooLong ? 'text-red-500' : 'text-app-faint'">
 
           <span>
             {{ post.body.length }} / {{ MAX_LENGTH }}

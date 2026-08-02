@@ -1,8 +1,8 @@
 <template>
   <div class="w-full">
     <div v-if="loading" class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="n in 6" :key="'skeleton-' + n" class="rounded-2xl overflow-hidden bg-[#1d1d21] animate-pulse">
-        <div class="aspect-[9/16] bg-[#232328]"></div>
+      <div v-for="n in 6" :key="'skeleton-' + n" class="rounded-2xl overflow-hidden bg-surface animate-pulse">
+        <div class="aspect-[9/16] bg-surface-hover"></div>
         <div class="p-2 space-y-2">
           <div class="h-3 w-3/4 rounded bg-white/10"></div>
           <div class="h-7 w-full rounded bg-white/5"></div>
@@ -10,26 +10,26 @@
       </div>
     </div>
 
-    <div v-else-if="!videos.length" class="text-center text-white/60 py-10">
+    <div v-else-if="!videos.length" class="text-center text-app-muted py-10">
       Zatim tu nejsou zadna videa.
     </div>
 
     <template v-else>
       <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4 w-full max-w-4xl">
         <div v-for="(video, index) in videos" :key="video.id"
-          class="rounded-2xl overflow-hidden bg-black relative text-left border border-white/10">
+          class="rounded-2xl overflow-hidden bg-black relative text-left border border-app">
           <button type="button" class="group block w-full aspect-[9/16] relative" @click="openVideo(video, index)">
             <video :src="video.video_url" class="w-full h-full object-cover transition group-hover:scale-[1.02]" muted
               loop autoplay playsinline></video>
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             <div class="absolute bottom-0 left-0 right-0 p-2 lg:p-3">
-              <p class="text-white text-xs lg:text-sm font-semibold truncate">{{ video.title || 'Bez nazvu' }}</p>
+              <p class="text-app text-xs lg:text-sm font-semibold truncate">{{ video.title || 'Bez nazvu' }}</p>
             </div>
           </button>
-          <div class="bg-[#141418] p-2 space-y-2">
+          <div class="bg-surface-2 p-2 space-y-2">
             <div class="flex gap-2 text-xs">
               <button type="button" class="rounded-md px-2 py-1 transition inline-flex items-center gap-1.5"
-                :class="video.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-white/70 hover:bg-white/10'"
+                :class="video.liked_by_me ? 'bg-red-500/20 text-red-500' : 'bg-white/5 text-app-muted hover:bg-white/10'"
                 @click="toggleLike(video)" aria-label="Like">
                 <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
                   <path
@@ -38,7 +38,7 @@
                 <span>{{ video.likes_count || 0 }}</span>
               </button>
               <button type="button"
-                class="rounded-md px-2 py-1 bg-white/5 text-white/70 hover:bg-white/10 transition inline-flex items-center gap-1.5"
+                class="rounded-md px-2 py-1 bg-white/5 text-app-muted hover:bg-white/10 transition inline-flex items-center gap-1.5"
                 @click="openCommentsModal(video)" aria-label="Comments">
                 <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
                   aria-hidden="true">
@@ -159,42 +159,42 @@
 
   <div v-if="activeCommentVideo" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4"
     @click.self="closeCommentsModal">
-    <div class="w-full max-w-lg rounded-2xl border border-white/10 bg-[#121216]">
-      <div class="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <div class="text-sm font-semibold text-white">Comments</div>
-        <button class="rounded-lg px-2 py-1 text-white/70 hover:bg-white/10" @click="closeCommentsModal">Close</button>
+    <div class="w-full max-w-lg rounded-2xl border border-app bg-surface-4">
+      <div class="flex items-center justify-between border-b border-app px-4 py-3">
+        <div class="text-sm font-semibold text-app">Comments</div>
+        <button class="rounded-lg px-2 py-1 text-app-muted hover:bg-white/10" @click="closeCommentsModal">Close</button>
       </div>
       <div class="max-h-[55vh] overflow-y-auto px-4 py-3 space-y-3">
-        <div v-if="activeCommentVideo.commentsLoading" class="text-xs text-white/50">Loading comments...</div>
-        <div v-else-if="!activeCommentVideo.comments?.length" class="text-xs text-white/50">No comments yet.</div>
+        <div v-if="activeCommentVideo.commentsLoading" class="text-xs text-app-faint">Loading comments...</div>
+        <div v-else-if="!activeCommentVideo.comments?.length" class="text-xs text-app-faint">No comments yet.</div>
         <div v-else class="space-y-2">
           <div v-for="comment in activeCommentVideo.comments" :key="comment.id"
             class="rounded-xl bg-black/30 px-3 py-2.5">
-            <div class="text-xs text-white/50">@{{ comment.user?.username || 'user' }}</div>
-            <div class="text-sm text-white/85">{{ comment.body }}</div>
-            <button type="button" class="mt-1 text-[11px] text-white/60 hover:text-white" @click="startReply(comment)">
+            <div class="text-xs text-app-faint">@{{ comment.user?.username || 'user' }}</div>
+            <div class="text-sm text-app">{{ comment.body }}</div>
+            <button type="button" class="mt-1 text-[11px] text-app-muted hover:text-app" @click="startReply(comment)">
               Reply
             </button>
-            <div v-if="comment.replies?.length" class="mt-2 ml-4 space-y-2 border-l border-white/10 pl-3">
+            <div v-if="comment.replies?.length" class="mt-2 ml-4 space-y-2 border-l border-app pl-3">
               <div v-for="reply in comment.replies" :key="reply.id" class="rounded-lg bg-black/30 px-3 py-2">
-                <div class="text-[11px] text-white/50">@{{ reply.user?.username || 'user' }}</div>
-                <div class="text-sm text-white/85">{{ reply.body }}</div>
+                <div class="text-[11px] text-app-faint">@{{ reply.user?.username || 'user' }}</div>
+                <div class="text-sm text-app">{{ reply.body }}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <form class="border-t border-white/10 p-3 flex gap-2" @submit.prevent="submitComment(activeCommentVideo)">
+      <form class="border-t border-app p-3 flex gap-2" @submit.prevent="submitComment(activeCommentVideo)">
         <input v-model="activeCommentVideo.commentDraft" type="text"
-          class="flex-1 rounded-lg bg-black/30 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:border-pink-400"
+          class="flex-1 rounded-lg bg-black/30 border border-app px-3 py-2 text-sm text-app outline-none focus:border-pink-400"
           :placeholder="replyTargetCommentId ? 'Write a reply...' : 'Write a comment...'" />
         <button type="submit"
-          class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-white hover:bg-pink-600">
+          class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-app hover:bg-pink-600">
           Send
         </button>
       </form>
       <div v-if="replyTargetCommentId" class="px-3 pb-3">
-        <button class="text-xs text-white/60 hover:text-white" @click="replyTargetCommentId = null">Cancel
+        <button class="text-xs text-app-muted hover:text-app" @click="replyTargetCommentId = null">Cancel
           reply</button>
       </div>
     </div>

@@ -1,22 +1,22 @@
 <template>
-  <div class="rounded-2xl bg-[#141418] border border-[#1f1f22] p-5 space-y-4">
+  <div class="rounded-2xl bg-surface-2 border border-app-strong p-5 space-y-4">
 
     <div v-if="rows.length" class="space-y-4">
 
       <div v-for="row in rows" :key="row.event_id"
-        class="border border-[#1f1f22] rounded-xl bg-[#0f0f12] overflow-hidden">
+        class="border border-app-strong rounded-xl bg-app overflow-hidden">
 
-        <div class="flex justify-between items-center px-4 py-3 border-b border-white/5">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-app-soft">
 
           <div>
-            <div class="text-xs text-white/40">Event</div>
+            <div class="text-xs text-app-subtle">Event</div>
             <div class="text-white font-medium">
               {{ row.event_title }}
             </div>
           </div>
 
           <div class="text-right">
-            <div class="text-xs text-white/40">Winner</div>
+            <div class="text-xs text-app-subtle">Winner</div>
             <div class="text-[#FFF7CC] font-semibold">
               {{ row.winner || '—' }}
             </div>
@@ -30,29 +30,29 @@
             <div class="h-full bg-pink-500 transition-all" :style="{ width: (row.progress || 0) + '%' }" />
           </div>
 
-          <div class="text-xs text-white/40 mt-2 flex justify-between">
+          <div class="text-xs text-app-subtle mt-2 flex justify-between">
             <span>Progress</span>
             <span>{{ row.progress || 0 }}%</span>
           </div>
 
         </div>
 
-        <div v-if="openId === row.event_id" class="border-t border-white/5 px-4 py-4 space-y-3">
+        <div v-if="openId === row.event_id" class="border-t border-app-soft px-4 py-4 space-y-3">
 
           <div class="grid gap-2">
 
             <div v-for="m in getSpider(row)" :key="m.id"
-              class="hidden lg:flex items-center justify-between px-3 py-2 rounded-lg bg-[#141418] border border-[#1f1f22]">
+              class="hidden lg:flex items-center justify-between px-3 py-2 rounded-lg bg-surface-2 border border-app-strong">
 
               <div class="flex items-center gap-3">
 
-                <span :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-white/60'">
+                <span :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-app-muted'">
                   {{ m.left }}
                 </span>
 
-                <span class="text-white/30 text-xs">vs</span>
+                <span class="text-app-ghost text-xs">vs</span>
 
-                <span :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-white/60'">
+                <span :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-app-muted'">
                   {{ m.right }}
                 </span>
 
@@ -64,21 +64,21 @@
 
             </div>
             <div v-for="m in getSpider(row)" :key="m.id"
-              class="lg:hidden flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-3 py-3 rounded-lg bg-[#141418] border border-[#1f1f22]">
+              class="lg:hidden flex flex-col gap-2 md:flex-row md:items-center md:justify-between px-3 py-3 rounded-lg bg-surface-2 border border-app-strong">
 
               <div class="flex items-center justify-between md:justify-start gap-2 w-full md:w-auto">
 
                 <span class="text-sm truncate max-w-[40%]"
-                  :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-white/60'">
+                  :class="m.winner === m.left ? 'text-pink-400 font-medium' : 'text-app-muted'">
                   {{ m.left }}
                 </span>
 
-                <span class="text-white/30 text-xs shrink-0 px-2">
+                <span class="text-app-ghost text-xs shrink-0 px-2">
                   vs
                 </span>
 
                 <span class="text-sm truncate max-w-[40%]"
-                  :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-white/60'">
+                  :class="m.winner === m.right ? 'text-pink-400 font-medium' : 'text-app-muted'">
                   {{ m.right }}
                 </span>
 
@@ -97,7 +97,7 @@
 
     </div>
 
-    <div v-else class="text-sm text-white/40 text-center py-6">
+    <div v-else class="text-sm text-app-subtle text-center py-6">
       No league events yet
     </div>
 

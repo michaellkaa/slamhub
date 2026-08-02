@@ -9,7 +9,7 @@
         {{ error }}
       </div>
 
-      <div v-else-if="!rows.length" class="py-8 text-center text-white/60">
+      <div v-else-if="!rows.length" class="py-8 text-center text-app-muted">
         Leaderboard je zatim prazdny.
       </div>
 

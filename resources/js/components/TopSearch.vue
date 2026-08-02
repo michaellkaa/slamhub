@@ -2,12 +2,12 @@
   <div class="relative w-full max-w-xl">
     <div class="flex gap-2">
       <input v-model="query" @input="search" placeholder="Hledat…"
-        class="flex-1 p-3 rounded-xl bg-[#1d1d21] text-white focus:outline-none" />
+        class="flex-1 p-3 rounded-xl bg-surface text-app focus:outline-none" />
     </div>
 
-    <div v-if="query && results" class="absolute mt-2 w-full bg-[#141418] rounded-xl shadow-xl p-4 z-50">
+    <div v-if="query && results" class="absolute mt-2 w-full bg-surface-2 rounded-xl shadow-xl p-4 z-50">
       <div v-if="results.users.length">
-        <p class="text-xs text-white/50 mb-2">Lidé</p>
+        <p class="text-xs text-app-faint mb-2">Lidé</p>
 
         <div v-for="u in results.users" :key="u.username" @click="goToProfile(u.username)"
           class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
@@ -15,25 +15,25 @@
 
           <div>
             <p class="text-white">{{ u.name }}</p>
-            <p class="text-xs text-white/40">{{ u.role }}</p>
+            <p class="text-xs text-app-subtle">{{ u.role }}</p>
           </div>
         </div>
       </div>
 
       <div v-if="results.events.length" class="mt-3">
-        <p class="text-xs text-white/50 mb-2">Eventy</p>
+        <p class="text-xs text-app-faint mb-2">Eventy</p>
         <div v-for="e in results.events" :key="e.id" @click="goToEvent(e.id)"
           class="text-white p-2 rounded hover:bg-white/5 cursor-pointer">
           {{ e.title }}
         </div>
       </div>
 
-      <div v-if="!results.users.length && !results.events.length" class="text-center text-white/40 py-3">
+      <div v-if="!results.users.length && !results.events.length" class="text-center text-app-subtle py-3">
         Žádné výsledky
       </div>
 
       <!--<div v-if="results.posts.length" class="mt-3">
-        <p class="text-xs text-white/50 mb-1">Příspěvky</p>
+        <p class="text-xs text-app-faint mb-1">Příspěvky</p>
         <div v-for="p in results.posts" :key="p.id">{{ p.title }}</div>
       </div>-->
     </div>

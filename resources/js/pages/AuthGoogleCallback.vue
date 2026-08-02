@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#0f0f12] text-white px-6">
-    <div class="w-full max-w-sm rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
+  <div class="min-h-screen flex items-center justify-center bg-app text-app px-6">
+    <div class="w-full max-w-sm rounded-3xl border border-app bg-white/5 backdrop-blur p-6">
       <div class="text-lg font-semibold">Přihlašuju přes Google…</div>
-      <div class="mt-2 text-sm text-white/70">
+      <div class="mt-2 text-sm text-app-muted">
         Chvilku strpení, dokončujeme přihlášení.
       </div>
 

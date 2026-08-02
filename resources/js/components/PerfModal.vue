@@ -1,6 +1,6 @@
 <template>
   <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" @click="close">
-    <div class="bg-[#141418] rounded-xl p-6 w-full max-w-md shadow-xl" @click.stop>
+    <div class="bg-surface-2 rounded-xl p-6 w-full max-w-md shadow-xl" @click.stop>
       <h2 class="text-lg font-bold mb-4">Vybrat performery</h2>
 
       <div class="max-h-40 overflow-y-auto space-y-2 mb-4">
@@ -11,13 +11,13 @@
       </div>
 
       <div class="mb-4">
-        <label class="text-sm text-white/80">
+        <label class="text-sm text-app-muted">
           Externí performer (bez profilu)
         </label>
 
         <div class="flex gap-2 mt-1">
           <input v-model="guestInput" placeholder="např. Vašek z Aše"
-            class="flex-1 p-2 rounded bg-[#1d1d21] text-white" />
+            class="flex-1 p-2 rounded bg-surface text-app" />
           <button type="button" @click="addGuest" class="px-3 rounded bg-pink-500 text-sm font-semibold">
             Přidat
           </button>
@@ -27,7 +27,7 @@
           <span v-for="(g, i) in localGuests" :key="i"
             class="bg-pink-500/20 px-2 py-1 rounded text-xs flex items-center gap-1">
             {{ g }}
-            <button type="button" @click="removeGuest(i)" class="text-white/60 hover:text-white">
+            <button type="button" @click="removeGuest(i)" class="text-app-muted hover:text-app">
               ×
             </button>
           </span>
@@ -35,7 +35,7 @@
       </div>
 
       <div class="flex justify-end gap-3">
-        <button type="button" @click="close" class="text-white/60 hover:text-white">
+        <button type="button" @click="close" class="text-app-muted hover:text-app">
           Zrušit
         </button>
 

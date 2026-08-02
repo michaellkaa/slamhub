@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen flex bg-[#0f0f12] text-white overflow-hidden">
+  <div class="w-screen h-screen flex bg-app text-app overflow-hidden">
 
 
 
@@ -9,7 +9,7 @@
       <div v-if="user" class="flex items-center gap-8">
         <img
           :src="user.profile_pic"
-          class="w-28 h-28 rounded-full object-cover border border-white/10 shadow-xl mb-4 cursor-pointer"
+          class="w-28 h-28 rounded-full object-cover border border-app shadow-xl mb-4 cursor-pointer"
           @click="triggerUpload"
         />
         <input
@@ -23,23 +23,23 @@
           <div class="flex items-center gap-4">
             <div class="font-bold tracking-wider">{{ user.name }}</div>
           </div>
-          <div class="text-white/40 text-sm">@{{ user.username }}</div>
+          <div class="text-app-subtle text-sm">@{{ user.username }}</div>
         </div>
       </div>
 
 
       <div v-else class="flex items-center gap-8 animate-pulse">
-        <div class="w-28 h-28 rounded-full bg-[#1d1d21] border border-white/10"></div>
+        <div class="w-28 h-28 rounded-full bg-surface border border-app"></div>
         <div class="flex flex-col gap-3 flex-1">
-          <div class="h-6 w-48 bg-[#1d1d21] rounded"></div>
-          <div class="h-4 w-40 bg-[#1d1d21] rounded"></div>
+          <div class="h-6 w-48 bg-surface rounded"></div>
+          <div class="h-4 w-40 bg-surface rounded"></div>
         </div>
       </div>
 
-      <div class="border-b border-white/10 pb-4 mt-8 no-scrollbar">
+      <div class="border-b border-app pb-4 mt-8 no-scrollbar">
 
         <div v-if="!user" class="flex gap-10">
-          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-[#1d1d21] rounded no-scrollbar"></div>
+          <div v-for="n in 4" :key="n" class="h-4 w-16 bg-surface rounded no-scrollbar"></div>
         </div>
 
         <div v-else class="flex gap-10">
@@ -72,9 +72,9 @@
 
     </div>
 
-    <div class="w-80 border-l border-white/5 px-6 py-8 overflow-auto space-y-4">
-      <div class="h-6 w-40 bg-[#1d1d21] rounded"></div>
-      <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-[#1d1d21]"></div>
+    <div class="w-80 border-l border-app-soft px-6 py-8 overflow-auto space-y-4">
+      <div class="h-6 w-40 bg-surface rounded"></div>
+      <div v-for="n in 4" :key="n" class="h-20 rounded-xl bg-surface"></div>
     </div>
 
     <CreateButton

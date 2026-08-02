@@ -1,23 +1,23 @@
 <template>
   <div class="flex flex-col gap-4 w-full">
-    <label class="text-xs text-white/60">Email</label>
+    <label class="text-xs text-app-muted">Email</label>
     <input
       type="email"
       name="email"
       autocomplete="email"
       v-model="email"
       placeholder="např. novak@email.cz"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
     />
 
-    <label class="mt-2 text-xs text-white/60">Heslo</label>
+    <label class="mt-2 text-xs text-app-muted">Heslo</label>
     <input
       type="password"
       name="password"
       autocomplete="current-password"
       v-model="password"
       placeholder="••••••••"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
+      class="w-full rounded-2xl border border-app bg-white/5 px-4 py-3 text-sm outline-none focus:border-pink-400/50 focus:ring-2 focus:ring-pink-400/20"
     />
 
     <button
@@ -29,13 +29,13 @@
 
     <div class="flex items-center gap-3 my-2">
       <div class="h-px flex-1 bg-white/10"></div>
-      <div class="text-xs text-white/50">nebo</div>
+      <div class="text-xs text-app-faint">nebo</div>
       <div class="h-px flex-1 bg-white/10"></div>
     </div>
 
     <button
       @click="loginWithGoogle"
-      class="w-full rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition text-white font-semibold py-3 flex items-center justify-center gap-2"
+      class="w-full rounded-2xl border border-app bg-white/5 hover:bg-white/10 transition text-white font-semibold py-3 flex items-center justify-center gap-2"
     >
       <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
         <path fill="#FFC107"
@@ -56,9 +56,9 @@
       <!-- INFO: neověřený email -->
       <div
         v-if="isUnverified"
-        class="rounded-2xl border border-white/10 bg-white/5 p-3"
+        class="rounded-2xl border border-app bg-white/5 p-3"
       >
-        <p class="text-sm text-white/60">
+        <p class="text-sm text-app-muted">
           {{ error }}
         </p>
 

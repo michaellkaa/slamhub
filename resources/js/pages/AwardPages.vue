@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] w-full min-h-screen md:h-screen flex flex-col md:flex-row overflow-x-hidden">
+  <div class="bg-app w-full min-h-screen md:h-screen flex flex-col md:flex-row overflow-x-hidden">
     <div class="md:h-full md:w-28 w-full fixed bottom-0 md:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
+  <div class="bg-app w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
 
     <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
@@ -9,12 +9,12 @@
       <div class="flex w-full h-full overflow-hidden min-h-0">
 
         <div :class="[
-          'w-full lg:w-72 bg-[#141418] border-r border-[#1f1f22] flex flex-col',
+          'w-full lg:w-72 bg-surface-2 border-r border-app-strong flex flex-col',
           selectedUser ? 'hidden lg:flex' : 'flex',
         ]">
-          <div class="h-16 border-b border-[#1f1f22] flex items-center justify-between px-4">
-            <div class="text-white font-semibold">Direct messages</div>
-            <button type="button" class="px-3 py-1.5 rounded-lg bg-[#1d1d21] hover:bg-[#2a2a30] text-white text-sm"
+          <div class="h-16 border-b border-app-strong flex items-center justify-between px-4">
+            <div class="text-app font-semibold">Direct messages</div>
+            <button type="button" class="px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-hover text-app text-sm"
               @click="showNewChat = !showNewChat">
               New chat
             </button>
@@ -24,12 +24,12 @@
 
             <template v-if="contacts.length > 0">
               <div v-for="user in contacts" :key="user.id"
-                class="flex items-center space-x-3 cursor-pointer hover:bg-[#1a1a1d] p-2 rounded"
+                class="flex items-center space-x-3 cursor-pointer hover:bg-surface-hover p-2 rounded"
                 @click="selectUser(user)">
                 <img :src="user.profile_pic_url || placeholderAvatar" alt=""
                   class="h-12 w-12 rounded-full object-cover" />
                 <div class="flex-1 space-y-1">
-                  <div class="text-white font-medium">{{ user.name }}</div>
+                  <div class="text-app font-medium">{{ user.name }}</div>
                   <!--<div class="text-gray-400 text-sm">{{ user.status || 'Online' }}</div>-->
                 </div>
               </div>
@@ -44,17 +44,17 @@
             <div v-if="showNewChat && suggestedUsers.length > 0" class="mt-2 w-full space-y-3">
               <div class="text-gray-400 text-sm mb-2 px-1">Lidé, které sleduješ</div>
               <div v-for="user in suggestedUsers" :key="user.id"
-                class="flex items-center justify-between p-2 bg-[#1d1d21] rounded hover:bg-[#2a2a30] cursor-pointer"
+                class="flex items-center justify-between p-2 bg-surface rounded hover:bg-surface-hover cursor-pointer"
                 @click="startNewChat(user)">
                 <div class="flex items-center space-x-3">
                   <img :src="user.profile_pic_url || placeholderAvatar" class="h-10 w-10 rounded-full object-cover" />
-                  <div class="text-white">{{ user.name }}</div>
+                  <div class="text-app">{{ user.name }}</div>
                 </div>
-                <span class="text-xs text-white/60">Message</span>
+                <span class="text-xs text-app-muted">Message</span>
               </div>
             </div>
 
-            <div v-else-if="showNewChat" class="text-sm text-white/60 bg-[#1d1d21] rounded p-3">
+            <div v-else-if="showNewChat" class="text-sm text-app-muted bg-surface rounded p-3">
               Nobody in your following list yet.
             </div>
 
@@ -63,15 +63,15 @@
 
         <div :class="['flex-1 flex flex-col min-h-0 h-full', selectedUser ? 'flex' : 'hidden lg:flex']">
 
-          <div class="h-16 border-b border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
+          <div class="h-16 border-b border-app-strong flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4">
             <button v-if="selectedUser" @click="backToList"
-              class="lg:hidden text-white/80 hover:text-white px-2 py-1 rounded bg-white/5">
+              class="lg:hidden text-app-muted hover:text-app px-2 py-1 rounded bg-white/5">
               ←
             </button>
             <img v-if="selectedUser" :src="selectedUser.profile_pic_url || placeholderAvatar"
               class="h-12 w-12 rounded-full object-cover" />
             <div>
-              <div class="text-white font-medium mb-1">{{ selectedUser?.name || 'Select a user' }}</div>
+              <div class="text-app font-medium mb-1">{{ selectedUser?.name || 'Select a user' }}</div>
               <div class="text-gray-400 text-sm">{{ selectedUser?.status || '' }}</div>
             </div>
           </div>
@@ -86,18 +86,18 @@
                 :src="message.sender.profile_pic_url || placeholderAvatar"
                 class="h-10 w-10 rounded-full object-cover" />
               <div
-                :class="message.sender_id === currentUser?.id ? 'bg-[#1d1d21] text-white p-3 rounded-lg max-w-[80%] lg:max-w-md break-words' : 'bg-[#2a2a30] text-white p-3 rounded-lg max-w-[80%] lg:max-w-md break-words'">
+                :class="message.sender_id === currentUser?.id ? 'bg-surface text-app p-3 rounded-lg max-w-[80%] lg:max-w-md break-words' : 'bg-surface-hover text-app p-3 rounded-lg max-w-[80%] lg:max-w-md break-words'">
                 {{ message.body }}
               </div>
             </div>
           </div>
 
-          <form class="h-20 shrink-0 border-t border-[#1f1f22] flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4"
+          <form class="h-20 shrink-0 border-t border-app-strong flex items-center px-4 lg:px-6 space-x-3 lg:space-x-4"
             @submit.prevent="sendMessage">
             <input v-model="newMessage" placeholder="Type a message..." :disabled="sendingMessage"
-              class="flex-1 h-12 px-4 rounded-lg bg-[#1d1d21] text-white focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed" />
+              class="flex-1 h-12 px-4 rounded-lg bg-surface text-app focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed" />
             <button type="submit" :disabled="sendingMessage"
-              class="h-12 px-4 lg:w-24 bg-[#1d1d21] rounded-lg text-white shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
+              class="h-12 px-4 lg:w-24 bg-surface rounded-lg text-app shrink-0 disabled:opacity-60 disabled:cursor-not-allowed">
               {{ sendingMessage ? 'Sending…' : 'Send' }}
             </button>
           </form>

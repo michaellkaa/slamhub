@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] w-full min-h-screen flex flex-col lg:flex-row overflow-hidden">
+  <div class="bg-app w-full min-h-screen flex flex-col lg:flex-row overflow-hidden">
     <div class="lg:h-full lg:w-28 w-full fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
@@ -65,7 +65,7 @@
                   {{ video.title || '' }}
                 </p>
 
-                <p class="text-sm text-white/75 leading-snug mt-1 line-clamp-2">
+                <p class="text-sm text-app-muted leading-snug mt-1 line-clamp-2">
                   {{ video.description || '' }}
                 </p>
               </div>
@@ -73,15 +73,15 @@
           </div>
         </div>
 
-        <div v-if="!loading && !videos.length" class="text-center text-white/60 py-10">
+        <div v-if="!loading && !videos.length" class="text-center text-app-muted py-10">
           Zatim tu nejsou zadna videa.
         </div>
 
         <div v-if="loading" v-for="n in 3" :key="'skeleton-' + n"
           class="mb-6 flex flex-col items-center gap-3 animate-pulse">
-          <div class="w-full max-w-md aspect-[9/16] bg-[#1d1d21] rounded-2xl"></div>
-          <div class="w-full max-w-md h-4 bg-[#1d1d21] rounded"></div>
-          <div class="w-full max-w-md h-3 bg-[#1d1d21] rounded"></div>
+          <div class="w-full max-w-md aspect-[9/16] bg-surface rounded-2xl"></div>
+          <div class="w-full max-w-md h-4 bg-surface rounded"></div>
+          <div class="w-full max-w-md h-3 bg-surface rounded"></div>
         </div>
       </div>
 
@@ -90,17 +90,17 @@
           <TopSearch />
         </div>
 
-        <div class="rounded-xl bg-[#121216] border border-white/10 p-4">
-          <div class="text-white font-semibold mb-3">Navrhy na sledovani</div>
+        <div class="rounded-xl bg-surface-4 border border-app p-4">
+          <div class="text-app font-semibold mb-3">Navrhy na sledovani</div>
 
           <div v-if="sidebarLoading" class="space-y-3">
             <div v-for="n in 3" :key="'suggest-skeleton-' + n" class="flex items-center">
-              <div class="w-10 h-10 rounded-full bg-[#1d1d21] mr-3"></div>
+              <div class="w-10 h-10 rounded-full bg-surface mr-3"></div>
               <div class="flex-1">
-                <div class="h-3 bg-[#1d1d21] rounded mb-1 w-2/3"></div>
-                <div class="h-2.5 bg-[#1d1d21] rounded w-1/3"></div>
+                <div class="h-3 bg-surface rounded mb-1 w-2/3"></div>
+                <div class="h-2.5 bg-surface rounded w-1/3"></div>
               </div>
-              <div class="w-16 h-7 rounded-lg bg-[#1d1d21]"></div>
+              <div class="w-16 h-7 rounded-lg bg-surface"></div>
             </div>
           </div>
 
@@ -108,20 +108,20 @@
             <div v-for="user in suggestedUsers" :key="user.id" class="flex items-center gap-3">
               <img :src="user.profile_pic_url || '/images/default-avatar.png'" class="w-10 h-10 rounded-full" />
               <button class="flex-1 text-left" @click="openProfile(user.username)">
-                <div class="text-sm text-white truncate">{{ user.name }}</div>
-                <div class="text-xs text-white/50">@{{ user.username }}</div>
+                <div class="text-sm text-app truncate">{{ user.name }}</div>
+                <div class="text-xs text-app-faint">@{{ user.username }}</div>
               </button>
             </div>
           </div>
         </div>
 
-        <div class="rounded-xl bg-[#121216] border border-white/10 p-4">
-          <div class="text-white font-semibold mb-3">Nedávné příspěvky</div>
+        <div class="rounded-xl bg-surface-4 border border-app p-4">
+          <div class="text-app font-semibold mb-3">Nedávné příspěvky</div>
 
           <div v-if="sidebarLoading" class="space-y-3">
             <div v-for="n in 3" :key="'post-skeleton-' + n" class="space-y-2">
-              <div class="h-3 bg-[#1d1d21] rounded w-5/6"></div>
-              <div class="h-2 bg-[#1d1d21] rounded w-1/2"></div>
+              <div class="h-3 bg-surface rounded w-5/6"></div>
+              <div class="h-2 bg-surface rounded w-1/2"></div>
             </div>
           </div>
 
@@ -129,30 +129,30 @@
             <div v-for="post in recentPosts" :key="post.id" class="flex items-start gap-3">
               <img :src="post.user?.profile_pic_url || '/images/default-avatar.png'" class="w-8 h-8 rounded-full mt-1" />
               <button class="text-left flex-1" @click="openProfile(post.user?.username)">
-                <div class="text-sm text-white truncate">{{ post.body }}</div>
-                <div class="text-xs text-white/50 mt-1">{{ formatDate(post.created_at) }}</div>
+                <div class="text-sm text-app truncate">{{ post.body }}</div>
+                <div class="text-xs text-app-faint mt-1">{{ formatDate(post.created_at) }}</div>
               </button>
             </div>
-            <div v-if="!recentPosts.length" class="text-white/50 text-sm">Žádné příspěvky.</div>
+            <div v-if="!recentPosts.length" class="text-app-faint text-sm">Žádné příspěvky.</div>
           </div>
         </div>
 
-        <div class="rounded-xl bg-[#121216] border border-white/10 p-4">
-          <div class="text-white font-semibold mb-3">Nadcházející akce</div>
+        <div class="rounded-xl bg-surface-4 border border-app p-4">
+          <div class="text-app font-semibold mb-3">Nadcházející akce</div>
 
           <div v-if="sidebarLoading" class="space-y-3">
-            <div v-for="n in 3" :key="'event-skeleton-' + n" class="h-3 bg-[#1d1d21] rounded"></div>
+            <div v-for="n in 3" :key="'event-skeleton-' + n" class="h-3 bg-surface rounded"></div>
           </div>
 
           <div v-else class="space-y-3">
             <div v-for="event in upcomingEvents" :key="event.id" class="flex items-center justify-between">
               <div class="flex-1">
-                <div class="text-sm text-white truncate">{{ event.title }}</div>
-                <div class="text-xs text-white/50">{{ formatDate(event.starts_at) }}</div>
+                <div class="text-sm text-app truncate">{{ event.title }}</div>
+                <div class="text-xs text-app-faint">{{ formatDate(event.starts_at) }}</div>
               </div>
-              <button class="text-xs text-white/60 ml-3" @click="openEvent(event.id)">Otevřít</button>
+              <button class="text-xs text-app-muted ml-3" @click="openEvent(event.id)">Otevřít</button>
             </div>
-            <div v-if="!upcomingEvents.length" class="text-white/50 text-sm">Žádné nadcházející akce.</div>
+            <div v-if="!upcomingEvents.length" class="text-app-faint text-sm">Žádné nadcházející akce.</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 <template>
   <div v-if="modelValue" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div class="bg-[#141418] rounded-xl p-6 w-96 max-h-[80vh] overflow-auto">
+    <div class="bg-surface-2 rounded-xl p-6 w-96 max-h-[80vh] overflow-auto">
       <h2 class="text-lg font-bold mb-4">Vybrat ocenění</h2>
 
       <div class="flex flex-col gap-2">

@@ -1,24 +1,24 @@
 <template>
-  <div class="min-h-screen bg-[#0f0f12] text-white flex">
+  <div class="min-h-screen bg-app text-app flex">
     <div class="flex-1 flex items-center justify-center px-6 py-10">
       <div class="w-full max-w-sm">
         <div class="mb-8">
           <div
-            class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+            class="inline-flex items-center gap-2 rounded-full border border-app bg-white/5 px-3 py-1 text-xs text-app-muted">
             SlamHub
           </div>
           <h1 class="mt-4 text-3xl font-black tracking-tight">
             Přihlášení
           </h1>
-          <p class="mt-2 text-sm text-white/70">
+          <p class="mt-2 text-sm text-app-muted">
             Pokračuj do aplikace a sleduj akce, videa i žebříčky.
           </p>
         </div>
 
-        <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-6">
+        <div class="rounded-3xl border border-app bg-white/5 backdrop-blur p-6">
           <LoginForm />
 
-          <p class="mt-6 text-sm text-white/70">
+          <p class="mt-6 text-sm text-app-muted">
             Nemáš účet?
             <router-link to="/register" class="text-pink-300 hover:text-pink-200 font-semibold">Zaregistruj
               se</router-link>

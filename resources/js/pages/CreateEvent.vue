@@ -1,14 +1,14 @@
 <template>
-  <div class="w-screen min-h-screen flex items-center justify-center bg-[#0f0f12] text-white p-6">
+  <div class="w-screen min-h-screen flex items-center justify-center bg-app text-app p-6">
 
-    <div class="bg-[#141418] rounded-2xl shadow-2xl p-8 w-full max-w-2xl space-y-8">
+    <div class="bg-surface-2 rounded-2xl shadow-2xl p-8 w-full max-w-2xl space-y-8">
 
       <div class="text-center">
         <h1 class="text-3xl font-bold">
   {{ isEdit ? 'Upravit Event' : 'Přidat Event' }}
 </h1>
 
-<p class="text-white/40 text-sm mt-1">
+<p class="text-app-subtle text-sm mt-1">
   {{
     isEdit
       ? 'Uprav detaily existujícího eventu'
@@ -22,27 +22,27 @@
         <div class="space-y-4">
 
           <input v-model="event.title" required placeholder="Název eventu"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
+            class="w-full p-3 rounded-lg bg-surface focus:ring-2 focus:ring-pink-500 outline-none" />
 
           <input type="datetime-local" v-model="event.starts_at" required
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
+            class="w-full p-3 rounded-lg bg-surface focus:ring-2 focus:ring-pink-500 outline-none" />
 
           <input v-model="event.location" placeholder="Místo konání"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
+            class="w-full p-3 rounded-lg bg-surface focus:ring-2 focus:ring-pink-500 outline-none" />
 
           <textarea v-model="event.description" rows="3" placeholder="Popis eventu"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
+            class="w-full p-3 rounded-lg bg-surface focus:ring-2 focus:ring-pink-500 outline-none" />
         </div>
 
         <div class="space-y-1">
 
-          <input type="file" @change="uploadCover" class="w-full p-3 rounded-lg bg-[#1d1d21]" />
+          <input type="file" @change="uploadCover" class="w-full p-3 rounded-lg bg-surface" />
         </div>
 
         <div class="space-y-4">
 
           <select v-model="event.event_mode"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none">
+            class="w-full p-3 rounded-lg bg-surface focus:ring-2 focus:ring-pink-500 outline-none">
             <option value="regular">Regular</option>
             <option value="league">League</option>
           </select>
@@ -55,17 +55,17 @@
         <div class="space-y-3">
 
           <button type="button" @click="showModal = true"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition">
+            class="w-full p-3 rounded-lg bg-surface hover:ring-2 hover:ring-pink-500 text-left transition">
             Vybrat performery
-            <div v-if="selectedPerformersLabel" class="text-xs text-white/40 mt-1">
+            <div v-if="selectedPerformersLabel" class="text-xs text-app-subtle mt-1">
               {{ selectedPerformersLabel }}
             </div>
           </button>
 
           <button type="button" @click="showAwardModal = true"
-            class="w-full p-3 rounded-lg bg-[#1d1d21] hover:ring-2 hover:ring-pink-500 text-left transition">
+            class="w-full p-3 rounded-lg bg-surface hover:ring-2 hover:ring-pink-500 text-left transition">
             Přidat ocenění
-            <div v-if="selectedAwardsLabel" class="text-xs text-white/40 mt-1">
+            <div v-if="selectedAwardsLabel" class="text-xs text-app-subtle mt-1">
               {{ selectedAwardsLabel }}
             </div>
           </button>

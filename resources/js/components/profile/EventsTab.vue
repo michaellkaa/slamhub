@@ -2,7 +2,7 @@
   <div class="mt-8 w-full lg:w-[50%] space-y-4">
     <div v-if="loading" class="space-y-3">
       <div v-for="n in 4" :key="'event-skeleton-' + n"
-        class="rounded-2xl border border-white/10 bg-[#1d1d21] p-4 animate-pulse">
+        class="rounded-2xl border border-app bg-surface p-4 animate-pulse">
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-2.5 flex-1">
             <div class="h-5 w-2/3 bg-white/10 rounded"></div>
@@ -16,30 +16,30 @@
 
     <div v-else-if="sortedEvents.length" class="space-y-3">
       <a v-for="event in upcomingEvents" :key="event.id" :href="`/events/${event.id}`"
-        class="block rounded-2xl border border-white/10 bg-[#1d1d21] p-4 transition hover:bg-[#24242a] hover:border-white/20">
+        class="block rounded-2xl border border-app bg-surface p-4 transition hover:bg-surface-hover-2 hover:border-app-stronger">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="text-white font-semibold text-base truncate">
+            <div class="text-app font-semibold text-base truncate">
               {{ event.title || 'Bez nazvu' }}
             </div>
-            <div class="mt-1 text-sm text-white/60 truncate">
+            <div class="mt-1 text-sm text-app-muted truncate">
               {{ event.location || 'Místo není uvedeno' }}
             </div>
           </div>
 
           <span class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
-            :class="isUpcoming(event.starts_at) ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-white/70'">
+            :class="isUpcoming(event.starts_at) ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/10 text-app-muted'">
             {{ isUpcoming(event.starts_at) ? 'Nadcházející' : 'Proběhlo' }}
           </span>
         </div>
 
-        <div class="mt-3 text-xs text-white/50">
+        <div class="mt-3 text-xs text-app-faint">
           {{ formatDateTime(event.starts_at) }}
         </div>
       </a>
 
       <div v-if="pastEvents.length" class="pt-1">
-        <button type="button" class="text-[11px] text-white/30 hover:text-white/50 transition"
+        <button type="button" class="text-[11px] text-app-ghost hover:text-app-faint transition"
           @click="showPastEvents = !showPastEvents">
           {{ showPastEvents ? 'Skrýt proběhlé akce' : `Zobrazit proběhle akce (${pastEvents.length})` }}
         </button>
@@ -47,14 +47,14 @@
 
       <div v-if="showPastEvents" class="space-y-2">
         <a v-for="event in pastEvents" :key="'past-' + event.id" :href="`/events/${event.id}`"
-          class="block rounded-xl border border-white/5 bg-[#141418] p-3 opacity-80 hover:opacity-100 transition">
-          <div class="text-sm text-white/80 truncate">{{ event.title || 'Bez nazvu' }}</div>
-          <div class="text-xs text-white/45 mt-1">{{ formatDateTime(event.starts_at) }}</div>
+          class="block rounded-xl border border-app-soft bg-surface-2 p-3 opacity-80 hover:opacity-100 transition">
+          <div class="text-sm text-app-muted truncate">{{ event.title || 'Bez nazvu' }}</div>
+          <div class="text-xs text-app-dim mt-1">{{ formatDateTime(event.starts_at) }}</div>
         </a>
       </div>
     </div>
 
-    <div v-else class="rounded-xl border border-white/10 bg-[#17171b] p-4 text-white/50 text-sm">
+    <div v-else class="rounded-xl border border-app bg-surface-3 p-4 text-app-faint text-sm">
       Tento uzivatel zatim nema zadne eventy.
     </div>
   </div>

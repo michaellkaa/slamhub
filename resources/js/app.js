@@ -3,6 +3,10 @@ import App from './App.vue';
 import router from './router';
 import axios from 'axios';
 import './bootstrap';
+import '../css/theme.css';
+import { initTheme } from './composables/useTheme';
+
+initTheme();
 
 axios.defaults.baseURL = window.location.origin;
 

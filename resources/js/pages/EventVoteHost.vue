@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-[#0f0f12] text-white px-4 py-6 flex justify-center">
+  <div class="min-h-screen bg-app text-app px-4 py-6 flex justify-center">
     <div class="w-full max-w-2xl">
       <div class="flex items-center justify-between mb-6">
         <button @click="$router.back()" class="text-pink-500 hover:underline text-lg">
           ←
         </button>
-        <div class="text-sm text-white/60">
+        <div class="text-sm text-app-muted">
           Host panel
         </div>
       </div>
@@ -16,7 +16,7 @@
             <h1 class="text-2xl font-extrabold tracking-wide">Hlasování (host)</h1>
           </div>
           <div class="text-right">
-            <div class="text-xs text-white/50">Kód</div>
+            <div class="text-xs text-app-faint">Kód</div>
             <div class="font-mono text-lg font-bold">{{ session.code || '—' }}</div>
           </div>
         </div>
@@ -41,23 +41,23 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-          <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-            <div class="text-xs text-white/50 mb-1">Stav</div>
+          <div class="bg-app rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+            <div class="text-xs text-app-faint mb-1">Stav</div>
             <div class="font-bold">{{ session.enabled ? 'Aktivni' : 'Neaktivni' }}</div>
           </div>
-          <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-            <div class="text-xs text-white/50 mb-1">Hlasů (live)</div>
+          <div class="bg-app rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+            <div class="text-xs text-app-faint mb-1">Hlasů (live)</div>
             <div class="font-extrabold text-xl">{{ liveTotals.votes }}</div>
           </div>
-          <div class="bg-[#0f0f12] rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-            <div class="text-xs text-white/50 mb-1">Součet bodů (live)</div>
+          <div class="bg-app rounded-2xl p-4 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+            <div class="text-xs text-app-faint mb-1">Součet bodů (live)</div>
             <div class="font-extrabold text-xl">{{ liveTotals.score }}</div>
           </div>
         </div>
 
         <div class="flex gap-2 mb-4">
           <input v-model="newPerformerName" placeholder="Jméno performera"
-            class="flex-1 bg-[#0f0f12] rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
+            class="flex-1 bg-app rounded-xl px-4 py-3 outline-none shadow-[0_0_0_1px_rgba(255,255,255,0.08)] focus:shadow-[0_0_0_1px_rgba(236,72,153,0.6)]" />
           <button @click="createRound" class="px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-semibold">
             Přidat kolo
           </button>
@@ -65,11 +65,11 @@
 
         <div v-if="rounds.length" class="space-y-2">
           <div v-for="r in rounds" :key="r.id"
-            class="bg-[#0f0f12] rounded-2xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+            class="bg-app rounded-2xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
             <div class="min-w-0">
               <div class="font-semibold truncate">{{ r.performer_name }}</div>
-              <div class="text-xs text-white/50">{{ r.state }}</div>
-              <div class="text-xs" :class="r.include_in_ranking ? 'text-emerald-300' : 'text-white/45'">
+              <div class="text-xs text-app-faint">{{ r.state }}</div>
+              <div class="text-xs" :class="r.include_in_ranking ? 'text-emerald-300' : 'text-app-dim'">
                 {{ r.include_in_ranking ? 'Pocita se do vysledku' : 'Skryto (bez bodu)' }}
               </div>
             </div>
@@ -89,7 +89,7 @@
           </div>
         </div>
 
-        <div v-else class="text-sm text-white/60">
+        <div v-else class="text-sm text-app-muted">
           Zatím žádná kola. Přidat prvního performera.
         </div>
       </div>

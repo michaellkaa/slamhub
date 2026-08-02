@@ -1,7 +1,7 @@
 <template>
-  <div class="w-screen h-screen flex items-center justify-center bg-[#0f0f12] text-white p-4">
+  <div class="w-screen h-screen flex items-center justify-center bg-app text-app p-4">
 
-    <div class="bg-[#141418] rounded-xl shadow-xl p-8 w-full max-w-lg">
+    <div class="bg-surface-2 rounded-xl shadow-xl p-8 w-full max-w-lg">
 
       <h1 class="text-2xl font-bold mb-6 text-center">
         Nahrát video
@@ -14,10 +14,10 @@
         </label>
 
         <div
-          class="border-2 border-dashed border-white/20 rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
+          class="border-2 border-dashed border-app-stronger rounded-xl w-full aspect-video relative flex items-center justify-center cursor-pointer hover:border-pink-500 transition bg-black overflow-hidden"
           @click="triggerFile" @dragover.prevent @drop.prevent="handleDrop">
 
-          <span v-if="!filePreview" class="text-white/60 text-sm">
+          <span v-if="!filePreview" class="text-app-muted text-sm">
             Klikni nebo přetáhni video
           </span>
 
@@ -26,7 +26,7 @@
 
         </div>
 
-        <div v-if="file" class="text-xs text-white/60 truncate">
+        <div v-if="file" class="text-xs text-app-muted truncate">
           {{ file.name }}
         </div>
 
@@ -37,16 +37,16 @@
         </label>
 
         <input v-model="title" required placeholder="Např. Slam poetry vystoupení"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none" />
+          class="p-3 rounded bg-surface focus:ring-2 focus:ring-pink-500 outline-none" />
 
         <label class="text-sm">
           Popis videa (max {{ DESC_LIMIT }} znaků)
         </label>
 
         <textarea v-model="description" rows="4" :maxlength="DESC_LIMIT" placeholder="Krátký popis videa"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"></textarea>
+          class="p-3 rounded bg-surface focus:ring-2 focus:ring-pink-500 outline-none"></textarea>
 
-        <div class="text-xs text-white/40 mt-1 flex justify-between">
+        <div class="text-xs text-app-subtle mt-1 flex justify-between">
           <span>{{ description.length }}/{{ DESC_LIMIT }}</span>
 
           <span v-if="description.length >= DESC_LIMIT" class="text-pink-400">
@@ -56,23 +56,23 @@
 
 
 
-        <label class="text-sm text-white/70">
+        <label class="text-sm text-app-muted">
           Viditelnost
         </label>
 
         <!--<select
           v-model="status"
-          class="p-3 rounded bg-[#1d1d21] focus:ring-2 focus:ring-pink-500 outline-none"
+          class="p-3 rounded bg-surface focus:ring-2 focus:ring-pink-500 outline-none"
         >
           <option value="public">Toto video bude nastaveno jako veřejné</option>
           <option value="unlisted">Unlisted</option>
           <option value="private">Private</option>
         </select>-->
         <div class="flex flex-col">
-          <span class="text-sm text-white">
+          <span class="text-sm text-app">
             Veřejné
           </span>
-          <span class="text-xs text-white/40">
+          <span class="text-xs text-app-subtle">
             Video bude viditelné pro všechny uživatele
           </span>
         </div>
@@ -85,7 +85,7 @@
           {{ uploading ? 'Nahrávám...' : 'Nahrát video' }}
         </button>
 
-        <!--<div v-if="videoSlug" class="text-white/70 text-sm mt-2 text-center break-all">
+        <!--<div v-if="videoSlug" class="text-app-muted text-sm mt-2 text-center break-all">
           Sdílecí link:
           <a
             :href="baseUrl + '/videos/' + videoSlug"

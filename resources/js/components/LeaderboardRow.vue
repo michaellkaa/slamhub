@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
-           bg-[#18181d]/60 border border-white/10
+           bg-[#18181d]/60 border border-app
            animate-pulse">
     <div class="w-10 h-5 bg-white/10 rounded"></div>
     <div class="h-12 w-12 rounded-full bg-white/10"></div>
@@ -15,7 +15,7 @@
 
   <button v-else type="button" class="w-full rounded-2xl px-5 py-4 flex items-center gap-4
            bg-[#18181d]/80 backdrop-blur-md
-           border border-white/10
+           border border-app
            hover:border-[#BF2679]/40 hover:bg-[#1c1c22]
            transition-all duration-200
            shadow-md hover:shadow-lg" @click="$emit('select', row)">
@@ -30,7 +30,7 @@
       <h1 class="text-base lg:text-lg font-semibold truncate text-white">
         {{ row.name }}
       </h1>
-      <p class="text-xs text-white/50 truncate">
+      <p class="text-xs text-app-faint truncate">
         @{{ row.username }}
       </p>
     </div>
@@ -57,10 +57,10 @@ const props = defineProps({
 defineEmits(['select'])
 
 const rankColor = computed(() => {
-  if (!props.row) return 'text-white/30'
+  if (!props.row) return 'text-app-ghost'
   if (props.row.rank === 1) return 'text-yellow-400'
   if (props.row.rank === 2) return 'text-gray-300'
   if (props.row.rank === 3) return 'text-orange-400'
-  return 'text-white/70'
+  return 'text-app-muted'
 })
 </script>

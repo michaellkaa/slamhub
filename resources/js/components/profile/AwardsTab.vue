@@ -1,20 +1,20 @@
 <template>
   <div class="mt-8 w-full lg:w-[70%] space-y-4">
     <div v-if="awards.length > 0">
-      <div v-for="award in awards" :key="award.id" class="flex items-center gap-4 p-4 bg-[#1d1d21] rounded-xl mb-4">
+      <div v-for="award in awards" :key="award.id" class="flex items-center gap-4 p-4 bg-surface rounded-xl mb-4">
         <img :src="award.icon_url" class="w-10 h-10 object-contain" />
         <div>
-          <div class="font-medium text-white">
+          <div class="font-medium text-app">
             {{ award.title }}
           </div>
-          <div class="text-sm text-white/40">
+          <div class="text-sm text-app-subtle">
             {{ award.year }}
           </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="text-white/20 text-center py-8">
+    <div v-else class="text-app-ghost text-center py-8">
       žádná ocenění nenalezena...
     </div>
   </div>

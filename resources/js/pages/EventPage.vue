@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
+  <div class="bg-app w-screen h-screen flex flex-col lg:flex-row overflow-hidden">
     <div class="lg:h-full lg:w-28 w-full  fixed bottom-0 lg:static z-10">
       <SideNav :activeNav="activeNav" @navigate="handleNavigate" />
     </div>
@@ -9,21 +9,21 @@
         <div class="max-w-5xl w-full flex-1 min-h-0 flex flex-col">
 
           <section class="mt-4 mb-4 flex items-center justify-between gap-4">
-            <h1 class="text-white text-2xl font-bold">Události</h1>
+            <h1 class="text-app text-2xl font-bold">Události</h1>
 
             <div class="relative">
               <button type="button"
-                class="min-w-[180px] rounded-xl border border-white/10 bg-[#17171b] px-3 py-2 text-left text-sm text-white/90 hover:bg-[#1f1f24] transition"
+                class="min-w-[180px] rounded-xl border border-app bg-surface-3 px-3 py-2 text-left text-sm text-app hover:bg-surface-hover transition"
                 @click="isFilterOpen = !isFilterOpen">
                 {{ activeFilterLabel }}
-                <span class="float-right text-white/50">▾</span>
+                <span class="float-right text-app-faint">▾</span>
               </button>
 
               <div v-if="isFilterOpen"
-                class="absolute right-0 mt-2 w-full rounded-xl border border-white/10 bg-[#141418] p-1 shadow-xl z-30">
+                class="absolute right-0 mt-2 w-full rounded-xl border border-app bg-surface-2 p-1 shadow-xl z-30">
                 <button v-for="option in filterOptions" :key="option.value" type="button"
                   class="w-full rounded-lg px-3 py-2 text-left text-sm transition"
-                  :class="activeFilter === option.value ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'"
+                  :class="activeFilter === option.value ? 'bg-white/10 text-app' : 'text-app-muted hover:bg-white/5 hover:text-app'"
                   @click="selectFilter(option.value)">
                   {{ option.label }}
                 </button>
@@ -42,7 +42,7 @@
                   @click="$router.push({ name: 'EventDetail', params: { id: event.id } })" />
 
                 <div v-if="!filteredEvents.length"
-                  class="col-span-full rounded-xl border border-white/10 bg-[#17171b] p-4 text-sm text-white/50">
+                  class="col-span-full rounded-xl border border-app bg-surface-3 p-4 text-sm text-app-faint">
                   Pro tento filtr nejsou žádné události.
                 </div>
 

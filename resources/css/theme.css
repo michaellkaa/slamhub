@@ -1,0 +1,156 @@
+/* Theme tokens — dark = current look; light = placeholders; system = OS preference via CSS */
+
+:root {
+  color-scheme: dark light;
+  --color-bg: #0f0f12;
+  --color-surface: #1d1d21;
+  --color-surface-2: #141418;
+  --color-surface-3: #17171b;
+  --color-surface-4: #121216;
+  --color-surface-hover: #2a2a30;
+  --color-surface-hover-2: #24242a;
+  --color-surface-active: #3a3a3a;
+  --color-border-strong: #1f1f22;
+  --color-text: #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-text-faint: rgba(255, 255, 255, 0.5);
+  --color-text-dim: rgba(255, 255, 255, 0.45);
+  --color-text-ghost: rgba(255, 255, 255, 0.3);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-soft: rgba(255, 255, 255, 0.05);
+  --color-border-stronger: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0f0f12;
+  --color-surface: #1d1d21;
+  --color-surface-2: #141418;
+  --color-surface-3: #17171b;
+  --color-surface-4: #121216;
+  --color-surface-hover: #2a2a30;
+  --color-surface-hover-2: #24242a;
+  --color-surface-active: #3a3a3a;
+  --color-border-strong: #1f1f22;
+  --color-text: #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.6);
+  --color-text-subtle: rgba(255, 255, 255, 0.4);
+  --color-text-faint: rgba(255, 255, 255, 0.5);
+  --color-text-dim: rgba(255, 255, 255, 0.45);
+  --color-text-ghost: rgba(255, 255, 255, 0.3);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-soft: rgba(255, 255, 255, 0.05);
+  --color-border-stronger: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="light"] {
+  /* TODO: doplň finální light mode barvy */
+  color-scheme: light;
+  --color-bg: #f4f4f6;
+  --color-surface: #ffffff;
+  --color-surface-2: #ececf0;
+  --color-surface-3: #e4e4ea;
+  --color-surface-4: #f0f0f4;
+  --color-surface-hover: #e6e6ec;
+  --color-surface-hover-2: #e0e0e8;
+  --color-surface-active: #d6d6de;
+  --color-border-strong: #d8d8e0;
+  --color-text: #111114;
+  --color-text-muted: rgba(17, 17, 20, 0.65);
+  --color-text-subtle: rgba(17, 17, 20, 0.45);
+  --color-text-faint: rgba(17, 17, 20, 0.55);
+  --color-text-dim: rgba(17, 17, 20, 0.5);
+  --color-text-ghost: rgba(17, 17, 20, 0.35);
+  --color-border: rgba(17, 17, 20, 0.12);
+  --color-border-soft: rgba(17, 17, 20, 0.06);
+  --color-border-stronger: rgba(17, 17, 20, 0.22);
+}
+
+/* System follows OS — works on macOS, iOS, Windows, Android */
+html[data-theme="system"] {
+  color-scheme: dark light;
+}
+
+@media (prefers-color-scheme: light) {
+  html[data-theme="system"] {
+    color-scheme: light;
+    --color-bg: #f4f4f6;
+    --color-surface: #ffffff;
+    --color-surface-2: #ececf0;
+    --color-surface-3: #e4e4ea;
+    --color-surface-4: #f0f0f4;
+    --color-surface-hover: #e6e6ec;
+    --color-surface-hover-2: #e0e0e8;
+    --color-surface-active: #d6d6de;
+    --color-border-strong: #d8d8e0;
+    --color-text: #111114;
+    --color-text-muted: rgba(17, 17, 20, 0.65);
+    --color-text-subtle: rgba(17, 17, 20, 0.45);
+    --color-text-faint: rgba(17, 17, 20, 0.55);
+    --color-text-dim: rgba(17, 17, 20, 0.5);
+    --color-text-ghost: rgba(17, 17, 20, 0.35);
+    --color-border: rgba(17, 17, 20, 0.12);
+    --color-border-soft: rgba(17, 17, 20, 0.06);
+    --color-border-stronger: rgba(17, 17, 20, 0.22);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    color-scheme: dark;
+    --color-bg: #0f0f12;
+    --color-surface: #1d1d21;
+    --color-surface-2: #141418;
+    --color-surface-3: #17171b;
+    --color-surface-4: #121216;
+    --color-surface-hover: #2a2a30;
+    --color-surface-hover-2: #24242a;
+    --color-surface-active: #3a3a3a;
+    --color-border-strong: #1f1f22;
+    --color-text: #ffffff;
+    --color-text-muted: rgba(255, 255, 255, 0.6);
+    --color-text-subtle: rgba(255, 255, 255, 0.4);
+    --color-text-faint: rgba(255, 255, 255, 0.5);
+    --color-text-dim: rgba(255, 255, 255, 0.45);
+    --color-text-ghost: rgba(255, 255, 255, 0.3);
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-soft: rgba(255, 255, 255, 0.05);
+    --color-border-stronger: rgba(255, 255, 255, 0.2);
+  }
+}
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.bg-app { background-color: var(--color-bg); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-surface-2 { background-color: var(--color-surface-2); }
+.bg-surface-3 { background-color: var(--color-surface-3); }
+.bg-surface-4 { background-color: var(--color-surface-4); }
+.bg-surface-hover { background-color: var(--color-surface-hover); }
+.bg-surface-active { background-color: var(--color-surface-active); }
+.hover\:bg-surface:hover { background-color: var(--color-surface); }
+.hover\:bg-surface-hover:hover { background-color: var(--color-surface-hover); }
+.hover\:bg-surface-hover-2:hover { background-color: var(--color-surface-hover-2); }
+.hover\:bg-surface-active:hover { background-color: var(--color-surface-active); }
+
+.text-app { color: var(--color-text); }
+.text-app-muted { color: var(--color-text-muted); }
+.text-app-subtle { color: var(--color-text-subtle); }
+.text-app-faint { color: var(--color-text-faint); }
+.text-app-dim { color: var(--color-text-dim); }
+.text-app-ghost { color: var(--color-text-ghost); }
+.hover\:text-app:hover { color: var(--color-text); }
+.hover\:text-app-muted:hover { color: var(--color-text-muted); }
+.hover\:text-app-faint:hover { color: var(--color-text-faint); }
+.hover\:text-app-ghost:hover { color: var(--color-text-ghost); }
+
+.border-app { border-color: var(--color-border); }
+.border-app-soft { border-color: var(--color-border-soft); }
+.border-app-strong { border-color: var(--color-border-strong); }
+.border-app-stronger { border-color: var(--color-border-stronger); }
+.hover\:border-app-stronger:hover { border-color: var(--color-border-stronger); }

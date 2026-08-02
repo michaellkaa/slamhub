@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#0f0f12] min-h-screen text-white px-4 py-8 flex justify-center">
+  <div class="bg-app min-h-screen text-app px-4 py-8 flex justify-center">
     <div class="w-full max-w-3xl">
 
       <button @click="$router.back()" class="mb-6 text-pink-500 hover:underline text-lg">
@@ -7,13 +7,13 @@
       </button>
 
       <div v-if="loading" class="animate-pulse space-y-4">
-        <div class="w-full max-w-md h-80 bg-[#2a2a2e] rounded mx-auto"></div>
-        <div class="h-8 bg-[#2a2a2e] rounded w-3/4 mx-auto"></div>
-        <div class="h-4 bg-[#2a2a2e] rounded w-1/2 mx-auto"></div>
-        <div class="h-12 bg-[#2a2a2e] rounded w-64 mx-auto"></div>
+        <div class="w-full max-w-md h-80 bg-surface-hover rounded mx-auto"></div>
+        <div class="h-8 bg-surface-hover rounded w-3/4 mx-auto"></div>
+        <div class="h-4 bg-surface-hover rounded w-1/2 mx-auto"></div>
+        <div class="h-12 bg-surface-hover rounded w-64 mx-auto"></div>
         <div class="space-y-2 pt-2">
-          <div class="h-4 bg-[#2a2a2e] rounded w-full"></div>
-          <div class="h-4 bg-[#2a2a2e] rounded w-5/6"></div>
+          <div class="h-4 bg-surface-hover rounded w-full"></div>
+          <div class="h-4 bg-surface-hover rounded w-5/6"></div>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
           class="mb-4 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl">
           Edit event
         </button>
-        <div class="text-white/60 text-sm mb-4 space-y-1">
+        <div class="text-app-muted text-sm mb-4 space-y-1">
           <p v-if="event.starts_at">
             {{ formatDate(event.starts_at) }}
           </p>
@@ -48,11 +48,11 @@
               : 'bg-white/10'" :disabled="!sessionStatus.enabled">
 
             Hlasovani
-            <span v-if="!sessionStatus.enabled" class="text-white/60 text-sm font-semibold">(Neaktivni)</span>
+            <span v-if="!sessionStatus.enabled" class="text-app-muted text-sm font-semibold">(Neaktivni)</span>
           </button>
         </div>
 
-        <p v-if="event.description" class="text-white/80 leading-relaxed mb-6 text-left whitespace-pre-line">
+        <p v-if="event.description" class="text-app-muted leading-relaxed mb-6 text-left whitespace-pre-line">
           {{ event.description }}
         </p>
 
@@ -65,7 +65,7 @@
             <li v-for="performer in event.performers" :key="performer.id" class="flex items-center gap-3 cursor-pointer"
               @click="goToProfile(performer.username)">
               <img :src="performer.profile_pic_url" class="w-8 h-8 rounded-full object-cover" />
-              <span class="text-white/80">
+              <span class="text-app-muted">
                 {{ performer.name || performer.username }}
               </span>
             </li>
@@ -77,16 +77,16 @@
           Koupit lístek
         </a>
 
-        <div class="mt-8 bg-[#121218] rounded-2xl p-5 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
+        <div class="mt-8 bg-surface-4 rounded-2xl p-5 text-left shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
           <div class="flex items-center justify-between gap-3">
             <div>
               <h3 class="text-lg font-extrabold">Hlasovani</h3>
-              <p class="text-sm text-white/60">
+              <p class="text-sm text-app-muted">
                 {{ sessionStatus.enabled ? 'Aktivni' : 'Neaktivni' }}
               </p>
               <div class="mt-2">
                 <span class="inline-flex items-center gap-2 text-xs font-semibold px-2.5 py-1 rounded-full"
-                  :class="canManageVoting ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-white/5 text-white/50 ring-1 ring-white/10'">
+                  :class="canManageVoting ? 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30' : 'bg-white/5 text-app-faint ring-1 ring-white/10'">
                   Host: {{ canManageVoting ? 'On' : 'Off' }}
                 </span>
               </div>
