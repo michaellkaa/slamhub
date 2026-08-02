@@ -4,7 +4,6 @@ import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
-
 export default defineConfig({
     plugins: [
         laravel({
@@ -20,12 +19,16 @@ export default defineConfig({
             registerType: 'autoUpdate',
             includeAssets: ['favicon.png', 'pwa-icon.svg'],
             injectRegister: false,
+            buildBase: '/build/',
+            base: '/',
+            scope: '/',
             manifest: {
                 name: 'SlamHub',
                 short_name: 'SlamHub',
                 description: 'Platforma pro slam poetry komunitu.',
                 start_url: '/',
                 scope: '/',
+                id: '/',
                 display: 'standalone',
                 background_color: '#0f0f12',
                 theme_color: '#0f0f12',
@@ -47,7 +50,6 @@ export default defineConfig({
                 type: 'module',
             },
         }),
-
     ],
     resolve: {
         alias: {

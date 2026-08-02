@@ -65,11 +65,35 @@ export function wantsPushEnabled() {
 async function getRegistration() {
   if (!('serviceWorker' in navigator)) return null
 
+  // Prefer registration already created by virtual:pwa-register.
+  if (window.__slamSwRegistration) {
+    return window.__slamSwRegistration
+  }
+
   try {
-    const existing = await navigator.serviceWorker.getRegistration()
-    if (existing) return existing
+    const existing = await navigator.serviceWorker.getRegistration('/')
+      || await navigator.serviceWorker.getRegistration()
+    if (existing?.active || existing?.waiting || existing?.installing) {
+      return existing
+    }
   } catch {
-    // continue
+    // continue to explicit register
+  }
+
+  // Production: SW is copied to /sw.js (root scope). Fallback: /build/sw.js + header.
+  const candidates = import.meta.env.DEV
+    ? []
+    : ['/sw.js', '/build/sw.js']
+
+  for (const url of candidates) {
+    try {
+      const reg = await navigator.serviceWorker.register(url, { scope: '/' })
+      window.__slamSwRegistration = reg
+      await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
+      return reg
+    } catch (err) {
+      console.warn('SW register failed for', url, err)
+    }
   }
 
   try {

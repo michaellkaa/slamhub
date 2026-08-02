@@ -16,8 +16,18 @@ import { syncPushSubscriptionIfGranted } from './composables/usePushNotification
 
 const isProd = import.meta.env.PROD
 
-// Register immediately so push subscribe can find an active SW.
-registerSW({ immediate: true })
+registerSW({
+  immediate: true,
+  onRegisteredSW(swUrl, registration) {
+    if (registration) {
+      window.__slamSwRegistration = registration
+    }
+    console.info('[PWA] service worker registered:', swUrl)
+  },
+  onRegisterError(error) {
+    console.error('[PWA] service worker registration failed:', error)
+  },
+})
 
 onMounted(() => {
   window.setTimeout(() => {

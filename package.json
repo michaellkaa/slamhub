@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build && node scripts/copy-pwa-assets.js"
     },
     "devDependencies": {
         "@tailwindcss/line-clamp": "^0.4.4",
