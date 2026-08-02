@@ -66,7 +66,14 @@ class PushChannel
             }
 
             try {
+                $host = parse_url((string) $sub->endpoint, PHP_URL_HOST) ?: '';
                 $encoding = $sub->content_encoding ?: 'aesgcm';
+
+                // Apple Push Service expects aes128gcm; wrong encoding → silent/failed delivery.
+                if (str_contains($host, 'web.push.apple.com')) {
+                    $encoding = 'aes128gcm';
+                }
+
                 $subscription = Subscription::create([
                     'endpoint' => $sub->endpoint,
                     'keys' => [
@@ -86,7 +93,7 @@ class PushChannel
                     'user_id' => $notifiable->getKey(),
                     'subscription_id' => $sub->id,
                     'encoding' => $encoding,
-                    'endpoint_host' => parse_url($sub->endpoint, PHP_URL_HOST),
+                    'endpoint_host' => $host,
                 ]);
             } catch (Throwable $e) {
                 Log::error('Web push queue failed', [
