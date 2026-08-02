@@ -36,11 +36,9 @@
 
     <title>Title</title>
 
-    @vite(['resources/css/theme.css', 'resources/css/output.css'])
+    @vite(['resources/css/output.css', 'resources/js/app.js'])
   </head>
   <body class="antialiased">
     <div id="app"></div>
-
-    @vite('resources/js/app.js')
   </body>
 </html>
