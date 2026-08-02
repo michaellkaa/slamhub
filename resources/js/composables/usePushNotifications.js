@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const PUSH_ENABLED_KEY = 'push_enabled'
+const SW_WAIT_MS = 10000
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -13,9 +14,19 @@ function urlBase64ToUint8Array(base64String) {
   return output
 }
 
+function withTimeout(promise, ms, label = 'timeout') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      window.setTimeout(() => reject(new Error(label)), ms)
+    }),
+  ])
+}
+
 export function isPushSupported() {
   return (
     typeof window !== 'undefined'
+    && window.isSecureContext
     && 'serviceWorker' in navigator
     && 'PushManager' in window
     && 'Notification' in window
@@ -32,8 +43,16 @@ export function isPushEnabledLocally() {
 
 async function getRegistration() {
   if (!('serviceWorker' in navigator)) return null
+
   try {
-    return await navigator.serviceWorker.ready
+    const existing = await navigator.serviceWorker.getRegistration()
+    if (existing) return existing
+  } catch {
+    // continue
+  }
+
+  try {
+    return await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
   } catch {
     return null
   }
@@ -59,13 +78,28 @@ async function syncSubscription(subscription) {
 
 export async function getPushEnabledState() {
   if (!isPushSupported()) {
-    return { supported: false, enabled: false, permission: 'unsupported' }
+    return {
+      supported: false,
+      enabled: false,
+      permission: typeof window !== 'undefined' && !window.isSecureContext
+        ? 'insecure'
+        : 'unsupported',
+      vapidOk: false,
+      hasSubscription: false,
+    }
   }
 
   const permission = Notification.permission
   let locallyEnabled = isPushEnabledLocally()
-
+  let vapidOk = true
   let hasSubscription = false
+
+  try {
+    await fetchVapidPublicKey()
+  } catch {
+    vapidOk = false
+  }
+
   try {
     const registration = await getRegistration()
     const subscription = await registration?.pushManager?.getSubscription?.()
@@ -74,8 +108,7 @@ export async function getPushEnabledState() {
     hasSubscription = false
   }
 
-  // Recover: active browser subscription means notifications are on,
-  // even if localStorage was lost (e.g. private mode / cleared storage).
+  // Recover: active browser subscription means notifications are on.
   if (permission === 'granted' && hasSubscription && !locallyEnabled) {
     try {
       localStorage.setItem(PUSH_ENABLED_KEY, '1')
@@ -85,28 +118,32 @@ export async function getPushEnabledState() {
     }
   }
 
-  // UI on/off = app preference + browser permission.
-  // Do NOT require hasSubscription — SW/subscription can be briefly missing
-  // on localhost / after reload while still opted in.
   return {
     supported: true,
     enabled: locallyEnabled && permission === 'granted',
     permission,
     locallyEnabled,
     hasSubscription,
+    vapidOk,
   }
 }
 
 export async function enablePushNotifications() {
   if (!isPushSupported()) {
-    return { ok: false, reason: 'unsupported' }
+    return {
+      ok: false,
+      reason: typeof window !== 'undefined' && !window.isSecureContext ? 'insecure' : 'unsupported',
+    }
   }
 
   if (!localStorage.getItem('token')) {
     return { ok: false, reason: 'unauthenticated' }
   }
 
-  const permission = await Notification.requestPermission()
+  let permission = Notification.permission
+  if (permission === 'default') {
+    permission = await Notification.requestPermission()
+  }
   if (permission !== 'granted') {
     return { ok: false, reason: 'denied' }
   }
@@ -116,33 +153,41 @@ export async function enablePushNotifications() {
     return { ok: false, reason: 'no-sw' }
   }
 
-  const publicKey = await fetchVapidPublicKey()
+  let publicKey
+  try {
+    publicKey = await fetchVapidPublicKey()
+  } catch {
+    return { ok: false, reason: 'no-vapid' }
+  }
   if (!publicKey) {
     return { ok: false, reason: 'no-vapid' }
   }
 
-  let subscription = await registration.pushManager.getSubscription()
-  if (!subscription) {
-    subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
-    })
+  try {
+    let subscription = await registration.pushManager.getSubscription()
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      })
+    }
+
+    await syncSubscription(subscription)
+    localStorage.setItem(PUSH_ENABLED_KEY, '1')
+    return { ok: true, reason: 'subscribed' }
+  } catch (err) {
+    console.error('Push subscribe failed:', err)
+    return { ok: false, reason: 'subscribe-failed' }
   }
-
-  await syncSubscription(subscription)
-  localStorage.setItem(PUSH_ENABLED_KEY, '1')
-
-  return { ok: true, reason: 'subscribed' }
 }
 
 export async function disablePushNotifications() {
-  // Always clear app preference first so sync won't re-enable.
   localStorage.removeItem(PUSH_ENABLED_KEY)
 
   try {
     await axios.delete('/api/push/subscribe')
   } catch {
-    // ignore — local unsubscribe still matters
+    // ignore
   }
 
   if (!isPushSupported()) {
@@ -170,7 +215,6 @@ export async function disablePushNotifications() {
 }
 
 export async function syncPushSubscriptionIfGranted() {
-  // Only re-sync when user explicitly left notifications ON.
   if (!isPushEnabledLocally()) return
   if (!isPushSupported()) return
   if (!localStorage.getItem('token')) return
@@ -198,7 +242,10 @@ export async function syncPushSubscriptionIfGranted() {
 }
 
 export function getPushPermission() {
-  if (!isPushSupported()) return 'unsupported'
+  if (!isPushSupported()) {
+    if (typeof window !== 'undefined' && !window.isSecureContext) return 'insecure'
+    return 'unsupported'
+  }
   return Notification.permission
 }
 

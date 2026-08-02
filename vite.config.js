@@ -17,9 +17,9 @@ export default defineConfig({
             strategies: 'injectManifest',
             srcDir: 'resources/js',
             filename: 'sw.js',
-            registerType: 'prompt',
+            registerType: 'autoUpdate',
             includeAssets: ['favicon.png', 'pwa-icon.svg'],
-            injectRegister: 'auto',
+            injectRegister: false,
             manifest: {
                 name: 'SlamHub',
                 short_name: 'SlamHub',

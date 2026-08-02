@@ -4,6 +4,7 @@ namespace App\Notifications\Channels;
 
 use App\Models\PushSubscription;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use Throwable;
@@ -21,6 +22,7 @@ class PushChannel
         $subject = config('services.vapid.subject') ?: env('VAPID_SUBJECT', config('app.url'));
 
         if (!$publicKey || !$privateKey) {
+            Log::warning('Push skipped: VAPID keys are not configured.');
             return;
         }
 
@@ -68,18 +70,29 @@ class PushChannel
             }
         }
 
-        foreach ($webPush->flush() as $report) {
-            if ($report->isSuccess()) {
-                continue;
-            }
+        try {
+            foreach ($webPush->flush() as $report) {
+                if ($report->isSuccess()) {
+                    continue;
+                }
 
-            $endpoint = $report->getRequest()->getUri()->__toString();
-            $code = $report->getResponse()?->getStatusCode();
+                $endpoint = $report->getRequest()->getUri()->__toString();
+                $code = $report->getResponse()?->getStatusCode();
+                $reason = $report->getReason();
 
-            // Gone / Not Found => remove dead subscription
-            if (in_array($code, [404, 410], true)) {
-                PushSubscription::where('endpoint', $endpoint)->delete();
+                Log::warning('Web push delivery failed', [
+                    'endpoint' => $endpoint,
+                    'status' => $code,
+                    'reason' => $reason,
+                ]);
+
+                // Gone / Not Found => remove dead subscription
+                if (in_array($code, [404, 410], true)) {
+                    PushSubscription::where('endpoint', $endpoint)->delete();
+                }
             }
+        } catch (Throwable $e) {
+            report($e);
         }
     }
 }

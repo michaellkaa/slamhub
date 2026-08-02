@@ -106,18 +106,14 @@
               :class="pushEnabled
                 ? 'border-pink-500 bg-surface'
                 : 'border-app bg-transparent hover:bg-surface'"
-              :disabled="pushBusy || !pushSupported || pushDenied"
+              :disabled="pushBusy || pushToggleDisabled"
               @click="toggleNotifications"
             >
               <div class="flex items-center justify-between gap-4">
                 <div class="min-w-0">
                   <div class="text-sm font-semibold">Push notifikace</div>
                   <div class="text-xs text-app-muted mt-0.5">
-                    <template v-if="!pushSupported">Tento prohlížeč je nepodporuje</template>
-                    <template v-else-if="pushDenied">Zakázané v nastavení prohlížeče</template>
-                    <template v-else-if="pushBusy">Ukládám…</template>
-                    <template v-else-if="pushEnabled">Zapnuté</template>
-                    <template v-else>Vypnuté</template>
+                    {{ pushStatusLabel }}
                   </div>
                 </div>
 
@@ -130,6 +126,10 @@
                 </span>
               </div>
             </button>
+
+            <p class="text-xs text-app-muted mt-3">
+              Notifikaci o nové akci dostanou lidé, kteří tě sledují — ne ty jako organizátor.
+            </p>
           </template>
         </div>
       </div>
@@ -159,17 +159,37 @@ const currentRole = ref('')
 const pushBusy = ref(false)
 const pushEnabled = ref(false)
 const pushPermission = ref('default')
+const pushVapidOk = ref(true)
 const pushSupported = computed(() => isPushSupported())
 const pushDenied = computed(() => pushPermission.value === 'denied')
+const pushToggleDisabled = computed(() => {
+  if (!pushSupported.value) return true
+  if (pushDenied.value) return true
+  if (pushPermission.value === 'insecure' || pushPermission.value === 'unsupported') return true
+  if (!pushVapidOk.value && !pushEnabled.value) return true
+  return false
+})
+const pushStatusLabel = computed(() => {
+  if (pushBusy.value) return 'Ukládám…'
+  if (pushPermission.value === 'insecure') return 'Vyžaduje HTTPS (nebo localhost)'
+  if (!pushSupported.value || pushPermission.value === 'unsupported') {
+    return 'Tento prohlížeč je nepodporuje'
+  }
+  if (pushDenied.value) return 'Zakázané v nastavení prohlížeče'
+  if (!pushVapidOk.value) return 'Server nemá nastavené VAPID klíče'
+  if (pushEnabled.value) return 'Zapnuté — klikni pro vypnutí'
+  return 'Vypnuté — klikni pro zapnutí'
+})
 
 const refreshPushState = async () => {
   const state = await getPushEnabledState()
   pushEnabled.value = !!state.enabled
   pushPermission.value = state.permission
+  pushVapidOk.value = state.vapidOk !== false
 }
 
 const toggleNotifications = async () => {
-  if (pushBusy.value || !pushSupported.value || pushDenied.value) return
+  if (pushBusy.value || pushToggleDisabled.value) return
   pushBusy.value = true
   try {
     if (pushEnabled.value) {
@@ -185,7 +205,13 @@ const toggleNotifications = async () => {
       } else if (result.reason === 'denied') {
         toastError('Notifikace zamítnuty v prohlížeči')
       } else if (result.reason === 'no-sw') {
-        toastInfo('Service worker ještě není ready — zkus znovu')
+        toastInfo('Service worker ještě není ready — obnov stránku a zkus znovu')
+      } else if (result.reason === 'no-vapid') {
+        toastError('Na serveru chybí VAPID klíče')
+      } else if (result.reason === 'insecure') {
+        toastError('Push funguje jen přes HTTPS')
+      } else if (result.reason === 'subscribe-failed') {
+        toastError('Prohlížeč odmítl push subscription')
       } else {
         toastError('Notifikace se nepodařilo zapnout')
       }
