@@ -33,9 +33,30 @@ export function isPushSupported() {
   )
 }
 
+/** Explicit app preference: '1' on, '0' off, null = never chosen in app. */
 export function isPushEnabledLocally() {
   try {
     return localStorage.getItem(PUSH_ENABLED_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function isPushExplicitlyDisabled() {
+  try {
+    return localStorage.getItem(PUSH_ENABLED_KEY) === '0'
+  } catch {
+    return false
+  }
+}
+
+/** Should the app keep / create a push subscription? */
+export function wantsPushEnabled() {
+  if (isPushExplicitlyDisabled()) return false
+  if (isPushEnabledLocally()) return true
+  // Browser already granted (e.g. via OS settings) → treat as opted in.
+  try {
+    return typeof Notification !== 'undefined' && Notification.permission === 'granted'
   } catch {
     return false
   }
@@ -86,10 +107,13 @@ export async function getPushEnabledState() {
         : 'unsupported',
       vapidOk: false,
       hasSubscription: false,
+      locallyEnabled: false,
+      explicitlyDisabled: false,
     }
   }
 
   const permission = Notification.permission
+  const explicitlyDisabled = isPushExplicitlyDisabled()
   let locallyEnabled = isPushEnabledLocally()
   let vapidOk = true
   let hasSubscription = false
@@ -108,8 +132,8 @@ export async function getPushEnabledState() {
     hasSubscription = false
   }
 
-  // Recover: active browser subscription means notifications are on.
-  if (permission === 'granted' && hasSubscription && !locallyEnabled) {
+  // Browser granted + not explicitly off in app → mark app preference ON.
+  if (permission === 'granted' && !explicitlyDisabled && !locallyEnabled) {
     try {
       localStorage.setItem(PUSH_ENABLED_KEY, '1')
       locallyEnabled = true
@@ -120,9 +144,12 @@ export async function getPushEnabledState() {
 
   return {
     supported: true,
-    enabled: locallyEnabled && permission === 'granted',
+    // Show ON when browser allows and user didn't turn off in app.
+    // Subscription may still be healing in the background.
+    enabled: permission === 'granted' && !explicitlyDisabled && (locallyEnabled || hasSubscription),
     permission,
     locallyEnabled,
+    explicitlyDisabled,
     hasSubscription,
     vapidOk,
   }
@@ -165,6 +192,8 @@ export async function enablePushNotifications() {
 
   try {
     let subscription = await registration.pushManager.getSubscription()
+
+    // Re-subscribe if keys might be stale / missing.
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -177,12 +206,34 @@ export async function enablePushNotifications() {
     return { ok: true, reason: 'subscribed' }
   } catch (err) {
     console.error('Push subscribe failed:', err)
-    return { ok: false, reason: 'subscribe-failed' }
+
+    // Existing subscription may be bound to old VAPID — drop and retry once.
+    try {
+      const registration = await getRegistration()
+      const existing = await registration?.pushManager?.getSubscription?.()
+      if (existing) await existing.unsubscribe()
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      })
+      await syncSubscription(subscription)
+      localStorage.setItem(PUSH_ENABLED_KEY, '1')
+      return { ok: true, reason: 'subscribed' }
+    } catch (retryErr) {
+      console.error('Push resubscribe failed:', retryErr)
+      return { ok: false, reason: 'subscribe-failed' }
+    }
   }
 }
 
 export async function disablePushNotifications() {
-  localStorage.removeItem(PUSH_ENABLED_KEY)
+  // Explicit off so browser "granted" doesn't keep flipping UI back on.
+  try {
+    localStorage.setItem(PUSH_ENABLED_KEY, '0')
+  } catch {
+    // ignore
+  }
 
   try {
     await axios.delete('/api/push/subscribe')
@@ -215,27 +266,13 @@ export async function disablePushNotifications() {
 }
 
 export async function syncPushSubscriptionIfGranted() {
-  if (!isPushEnabledLocally()) return
+  if (!wantsPushEnabled()) return
   if (!isPushSupported()) return
   if (!localStorage.getItem('token')) return
   if (Notification.permission !== 'granted') return
 
   try {
-    const registration = await getRegistration()
-    if (!registration) return
-
-    let subscription = await registration.pushManager.getSubscription()
-    if (!subscription) {
-      const publicKey = await fetchVapidPublicKey()
-      if (!publicKey) return
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      })
-    }
-
-    await syncSubscription(subscription)
-    localStorage.setItem(PUSH_ENABLED_KEY, '1')
+    await enablePushNotifications()
   } catch (err) {
     console.error('Push sync failed:', err)
   }
@@ -253,6 +290,8 @@ export function usePushNotifications() {
   return {
     isPushSupported,
     isPushEnabledLocally,
+    isPushExplicitlyDisabled,
+    wantsPushEnabled,
     getPushEnabledState,
     getPushPermission,
     enablePushNotifications,

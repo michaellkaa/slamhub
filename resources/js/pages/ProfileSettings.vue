@@ -160,6 +160,7 @@ const pushBusy = ref(false)
 const pushEnabled = ref(false)
 const pushPermission = ref('default')
 const pushVapidOk = ref(true)
+const pushHasSubscription = ref(false)
 const pushSupported = computed(() => isPushSupported())
 const pushDenied = computed(() => pushPermission.value === 'denied')
 const pushToggleDisabled = computed(() => {
@@ -177,15 +178,32 @@ const pushStatusLabel = computed(() => {
   }
   if (pushDenied.value) return 'Zakázané v nastavení prohlížeče'
   if (!pushVapidOk.value) return 'Server nemá nastavené VAPID klíče'
-  if (pushEnabled.value) return 'Zapnuté — klikni pro vypnutí'
+  if (pushEnabled.value && pushHasSubscription.value) return 'Zapnuté — klikni pro vypnutí'
+  if (pushEnabled.value) return 'Zapnuté v prohlížeči — dokončuji aktivaci…'
+  if (pushPermission.value === 'granted') {
+    return 'Povoleno v prohlížeči — klikni pro zapnutí v aplikaci'
+  }
   return 'Vypnuté — klikni pro zapnutí'
 })
 
 const refreshPushState = async () => {
-  const state = await getPushEnabledState()
+  let state = await getPushEnabledState()
+
+  // If browser already granted and user didn't turn off in app, create/sync subscription.
+  if (state.permission === 'granted' && !state.explicitlyDisabled && state.vapidOk !== false) {
+    const result = await enablePushNotifications()
+    state = await getPushEnabledState()
+    if (!result.ok && !state.hasSubscription) {
+      toastInfo(result.reason === 'no-sw'
+        ? 'Obnov stránku a zkus notifikace znovu'
+        : 'Notifikace v prohlížeči jsou povolené, ale appce se nepodařilo je aktivovat')
+    }
+  }
+
   pushEnabled.value = !!state.enabled
   pushPermission.value = state.permission
   pushVapidOk.value = state.vapidOk !== false
+  pushHasSubscription.value = !!state.hasSubscription
 }
 
 const toggleNotifications = async () => {
@@ -195,12 +213,17 @@ const toggleNotifications = async () => {
     if (pushEnabled.value) {
       pushEnabled.value = false
       await disablePushNotifications()
-      await refreshPushState()
-      toastInfo('Notifikace vypnuté')
+      const state = await getPushEnabledState()
+      pushEnabled.value = !!state.enabled
+      pushPermission.value = state.permission
+      pushVapidOk.value = state.vapidOk !== false
+      pushHasSubscription.value = !!state.hasSubscription
+      toastInfo('Notifikace vypnuté v aplikaci')
     } else {
       const result = await enablePushNotifications()
       if (result.ok) {
         pushEnabled.value = true
+        pushHasSubscription.value = true
         toastSuccess('Notifikace zapnuté')
       } else if (result.reason === 'denied') {
         toastError('Notifikace zamítnuty v prohlížeči')

@@ -28,6 +28,10 @@ class PushChannel
 
         $subscriptions = $notifiable->pushSubscriptions;
         if (!$subscriptions || $subscriptions->isEmpty()) {
+            Log::info('Push skipped: user has no push_subscriptions', [
+                'user_id' => $notifiable->getKey(),
+                'notification' => $notification::class,
+            ]);
             return;
         }
 
