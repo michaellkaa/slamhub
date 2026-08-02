@@ -12,9 +12,9 @@ class AllowServiceWorkerRootScope
     {
         $response = $next($request);
 
-        if ($request->is('sw.js') || $request->is('build/sw.js')) {
+        if ($request->is('sw.js') || $request->is('build/sw.js') || $request->is('service-worker.js')) {
             $response->headers->set('Service-Worker-Allowed', '/');
-            $response->headers->set('Cache-Control', 'no-cache');
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
         }
 
         return $response;

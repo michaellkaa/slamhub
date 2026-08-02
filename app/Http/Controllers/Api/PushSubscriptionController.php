@@ -17,7 +17,7 @@ class PushSubscriptionController extends Controller
         }
 
         return response()->json([
-            'publicKey' => $key,
+            'publicKey' => trim((string) $key),
         ]);
     }
 

@@ -29,6 +29,32 @@ Route::get('/test-mail', function () {
     return 'Email odeslán';
 });
 
+// Served via PHP so nginx/Cloudflare get correct SW headers (not a static cached file).
+Route::get('/service-worker.js', function () {
+    $candidates = [
+        public_path('build/sw.js'),
+        public_path('sw.js'),
+    ];
+
+    $path = null;
+    foreach ($candidates as $candidate) {
+        if (is_file($candidate)) {
+            $path = $candidate;
+            break;
+        }
+    }
+
+    if (!$path) {
+        abort(404, 'Service worker not built. Run npm run build.');
+    }
+
+    return response()->file($path, [
+        'Content-Type' => 'application/javascript; charset=UTF-8',
+        'Service-Worker-Allowed' => '/',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+})->name('service-worker');
+
 Route::get('/{any}', function () {
     return view('app');
 })->where('any', '.*');

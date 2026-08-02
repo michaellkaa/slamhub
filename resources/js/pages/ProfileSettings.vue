@@ -177,13 +177,13 @@ const pushStatusLabel = computed(() => {
     return 'Tento prohlížeč je nepodporuje'
   }
   if (pushDenied.value) return 'Zakázané v nastavení prohlížeče'
-  if (!pushVapidOk.value) return 'Server nemá nastavené VAPID klíče'
-  if (pushEnabled.value && pushHasSubscription.value) return 'Zapnuté — klikni pro vypnutí'
-  if (pushEnabled.value) return 'Zapnuté v prohlížeči — dokončuji aktivaci…'
+  if (!pushVapidOk.value) return ' '
+  if (pushEnabled.value && pushHasSubscription.value) return ' '
+  if (pushEnabled.value) return ' '
   if (pushPermission.value === 'granted') {
     return 'Povoleno v prohlížeči — klikni pro zapnutí v aplikaci'
   }
-  return 'Vypnuté — klikni pro zapnutí'
+  return ' '
 })
 
 const refreshPushState = async () => {
@@ -233,6 +233,8 @@ const toggleNotifications = async () => {
         toastError('Na serveru chybí VAPID klíče')
       } else if (result.reason === 'insecure') {
         toastError('Push funguje jen přes HTTPS')
+      } else if (result.reason === 'push-service') {
+        toastError('Prohlížeč nedokázal vytvořit push (zkus Chrome, vypni VPN/Private Relay)')
       } else if (result.reason === 'subscribe-failed') {
         toastError('Prohlížeč odmítl push subscription')
       } else {

@@ -19,15 +19,17 @@ class PushChannel
 
         $publicKey = config('services.vapid.public_key') ?: env('VAPID_PUBLIC_KEY');
         $privateKey = config('services.vapid.private_key') ?: env('VAPID_PRIVATE_KEY');
-        $subject = config('services.vapid.subject') ?: env('VAPID_SUBJECT', config('app.url'));
+        $subject = $this->normalizeVapidSubject(
+            config('services.vapid.subject') ?: env('VAPID_SUBJECT', config('app.url'))
+        );
 
         if (!$publicKey || !$privateKey) {
             Log::warning('Push skipped: VAPID keys are not configured.');
             return;
         }
 
-        $subscriptions = $notifiable->pushSubscriptions;
-        if (!$subscriptions || $subscriptions->isEmpty()) {
+        $subscriptions = $notifiable->pushSubscriptions()->get();
+        if ($subscriptions->isEmpty()) {
             Log::info('Push skipped: user has no push_subscriptions', [
                 'user_id' => $notifiable->getKey(),
                 'notification' => $notification::class,
@@ -75,8 +77,10 @@ class PushChannel
         }
 
         try {
+            $sent = 0;
             foreach ($webPush->flush() as $report) {
                 if ($report->isSuccess()) {
+                    $sent++;
                     continue;
                 }
 
@@ -95,8 +99,43 @@ class PushChannel
                     PushSubscription::where('endpoint', $endpoint)->delete();
                 }
             }
+
+            if ($sent > 0) {
+                Log::info('Web push delivered', [
+                    'user_id' => $notifiable->getKey(),
+                    'sent' => $sent,
+                    'notification' => $notification::class,
+                ]);
+            }
         } catch (Throwable $e) {
             report($e);
         }
+    }
+
+    /**
+     * VAPID subject must be mailto: or https: — plain http:// is rejected by push services.
+     */
+    private function normalizeVapidSubject(?string $subject): string
+    {
+        $subject = trim((string) $subject);
+
+        if ($subject === '') {
+            return 'mailto:admin@localhost';
+        }
+
+        if (str_starts_with($subject, 'mailto:')) {
+            return $subject;
+        }
+
+        if (str_starts_with($subject, 'https://')) {
+            return $subject;
+        }
+
+        // http://localhost or other http URLs → mailto fallback
+        if (str_starts_with($subject, 'http://')) {
+            return 'mailto:admin@localhost';
+        }
+
+        return 'mailto:'.$subject;
     }
 }

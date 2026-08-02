@@ -1,11 +1,13 @@
 import axios from 'axios'
 
 const PUSH_ENABLED_KEY = 'push_enabled'
-const SW_WAIT_MS = 10000
+const SW_URL = '/service-worker.js'
+const SW_WAIT_MS = 15000
 
 function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const cleaned = String(base64String || '').trim().replace(/\s+/g, '')
+  const padding = '='.repeat((4 - (cleaned.length % 4)) % 4)
+  const base64 = (cleaned + padding).replace(/-/g, '+').replace(/_/g, '/')
   const raw = window.atob(base64)
   const output = new Uint8Array(raw.length)
   for (let i = 0; i < raw.length; i += 1) {
@@ -23,6 +25,10 @@ function withTimeout(promise, ms, label = 'timeout') {
   ])
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms))
+}
+
 export function isPushSupported() {
   return (
     typeof window !== 'undefined'
@@ -33,7 +39,6 @@ export function isPushSupported() {
   )
 }
 
-/** Explicit app preference: '1' on, '0' off, null = never chosen in app. */
 export function isPushEnabledLocally() {
   try {
     return localStorage.getItem(PUSH_ENABLED_KEY) === '1'
@@ -50,11 +55,9 @@ export function isPushExplicitlyDisabled() {
   }
 }
 
-/** Should the app keep / create a push subscription? */
 export function wantsPushEnabled() {
   if (isPushExplicitlyDisabled()) return false
   if (isPushEnabledLocally()) return true
-  // Browser already granted (e.g. via OS settings) → treat as opted in.
   try {
     return typeof Notification !== 'undefined' && Notification.permission === 'granted'
   } catch {
@@ -62,60 +65,85 @@ export function wantsPushEnabled() {
   }
 }
 
-async function getRegistration() {
+async function waitForActiveWorker(registration) {
+  if (registration.active) return registration.active
+
+  const worker = registration.installing || registration.waiting
+  if (!worker) {
+    await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
+    return registration.active
+  }
+
+  await withTimeout(new Promise((resolve) => {
+    if (worker.state === 'activated') {
+      resolve()
+      return
+    }
+    worker.addEventListener('statechange', () => {
+      if (worker.state === 'activated') resolve()
+    })
+  }), SW_WAIT_MS, 'sw-activate-timeout')
+
+  return registration.active
+}
+
+/** Always register the Laravel-served SW (correct scope + no Cloudflare cache). */
+export async function ensureServiceWorker() {
   if (!('serviceWorker' in navigator)) return null
 
-  // Prefer registration already created by virtual:pwa-register.
-  if (window.__slamSwRegistration) {
-    return window.__slamSwRegistration
-  }
-
   try {
-    const existing = await navigator.serviceWorker.getRegistration('/')
-      || await navigator.serviceWorker.getRegistration()
-    if (existing?.active || existing?.waiting || existing?.installing) {
-      return existing
+    let registration = await navigator.serviceWorker.getRegistration('/')
+
+    const scriptURL = registration?.active?.scriptURL
+      || registration?.waiting?.scriptURL
+      || registration?.installing?.scriptURL
+      || ''
+
+    const isOurSw = scriptURL.includes('service-worker.js')
+
+    if (!registration || !isOurSw) {
+      registration = await navigator.serviceWorker.register(SW_URL, {
+        scope: '/',
+        updateViaCache: 'none',
+      })
+    } else {
+      try {
+        await registration.update()
+      } catch {
+        // ignore
+      }
     }
-  } catch {
-    // continue to explicit register
-  }
 
-  // Production: SW is copied to /sw.js (root scope). Fallback: /build/sw.js + header.
-  const candidates = import.meta.env.DEV
-    ? []
-    : ['/sw.js', '/build/sw.js']
-
-  for (const url of candidates) {
-    try {
-      const reg = await navigator.serviceWorker.register(url, { scope: '/' })
-      window.__slamSwRegistration = reg
-      await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
-      return reg
-    } catch (err) {
-      console.warn('SW register failed for', url, err)
-    }
-  }
-
-  try {
-    return await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
-  } catch {
+    window.__slamSwRegistration = registration
+    await waitForActiveWorker(registration)
+    await withTimeout(navigator.serviceWorker.ready, SW_WAIT_MS, 'sw-timeout')
+    return registration
+  } catch (err) {
+    console.error('[PWA] Failed to register', SW_URL, err)
     return null
   }
 }
 
+async function getRegistration() {
+  return ensureServiceWorker()
+}
+
 async function fetchVapidPublicKey() {
   const { data } = await axios.get('/api/push/vapid-public-key')
-  return data?.publicKey || null
+  return String(data?.publicKey || '').trim() || null
 }
 
 async function syncSubscription(subscription) {
   if (!subscription) return
   const json = subscription.toJSON()
+  if (!json?.endpoint || !json?.keys?.p256dh || !json?.keys?.auth) {
+    throw new Error('Incomplete push subscription keys')
+  }
   await axios.post('/api/push/subscribe', {
     endpoint: json.endpoint,
     keys: {
-      p256dh: json.keys?.p256dh,
-      auth: json.keys?.auth,
+      p256dh: json.keys.p256dh,
+      auth: json.keys.auth,
     },
     contentEncoding: (PushManager.supportedContentEncodings || ['aesgcm'])[0],
   })
@@ -156,7 +184,6 @@ export async function getPushEnabledState() {
     hasSubscription = false
   }
 
-  // Browser granted + not explicitly off in app → mark app preference ON.
   if (permission === 'granted' && !explicitlyDisabled && !locallyEnabled) {
     try {
       localStorage.setItem(PUSH_ENABLED_KEY, '1')
@@ -168,8 +195,6 @@ export async function getPushEnabledState() {
 
   return {
     supported: true,
-    // Show ON when browser allows and user didn't turn off in app.
-    // Subscription may still be healing in the background.
     enabled: permission === 'granted' && !explicitlyDisabled && (locallyEnabled || hasSubscription),
     permission,
     locallyEnabled,
@@ -200,9 +225,11 @@ export async function enablePushNotifications() {
   }
 
   const registration = await getRegistration()
-  if (!registration) {
+  if (!registration?.pushManager) {
     return { ok: false, reason: 'no-sw' }
   }
+
+  await waitForActiveWorker(registration)
 
   let publicKey
   try {
@@ -214,14 +241,19 @@ export async function enablePushNotifications() {
     return { ok: false, reason: 'no-vapid' }
   }
 
-  try {
-    let subscription = await registration.pushManager.getSubscription()
+  const appServerKey = urlBase64ToUint8Array(publicKey)
+  if (appServerKey.byteLength !== 65) {
+    console.error('Invalid VAPID public key length', appServerKey.byteLength)
+    return { ok: false, reason: 'no-vapid' }
+  }
 
-    // Re-subscribe if keys might be stale / missing.
+  try {
+    // Prefer existing subscription — forced unsubscribe often causes Chrome AbortError.
+    let subscription = await registration.pushManager.getSubscription()
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
+        applicationServerKey: appServerKey,
       })
     }
 
@@ -231,28 +263,30 @@ export async function enablePushNotifications() {
   } catch (err) {
     console.error('Push subscribe failed:', err)
 
-    // Existing subscription may be bound to old VAPID — drop and retry once.
+    // One recovery attempt: drop old sub and retry after short wait.
     try {
-      const registration = await getRegistration()
-      const existing = await registration?.pushManager?.getSubscription?.()
+      const existing = await registration.pushManager.getSubscription()
       if (existing) await existing.unsubscribe()
-
+      await sleep(400)
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
+        applicationServerKey: appServerKey,
       })
       await syncSubscription(subscription)
       localStorage.setItem(PUSH_ENABLED_KEY, '1')
       return { ok: true, reason: 'subscribed' }
     } catch (retryErr) {
       console.error('Push resubscribe failed:', retryErr)
+      const message = String(retryErr?.message || err?.message || '')
+      if (/push service error/i.test(message) || retryErr?.name === 'AbortError') {
+        return { ok: false, reason: 'push-service' }
+      }
       return { ok: false, reason: 'subscribe-failed' }
     }
   }
 }
 
 export async function disablePushNotifications() {
-  // Explicit off so browser "granted" doesn't keep flipping UI back on.
   try {
     localStorage.setItem(PUSH_ENABLED_KEY, '0')
   } catch {
@@ -316,6 +350,7 @@ export function usePushNotifications() {
     isPushEnabledLocally,
     isPushExplicitlyDisabled,
     wantsPushEnabled,
+    ensureServiceWorker,
     getPushEnabledState,
     getPushPermission,
     enablePushNotifications,

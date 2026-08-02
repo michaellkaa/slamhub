@@ -1,22 +1,22 @@
-/* Custom service worker for PWA + Web Push */
+/* Custom service worker for PWA + Web Push — keep install lightweight so subscribe works. */
 import { clientsClaim } from 'workbox-core'
-import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching'
-import { NavigationRoute, registerRoute } from 'workbox-routing'
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching'
 
 self.skipWaiting()
 clientsClaim()
 
-precacheAndRoute(self.__WB_MANIFEST || [])
-cleanupOutdatedCaches()
+self.addEventListener('message', (event) => {
+  if (event?.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
 
+// Precache built assets, but don't hard-fail the worker if a file is missing.
 try {
-  registerRoute(
-    new NavigationRoute(createHandlerBoundToURL('/'), {
-      denylist: [/^\/api\//, /^\/storage\//, /^\/build\//],
-    })
-  )
+  precacheAndRoute(self.__WB_MANIFEST || [])
+  cleanupOutdatedCaches()
 } catch (e) {
-  // Ignore if app shell route isn't available during early builds.
+  console.warn('[SW] precache skipped', e)
 }
 
 self.addEventListener('push', (event) => {
