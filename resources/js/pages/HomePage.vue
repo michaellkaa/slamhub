@@ -157,6 +157,54 @@
         </div>
       </div>
     </div>
+
+    <div v-if="activeCommentItem" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4"
+      @click.self="closeCommentsModal">
+      <div class="w-full max-w-lg rounded-2xl border border-app bg-surface-4">
+        <div class="flex items-center justify-between border-b border-app px-4 py-3">
+          <div class="text-sm font-semibold text-app">Komentáře</div>
+          <button type="button" class="rounded-lg px-2 py-1 text-app-muted hover:bg-white/10" @click="closeCommentsModal">
+            Zavřít
+          </button>
+        </div>
+
+        <div class="max-h-[55vh] overflow-y-auto px-4 py-3 space-y-3">
+          <div v-if="activeCommentItem.commentsLoading" class="text-xs text-app-faint">Načítám komentáře…</div>
+          <div v-else-if="!activeCommentItem.comments?.length" class="text-xs text-app-faint">Zatím žádné komentáře.</div>
+          <div v-else class="space-y-2">
+            <div v-for="comment in activeCommentItem.comments" :key="comment.id"
+              class="rounded-xl bg-black/30 px-3 py-2.5">
+              <div class="text-xs text-app-faint">@{{ comment.user?.username || 'user' }}</div>
+              <div class="text-sm text-app">{{ comment.body }}</div>
+              <button type="button" class="mt-1 text-[11px] text-app-muted hover:text-app" @click="startReply(comment)">
+                Odpovědět
+              </button>
+              <div v-if="comment.replies?.length" class="mt-2 ml-4 space-y-2 border-l border-app pl-3">
+                <div v-for="reply in comment.replies" :key="reply.id" class="rounded-lg bg-black/30 px-3 py-2">
+                  <div class="text-[11px] text-app-faint">@{{ reply.user?.username || 'user' }}</div>
+                  <div class="text-sm text-app">{{ reply.body }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="border-t border-app p-3 flex gap-2" @submit.prevent="submitComment(activeCommentItem)">
+          <input v-model="activeCommentItem.commentDraft" type="text"
+            class="flex-1 rounded-lg bg-black/30 border border-app px-3 py-2 text-sm text-app outline-none focus:border-pink-400"
+            :placeholder="replyTargetId ? 'Napsat odpověď…' : 'Napsat komentář…'" />
+          <button type="submit"
+            class="rounded-lg bg-pink-500 px-3 py-2 text-sm font-semibold text-white hover:bg-pink-600">
+            Odeslat
+          </button>
+        </form>
+        <div v-if="replyTargetId" class="px-3 pb-3">
+          <button type="button" class="text-xs text-app-muted hover:text-app" @click="replyTargetId = null">
+            Zrušit odpověď
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -166,7 +214,9 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import SideNav from '../components/SideNav.vue'
 import TopSearch from '../components/TopSearch.vue'
+import { useToast } from '../composables/useToast'
 
+const { success: toastSuccess } = useToast()
 const videos = ref([])
 const loading = ref(true)
 const sidebarLoading = ref(true)
@@ -175,7 +225,6 @@ const recentPosts = ref([])
 const upcomingEvents = ref([])
 const activeCommentItem = ref(null)
 const replyTargetId = ref(null)
-const shareNotice = ref('')
 const router = useRouter()
 
 const withVideoInteractionState = (item) => ({
@@ -277,15 +326,13 @@ const shareVideo = async (video) => {
   try {
     if (navigator.share) {
       await navigator.share({ url: link })
-      shareNotice.value = 'Share opened'
-      setTimeout(() => { shareNotice.value = '' }, 1200)
+      toastSuccess('Sdílení otevřeno')
       return
     }
   } catch { }
   try {
     await navigator.clipboard.writeText(link)
-    shareNotice.value = 'Link copied'
-    setTimeout(() => { shareNotice.value = '' }, 1200)
+    toastSuccess('Odkaz zkopírován')
   } catch (err) {
     console.error(err)
   }

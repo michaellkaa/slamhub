@@ -43,6 +43,10 @@ onMounted(async () => {
     const { data: me } = await axios.get('/api/me')
     localStorage.setItem('user', JSON.stringify(me))
 
+    import('../composables/usePushNotifications').then(({ syncPushSubscriptionIfGranted }) => {
+      syncPushSubscriptionIfGranted()
+    }).catch(() => {})
+
     router.replace(`/profile/${me.username}`)
   } catch (e) {
     localStorage.removeItem('token')

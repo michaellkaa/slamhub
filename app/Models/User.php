@@ -139,6 +139,11 @@ class User extends Authenticatable
         return $this->hasMany(VideoComment::class);
     }
 
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
+
     
 
     public function conversations()

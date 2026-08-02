@@ -26,6 +26,7 @@ const routes = [
   },
   { path: "/profile/:username", name: "profile.detail", component: () => import("./Pages/ProfileDetail.vue"), props: true, meta: { requiresAuth: true } },
   { path: "/settings", name: "settings", component: () => import("./Pages/ProfileSettings.vue"), meta: { requiresAuth: true } },
+  { path: "/admin", name: "admin", component: () => import("./Pages/AdminDashboard.vue"), meta: { requiresAuth: true, requiresAdmin: true } },
   { path: "/events", name: "events", component: () => import("./Pages/EventPage.vue"), meta: { requiresAuth: true } },
   { path: "/messages", name: "messages", component: () => import("./Pages/DirectMessages.vue"), meta: { requiresAuth: true } },
   { path: "/events/create", name: "CreateEvent", component: () => import("./Pages/CreateEvent.vue"), meta: { requiresAuth: true } },
@@ -61,6 +62,17 @@ router.beforeEach((to) => {
 
   if (to.meta.guestOnly && isAuthenticated) {
     return { name: 'home' }
+  }
+
+  if (to.meta.requiresAdmin && isAuthenticated) {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || 'null')
+      if (user?.role !== 'admin') {
+        return { name: 'settings' }
+      }
+    } catch {
+      return { name: 'settings' }
+    }
   }
 
   return true

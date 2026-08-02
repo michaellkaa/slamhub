@@ -154,3 +154,39 @@ body {
 .border-app-strong { border-color: var(--color-border-strong); }
 .border-app-stronger { border-color: var(--color-border-stronger); }
 .hover\:border-app-stronger:hover { border-color: var(--color-border-stronger); }
+
+.push-toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.push-toggle.is-on {
+  background: #ec4899;
+  border-color: #ec4899;
+}
+
+.push-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease;
+}
+
+.push-toggle.is-on .push-toggle-knob {
+  transform: translateX(20px);
+}
+
+.border-pink-500 {
+  border-color: #ec4899;
+}

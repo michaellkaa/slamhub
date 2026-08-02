@@ -23,6 +23,8 @@ use App\Http\Controllers\PostInteractionController;
 use App\Http\Controllers\VideoInteractionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\EventLeagueController;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\PushSubscriptionController;
 
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -127,6 +129,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead']);
+});
+
+Route::get('/push/vapid-public-key', [PushSubscriptionController::class, 'vapidPublicKey']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/push/subscribe', [PushSubscriptionController::class, 'store']);
+    Route::delete('/push/subscribe', [PushSubscriptionController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/overview', [AdminController::class, 'overview']);
+    Route::get('/users', [AdminController::class, 'users']);
+    Route::put('/users/{user}', [AdminController::class, 'updateUser']);
+    Route::get('/posts', [AdminController::class, 'posts']);
+    Route::put('/posts/{post}', [AdminController::class, 'updatePost']);
+    Route::get('/videos', [AdminController::class, 'videos']);
+    Route::put('/videos/{video}', [AdminController::class, 'updateVideo']);
+    Route::get('/events', [AdminController::class, 'events']);
 });
 
 Route::middleware('auth:sanctum')->get('/users', [ApiUserController::class, 'index']);

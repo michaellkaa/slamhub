@@ -43,7 +43,9 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
 
+const { error: toastError } = useToast()
 const router = useRouter()
 
 const award = ref({
@@ -87,7 +89,7 @@ const submitAward = async () => {
 
   } catch (err) {
     console.error(err.response?.data)
-    alert(JSON.stringify(err.response?.data))
+    toastError(err.response?.data?.message || 'Chyba při vytváření ocenění.')
   }
 }
 

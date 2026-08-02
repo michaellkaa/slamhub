@@ -21,6 +21,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { useToast } from '../composables/useToast'
+
+const { error: toastError } = useToast()
 
 const router = useRouter()
 
@@ -90,7 +94,7 @@ const triggerVideoUpload = () => {
 
     } catch (err) {
       console.error(err)
-      alert('Nahrání videa selhalo')
+      toastError('Nahrání videa selhalo')
     }
   }
   input.click()

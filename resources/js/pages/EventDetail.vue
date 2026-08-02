@@ -117,6 +117,9 @@
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useToast } from '../composables/useToast'
+
+const { success: toastSuccess, error: toastError, info: toastInfo } = useToast()
 
 const router = useRouter()
 
@@ -267,7 +270,7 @@ const ensureSession = async () => {
 const giveAward = async () => {
   try {
     if (!event.value.winner_award_id) {
-      alert('Není vybraná žádná award')
+      toastInfo('Není vybraná žádná award')
       return
     }
 
@@ -275,10 +278,10 @@ const giveAward = async () => {
       award_id: event.value.winner_award_id
     })
 
-    alert('Award rozdána všem performerům!')
+    toastSuccess('Award rozdána všem performerům!')
   } catch (err) {
     console.error(err.response?.data || err)
-    alert('Chyba při rozdávání award')
+    toastError('Chyba při rozdávání award')
   }
 }
 </script>

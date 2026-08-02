@@ -116,6 +116,10 @@ const login = async () => {
 
     const user = await axios.get('/api/me')
 
+    import('../composables/usePushNotifications').then(({ syncPushSubscriptionIfGranted }) => {
+      syncPushSubscriptionIfGranted()
+    }).catch(() => {})
+
     router.push(`/profile/${user.data.username}`)
 
   } catch (err) {

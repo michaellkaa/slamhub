@@ -21,6 +21,19 @@
               <span class="w-5 h-5 flex items-center justify-center opacity-80" v-html="section.icon"></span>
               {{ section.label }}
             </button>
+
+            <button
+              v-if="isAdmin"
+              type="button"
+              @click="goToAdmin"
+              class="mt-2 flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-left w-full text-app-muted hover:text-app hover:bg-surface"
+            >
+              <span class="flex items-center gap-3 min-w-0">
+                <span class="w-5 h-5 flex items-center justify-center opacity-80" v-html="adminIcon"></span>
+                <span class="truncate">Admin dashboard</span>
+              </span>
+              <span class="shrink-0 opacity-70" aria-hidden="true" v-html="externalArrowIcon"></span>
+            </button>
           </nav>
         </aside>
 
@@ -80,6 +93,44 @@
               </button>
             </div>
           </template>
+
+          <template v-else-if="activeSection === 'notifications'">
+            <h1 class="text-xl font-semibold">Notifikace</h1>
+            <p class="text-app-muted text-sm mt-1">
+              Dostávej upozornění o nových akcích a zprávách i když appku zrovna nepoužíváš.
+            </p>
+
+            <button
+              type="button"
+              class="mt-6 w-full rounded-xl border px-4 py-4 text-left transition disabled:opacity-60"
+              :class="pushEnabled
+                ? 'border-pink-500 bg-surface'
+                : 'border-app bg-transparent hover:bg-surface'"
+              :disabled="pushBusy || !pushSupported || pushDenied"
+              @click="toggleNotifications"
+            >
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="text-sm font-semibold">Push notifikace</div>
+                  <div class="text-xs text-app-muted mt-0.5">
+                    <template v-if="!pushSupported">Tento prohlížeč je nepodporuje</template>
+                    <template v-else-if="pushDenied">Zakázané v nastavení prohlížeče</template>
+                    <template v-else-if="pushBusy">Ukládám…</template>
+                    <template v-else-if="pushEnabled">Zapnuté</template>
+                    <template v-else>Vypnuté</template>
+                  </div>
+                </div>
+
+                <span
+                  class="push-toggle"
+                  :class="{ 'is-on': pushEnabled }"
+                  aria-hidden="true"
+                >
+                  <span class="push-toggle-knob"></span>
+                </span>
+              </div>
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -87,15 +138,76 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useTheme } from '../composables/useTheme'
+import {
+  disablePushNotifications,
+  enablePushNotifications,
+  getPushEnabledState,
+  isPushSupported,
+} from '../composables/usePushNotifications'
+import { useToast } from '../composables/useToast'
 
 const router = useRouter()
 const { preference, setTheme } = useTheme()
+const { success: toastSuccess, error: toastError, info: toastInfo } = useToast()
 
 const activeSection = ref('profile')
+const currentRole = ref('')
+const pushBusy = ref(false)
+const pushEnabled = ref(false)
+const pushPermission = ref('default')
+const pushSupported = computed(() => isPushSupported())
+const pushDenied = computed(() => pushPermission.value === 'denied')
+
+const refreshPushState = async () => {
+  const state = await getPushEnabledState()
+  pushEnabled.value = !!state.enabled
+  pushPermission.value = state.permission
+}
+
+const toggleNotifications = async () => {
+  if (pushBusy.value || !pushSupported.value || pushDenied.value) return
+  pushBusy.value = true
+  try {
+    if (pushEnabled.value) {
+      pushEnabled.value = false
+      await disablePushNotifications()
+      await refreshPushState()
+      toastInfo('Notifikace vypnuté')
+    } else {
+      const result = await enablePushNotifications()
+      if (result.ok) {
+        pushEnabled.value = true
+        toastSuccess('Notifikace zapnuté')
+      } else if (result.reason === 'denied') {
+        toastError('Notifikace zamítnuty v prohlížeči')
+      } else if (result.reason === 'no-sw') {
+        toastInfo('Service worker ještě není ready — zkus znovu')
+      } else {
+        toastError('Notifikace se nepodařilo zapnout')
+      }
+      await refreshPushState()
+    }
+  } catch (err) {
+    console.error(err)
+    toastError('Nepodařilo se změnit notifikace')
+    await refreshPushState()
+  } finally {
+    pushBusy.value = false
+  }
+}
+
+const isAdmin = computed(() => currentRole.value === 'admin')
+
+const adminIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`
+const externalArrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>`
+
+const goToAdmin = () => {
+  router.push('/admin')
+}
 
 const sections = [
   {
@@ -107,6 +219,11 @@ const sections = [
     key: 'appearance',
     label: 'Vzhled',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+  },
+  {
+    key: 'notifications',
+    label: 'Notifikace',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   },
 ]
 
@@ -158,6 +275,12 @@ onMounted(async () => {
     const { data } = await axios.get('/api/me')
     form.value.name = data.name || ''
     form.value.username = data.username || ''
+    currentRole.value = data.role || ''
+    localStorage.setItem('user', JSON.stringify({
+      ...JSON.parse(localStorage.getItem('user') || '{}'),
+      ...data,
+    }))
+    await refreshPushState()
   } catch (err) {
     console.error('Failed to load current user:', err)
     router.push('/login')

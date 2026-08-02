@@ -17,7 +17,19 @@ class LeaderboardMovementNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'push'];
+    }
+
+    public function toPush(object $notifiable): array
+    {
+        $change = $this->previousRank - $this->newRank;
+        $direction = $change > 0 ? 'nahoru' : ($change < 0 ? 'dolů' : 'beze změny');
+
+        return [
+            'title' => 'Žebříček',
+            'body' => "Tvé umístění: #{$this->newRank} ({$direction})",
+            'url' => '/awards',
+        ];
     }
 
     public function toArray(object $notifiable): array

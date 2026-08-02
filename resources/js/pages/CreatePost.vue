@@ -30,6 +30,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import axios from 'axios'
+import { useToast } from '../composables/useToast'
+
+const { error: toastError } = useToast()
 
 const MAX_LENGTH = 500
 
@@ -60,7 +63,7 @@ const submitPost = async () => {
     window.location.href = '/profile'
   } catch (err) {
     console.error(err.response?.data)
-    alert('Chyba při vytváření příspěvku: ' + JSON.stringify(err.response?.data))
+    toastError(err.response?.data?.message || 'Chyba při vytváření příspěvku.')
   }
 }
 </script>

@@ -199,17 +199,15 @@
       </div>
     </div>
   </div>
-
-  <div v-if="shareNotice"
-    class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[85] rounded-lg bg-black/80 px-3 py-2 text-xs text-white">
-    {{ shareNotice }}
-  </div>
 </template>
 
 <script setup>
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { useToast } from '../../composables/useToast'
+
+const { success: toastSuccess } = useToast()
 
 const props = defineProps({
   username: {
@@ -226,7 +224,6 @@ const mobileViewerRef = ref(null)
 const mobileSlideRefs = ref([])
 const activeCommentVideo = ref(null)
 const replyTargetCommentId = ref(null)
-const shareNotice = ref('')
 const router = useRouter()
 
 const fetchVideos = async () => {
@@ -332,15 +329,13 @@ const shareVideo = async (video) => {
   try {
     if (navigator.share) {
       await navigator.share({ url: link })
-      shareNotice.value = 'Share opened'
-      setTimeout(() => { shareNotice.value = '' }, 1200)
+      toastSuccess('Sdílení otevřeno')
       return
     }
   } catch { }
   try {
     await navigator.clipboard.writeText(link)
-    shareNotice.value = 'Link copied'
-    setTimeout(() => { shareNotice.value = '' }, 1200)
+    toastSuccess('Odkaz zkopírován')
   } catch (err) {
     console.error(err)
   }

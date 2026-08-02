@@ -14,8 +14,12 @@ export default defineConfig({
         vue(),
         tailwindcss(),
         VitePWA({
+            strategies: 'injectManifest',
+            srcDir: 'resources/js',
+            filename: 'sw.js',
             registerType: 'prompt',
             includeAssets: ['favicon.png', 'pwa-icon.svg'],
+            injectRegister: 'auto',
             manifest: {
                 name: 'SlamHub',
                 short_name: 'SlamHub',
@@ -34,13 +38,13 @@ export default defineConfig({
                     },
                 ],
             },
-            workbox: {
-                navigateFallback: '/',
+            injectManifest: {
                 globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,webp,ico,json,txt,woff,woff2}'],
                 maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
             },
             devOptions: {
-                enabled: false,
+                enabled: true,
+                type: 'module',
             },
         }),
 

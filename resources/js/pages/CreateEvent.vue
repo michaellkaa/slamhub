@@ -92,9 +92,12 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 import axios from 'axios'
+import { useToast } from '../composables/useToast'
 
 import PerfModal from '../components/PerfModal.vue'
 import AwardModal from '../components/AwardModal.vue'
+
+const { error: toastError } = useToast()
 
 axios.defaults.withCredentials = true
 
@@ -262,7 +265,7 @@ const submitEvent = async () => {
 
   } catch (err) {
     console.error("Chyba při ukládání:", err.response?.data);
-    alert("Chyba: " + JSON.stringify(err.response?.data?.errors || err.response?.data?.message));
+    toastError(err.response?.data?.message || 'Chyba při ukládání eventu.')
   } finally {
     isSubmitting.value = false;
   }

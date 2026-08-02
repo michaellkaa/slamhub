@@ -38,4 +38,10 @@ return [
         'verify_ssl' => env('GOOGLE_VERIFY_SSL', true),
     ],
 
+    'vapid' => [
+        'subject' => env('VAPID_SUBJECT', env('APP_URL', 'mailto:admin@localhost')),
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+    ],
+
 ];

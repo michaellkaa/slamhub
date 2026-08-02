@@ -19,14 +19,14 @@ class EventPublishedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast', 'push'];
+        return ['database', 'push'];
     }
 
     public function toPush(object $notifiable): array
     {
         return [
-            'title' => 'New event',
-            'body' => $this->event->title,
+            'title' => 'Nová akce',
+            'body' => ($this->organizer->name ?: 'Organizátor') . ': ' . $this->event->title,
             'url' => '/events/' . $this->event->id,
         ];
     }

@@ -19,7 +19,16 @@ class NewMessageNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'push'];
+    }
+
+    public function toPush(object $notifiable): array
+    {
+        return [
+            'title' => 'Nová zpráva',
+            'body' => ($this->sender->name ?: 'Někdo') . ': ' . mb_substr((string) $this->message->body, 0, 120),
+            'url' => '/messages',
+        ];
     }
 
     public function toArray(object $notifiable): array
