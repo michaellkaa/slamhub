@@ -28,8 +28,10 @@ class TestPushCommand extends Command
         $subs = $user->pushSubscriptions;
         $this->info("User #{$user->id} @{$user->username}");
         $this->info('push_subscriptions: '.$subs->count());
-        $this->info('VAPID public: '.(config('services.vapid.public_key') ? 'yes' : 'NO'));
+        $this->info('VAPID public: '.(config('services.vapid.public_key') ? 'yes ('.strlen((string) config('services.vapid.public_key')).' chars)' : 'NO'));
+        $this->info('VAPID private: '.(config('services.vapid.private_key') ? 'yes' : 'NO'));
         $this->info('VAPID subject: '.(config('services.vapid.subject') ?: 'empty'));
+        $this->info('APP_URL: '.(string) config('app.url'));
 
         if ($subs->isEmpty()) {
             $this->error('No push_subscriptions for this user — enable notifications in the app first.');
@@ -37,7 +39,15 @@ class TestPushCommand extends Command
         }
 
         foreach ($subs as $sub) {
-            $this->line('- #'.$sub->id.' enc='.($sub->content_encoding ?: '?').' '.substr((string) $sub->endpoint, 0, 72).'...');
+            $host = parse_url((string) $sub->endpoint, PHP_URL_HOST) ?: '?';
+            $this->line(sprintf(
+                '- #%d host=%s enc=%s p256dh=%s auth=%s',
+                $sub->id,
+                $host,
+                $sub->content_encoding ?: '?',
+                $sub->p256dh ? 'yes' : 'NO',
+                $sub->auth ? 'yes' : 'NO'
+            ));
         }
 
         $notification = new class extends Notification {

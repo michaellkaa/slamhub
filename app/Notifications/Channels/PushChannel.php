@@ -52,44 +52,77 @@ class PushChannel
             return;
         }
 
+        $queued = 0;
         foreach ($subscriptions as $sub) {
             if (!$sub->endpoint || !$sub->p256dh || !$sub->auth) {
+                Log::warning('Push skipped incomplete subscription row', [
+                    'user_id' => $notifiable->getKey(),
+                    'subscription_id' => $sub->id,
+                    'has_endpoint' => (bool) $sub->endpoint,
+                    'has_p256dh' => (bool) $sub->p256dh,
+                    'has_auth' => (bool) $sub->auth,
+                ]);
                 continue;
             }
 
             try {
+                $encoding = $sub->content_encoding ?: 'aesgcm';
                 $subscription = Subscription::create([
                     'endpoint' => $sub->endpoint,
                     'keys' => [
                         'p256dh' => $sub->p256dh,
                         'auth' => $sub->auth,
                     ],
-                    'contentEncoding' => $sub->content_encoding ?: 'aesgcm',
+                    'contentEncoding' => $encoding,
                 ]);
 
                 $webPush->queueNotification(
                     $subscription,
                     json_encode($data)
                 );
+                $queued++;
+
+                Log::info('Web push queued', [
+                    'user_id' => $notifiable->getKey(),
+                    'subscription_id' => $sub->id,
+                    'encoding' => $encoding,
+                    'endpoint_host' => parse_url($sub->endpoint, PHP_URL_HOST),
+                ]);
             } catch (Throwable $e) {
+                Log::error('Web push queue failed', [
+                    'user_id' => $notifiable->getKey(),
+                    'subscription_id' => $sub->id,
+                    'error' => $e->getMessage(),
+                ]);
                 report($e);
             }
         }
 
+        if ($queued === 0) {
+            Log::warning('Push skipped: nothing queued', [
+                'user_id' => $notifiable->getKey(),
+                'subscription_count' => $subscriptions->count(),
+            ]);
+            return;
+        }
+
         try {
             $sent = 0;
+            $failed = 0;
             foreach ($webPush->flush() as $report) {
                 if ($report->isSuccess()) {
                     $sent++;
                     continue;
                 }
 
+                $failed++;
                 $endpoint = $report->getRequest()->getUri()->__toString();
                 $code = $report->getResponse()?->getStatusCode();
                 $reason = $report->getReason();
 
                 Log::warning('Web push delivery failed', [
-                    'endpoint' => $endpoint,
+                    'user_id' => $notifiable->getKey(),
+                    'endpoint_host' => parse_url($endpoint, PHP_URL_HOST),
                     'status' => $code,
                     'reason' => $reason,
                 ]);
@@ -100,14 +133,19 @@ class PushChannel
                 }
             }
 
-            if ($sent > 0) {
-                Log::info('Web push delivered', [
-                    'user_id' => $notifiable->getKey(),
-                    'sent' => $sent,
-                    'notification' => $notification::class,
-                ]);
-            }
+            Log::info('Web push flush finished', [
+                'user_id' => $notifiable->getKey(),
+                'queued' => $queued,
+                'sent' => $sent,
+                'failed' => $failed,
+                'notification' => $notification::class,
+                'vapid_subject' => $subject,
+            ]);
         } catch (Throwable $e) {
+            Log::error('Web push flush exception', [
+                'user_id' => $notifiable->getKey(),
+                'error' => $e->getMessage(),
+            ]);
             report($e);
         }
     }

@@ -139,13 +139,30 @@ async function syncSubscription(subscription) {
   if (!json?.endpoint || !json?.keys?.p256dh || !json?.keys?.auth) {
     throw new Error('Incomplete push subscription keys')
   }
+
+  const encodings = PushManager.supportedContentEncodings || ['aesgcm']
+  // Prefer aes128gcm when available (Safari / Apple Push).
+  const contentEncoding = encodings.includes('aes128gcm')
+    ? 'aes128gcm'
+    : encodings[0]
+
+  console.info('[Push] saving subscription', {
+    endpointHost: (() => {
+      try { return new URL(json.endpoint).host } catch { return 'unknown' }
+    })(),
+    encodings,
+    contentEncoding,
+    hasP256dh: Boolean(json.keys.p256dh),
+    hasAuth: Boolean(json.keys.auth),
+  })
+
   await axios.post('/api/push/subscribe', {
     endpoint: json.endpoint,
     keys: {
       p256dh: json.keys.p256dh,
       auth: json.keys.auth,
     },
-    contentEncoding: (PushManager.supportedContentEncodings || ['aesgcm'])[0],
+    contentEncoding,
   })
 }
 
@@ -247,9 +264,30 @@ export async function enablePushNotifications() {
     return { ok: false, reason: 'no-vapid' }
   }
 
+  const subscriptionMatchesVapid = (subscription) => {
+    try {
+      const existing = subscription?.options?.applicationServerKey
+      if (!existing) return true
+      const bytes = existing instanceof ArrayBuffer
+        ? new Uint8Array(existing)
+        : new Uint8Array(existing)
+      if (bytes.byteLength !== appServerKey.byteLength) return false
+      for (let i = 0; i < bytes.byteLength; i += 1) {
+        if (bytes[i] !== appServerKey[i]) return false
+      }
+      return true
+    } catch {
+      return true
+    }
+  }
+
   try {
-    // Prefer existing subscription — forced unsubscribe often causes Chrome AbortError.
+    // Reuse existing subscription only when it matches current VAPID key.
     let subscription = await registration.pushManager.getSubscription()
+    if (subscription && !subscriptionMatchesVapid(subscription)) {
+      await subscription.unsubscribe()
+      subscription = null
+    }
     if (!subscription) {
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
