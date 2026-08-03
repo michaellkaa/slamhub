@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('pwa-icon.png') }}" type="image/png">
     <meta name="theme-color" content="#0f0f12">
     <meta name="color-scheme" content="light dark">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -34,7 +34,7 @@
       })();
     </script>
 
-    <title>Title</title>
+    <title>SlamHub</title>
 
     @vite(['resources/css/output.css', 'resources/js/app.js'])
   </head>

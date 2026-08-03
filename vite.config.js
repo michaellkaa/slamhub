@@ -36,7 +36,7 @@ export default defineConfig({
                     {
                         src: '/pwa-icon.png',
                         sizes: 'any',
-                        type: 'image/svg+xml',
+                        type: 'image/png',
                         purpose: 'any maskable',
                     },
                 ],
