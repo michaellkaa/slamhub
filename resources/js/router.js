@@ -27,6 +27,7 @@ const routes = [
   { path: "/profile/:username", name: "profile.detail", component: () => import("./pages/ProfileDetail.vue"), props: true, meta: { title: "Profil", requiresAuth: true } },
   { path: "/settings", name: "settings", component: () => import("./pages/ProfileSettings.vue"), meta: { title: "Nastavení", requiresAuth: true } },
   { path: "/admin", name: "admin", component: () => import("./pages/AdminDashboard.vue"), meta: { title: "Admin", requiresAuth: true, requiresAdmin: true } },
+  { path: "/organizer", name: "organizer", component: () => import("./pages/OrganizerDashboard.vue"), meta: { title: "Organizátor", requiresAuth: true, requiresOrganizer: true } },
   { path: "/events", name: "events", component: () => import("./pages/EventPage.vue"), meta: { title: "Události", requiresAuth: true } },
   { path: "/messages", name: "messages", component: () => import("./pages/DirectMessages.vue"), meta: { title: "Zprávy", requiresAuth: true } },
   { path: "/events/create", name: "CreateEvent", component: () => import("./pages/CreateEvent.vue"), meta: { title: "Vytvořit událost", requiresAuth: true } },
@@ -68,6 +69,17 @@ router.beforeEach((to) => {
     try {
       const user = JSON.parse(localStorage.getItem('user') || 'null')
       if (user?.role !== 'admin') {
+        return { name: 'settings' }
+      }
+    } catch {
+      return { name: 'settings' }
+    }
+  }
+
+  if (to.meta.requiresOrganizer && isAuthenticated) {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || 'null')
+      if (!['organizer', 'admin'].includes(user?.role)) {
         return { name: 'settings' }
       }
     } catch {

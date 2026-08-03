@@ -23,6 +23,19 @@
             </button>
 
             <button
+              v-if="isOrganizer"
+              type="button"
+              @click="goToOrganizer"
+              class="mt-2 flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-left w-full text-app-muted hover:text-app hover:bg-surface"
+            >
+              <span class="flex items-center gap-3 min-w-0">
+                <span class="w-5 h-5 flex items-center justify-center opacity-80" v-html="organizerIcon"></span>
+                <span class="truncate">Organizátor dashboard</span>
+              </span>
+              <span class="shrink-0 opacity-70" aria-hidden="true" v-html="externalArrowIcon"></span>
+            </button>
+
+            <button
               v-if="isAdmin"
               type="button"
               @click="goToAdmin"
@@ -252,12 +265,17 @@ const toggleNotifications = async () => {
 }
 
 const isAdmin = computed(() => currentRole.value === 'admin')
+const isOrganizer = computed(() => ['organizer', 'admin'].includes(currentRole.value))
 
+const organizerIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M4 6h16M7 6v12M17 6v12M4 18h16"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>`
 const adminIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`
 const externalArrowIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>`
 
 const goToAdmin = () => {
   router.push('/admin')
+}
+const goToOrganizer = () => {
+  router.push('/organizer')
 }
 
 const sections = [
