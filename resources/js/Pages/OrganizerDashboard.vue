@@ -94,6 +94,23 @@
                 </div>
               </div>
 
+                <div class="mt-4">
+                  <div class="text-sm text-app-muted mb-3">Vložit body z papíru</div>
+                  <textarea v-model="rawPoints" placeholder="Jméno 5, Druhý 4 nebo každé jméno na nový řádek s číslem" class="w-full rounded-2xl border border-app bg-app p-3 text-sm h-28 resize-none"></textarea>
+                  <div class="flex gap-2 mt-3">
+                    <button @click="parsePoints" type="button" class="rounded-2xl bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 text-sm">Načíst body</button>
+                    <button @click="applyParsedToSlots" type="button" :disabled="!parsedParticipants.length" class="rounded-2xl bg-surface px-3 py-2 text-sm">Aplikovat do slotů</button>
+                    <button @click="rawPoints = ''" type="button" class="rounded-2xl bg-transparent border border-app px-3 py-2 text-sm">Vyčistit</button>
+                  </div>
+
+                  <div v-if="parsedParticipants.length" class="mt-3 space-y-2">
+                    <div v-for="(p, idx) in parsedParticipants" :key="idx" class="flex items-center justify-between gap-3">
+                      <div class="truncate text-sm">{{ p.name }}</div>
+                      <input v-model.number="p.points" class="w-20 text-sm rounded-md bg-surface p-1 text-center" />
+                    </div>
+                  </div>
+                </div>
+
               <div>
                 <div class="text-sm text-app-muted mb-3">Výsledky zápasů</div>
                 <div class="grid gap-3">
@@ -133,6 +150,18 @@
                 </div>
               </div>
 
+              <div class="rounded-2xl border border-app bg-surface p-3">
+                <div class="text-sm text-app-muted mb-3">Hlasování</div>
+                <div class="flex gap-2 mb-3">
+                  <button v-if="selectedEvent" @click.prevent="router.push(`/events/${selectedEvent.id}/voting/host`)" class="rounded-2xl bg-pink-500 text-white px-3 py-2 text-sm">Otevřít hostitelský panel</button>
+                  <button v-if="selectedEvent" @click.prevent="loadVotingStatus(selectedEvent.id)" class="rounded-2xl bg-surface px-3 py-2 text-sm">Aktualizovat stav</button>
+                </div>
+                <div v-if="votingStatus">
+                  <div v-if="votingStatus.error" class="text-sm text-red-400">Nepodařilo se načíst stav hlasování</div>
+                  <div v-else class="text-sm text-app-muted">{{ JSON.stringify(votingStatus) }}</div>
+                </div>
+              </div>
+
               <button @click="saveLeague" class="w-full rounded-2xl bg-pink-500 hover:bg-pink-600 py-3 text-white font-semibold">
                 Uložit ligu
               </button>
@@ -165,6 +194,10 @@ const finalWinner = ref(null)
 const eventPerformers = ref([])
 const guestPerformers = ref([])
 const saveMessage = ref('')
+const rawPoints = ref('')
+const parsedParticipants = ref([])
+const pointsMap = ref({})
+const votingStatus = ref(null)
 
 const matches = [
   { id: 'ab', left: 'A', right: 'B', label: 'Zápas A vs B' },
@@ -204,6 +237,7 @@ const selectEvent = async (id) => {
   selectedEventId.value = id
   saveMessage.value = ''
   await loadLeagueData(id)
+  await loadVotingStatus(id)
 }
 
 const getSlot = (id) => localSlots.value.find((s) => s.id === id)?.value || `Soutěžící ${id}`
@@ -218,6 +252,42 @@ const ranking = computed(() => {
   return Object.entries(wins).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([name]) => name)
 })
 
+const parsePoints = () => {
+  const text = rawPoints.value || ''
+  const lines = text.split(/\n|,/) .map(s => s.trim()).filter(Boolean)
+  const out = []
+  for (const line of lines) {
+    // try to find a number at end
+    const m = line.match(/^(.*?)[\s,:-]*([0-9]+)\s*$/)
+    if (m) {
+      out.push({ name: m[1].trim(), points: Number(m[2]) })
+    } else {
+      // if only name provided, default 0
+      out.push({ name: line, points: 0 })
+    }
+  }
+  parsedParticipants.value = out
+  pointsMap.value = out.reduce((acc, p) => ({ ...acc, [p.name]: p.points }), {})
+}
+
+const applyParsedToSlots = () => {
+  if (!parsedParticipants.value.length) return
+  // apply names to slots in order
+  for (let i = 0; i < localSlots.value.length; i++) {
+    localSlots.value[i].value = parsedParticipants.value[i]?.name || localSlots.value[i].value
+  }
+}
+
+const loadVotingStatus = async (eventId) => {
+  if (!eventId) return
+  try {
+    const { data } = await axios.get(`/api/events/${eventId}/voting/status`)
+    votingStatus.value = data
+  } catch (err) {
+    votingStatus.value = { error: true }
+  }
+}
+
 const loadEvents = async () => {
   loadingEvents.value = true
   try {
@@ -226,6 +296,7 @@ const loadEvents = async () => {
     if (events.value.length && !selectedEventId.value) {
       selectedEventId.value = events.value[0].id
       await loadLeagueData(selectedEventId.value)
+      await loadVotingStatus(selectedEventId.value)
     }
   } catch (err) {
     console.error('Chyba načítání eventů:', err)
@@ -248,6 +319,14 @@ const loadLeagueData = async (eventId) => {
     roundRobin.value = { ab: null, bc: null, ca: null, ...(data.round_robin || {}) }
     secondRoundWinner.value = data.second_round_winner || null
     finalWinner.value = data.final_winner || null
+    // restore parsed points if present
+    if (data.points && typeof data.points === 'object') {
+      parsedParticipants.value = Object.entries(data.points).map(([name, pts]) => ({ name, points: pts }))
+      pointsMap.value = { ...data.points }
+    } else {
+      parsedParticipants.value = []
+      pointsMap.value = {}
+    }
   } catch (err) {
     console.error('Chyba načítání ligy:', err)
   }
@@ -262,6 +341,13 @@ const saveLeague = async () => {
     second_round_winner: secondRoundWinner.value,
     final_winner: finalWinner.value,
   }
+    // include any parsed points
+    // ensure pointsMap reflects current parsedParticipants edits
+    if (parsedParticipants.value.length) {
+      payload.points = parsedParticipants.value.reduce((acc, p) => ({ ...acc, [p.name]: p.points }), {})
+    } else if (Object.keys(pointsMap.value).length) {
+      payload.points = pointsMap.value
+    }
 
   try {
     await axios.put(`/api/events/${selectedEvent.value.id}/league`, { league_data: payload })
