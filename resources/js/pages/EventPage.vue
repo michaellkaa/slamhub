@@ -66,7 +66,7 @@ const activeNav = ref('award')
 const events = ref([])
 const loading = ref(true)
 const isFilterOpen = ref(false)
-const activeFilter = ref('all')
+const activeFilter = ref('upcoming')
 const filterOptions = [
   { value: 'all', label: 'Všechny události' },
   { value: 'upcoming', label: 'Nadcházející' },
