@@ -1,174 +1,133 @@
 <template>
-  <div class="min-h-screen bg-app text-app px-3 sm:px-4 md:px-6 py-6 md:py-10 pb-28 lg:pb-10">
-    <div class="w-full max-w-5xl mx-auto">
-      <div class="mb-6 md:mb-8">
-        <button type="button" @click="goBack" class="text-sm text-app-muted hover:text-app transition mb-3">
-          ← Zpět do nastavení
-        </button>
-        <h1 class="text-xl sm:text-2xl font-semibold">Organizátor dashboard</h1>
-        <p class="text-app-muted text-sm mt-1">Vyber svůj event a uprav jeho ligovou tabulku.</p>
-      </div>
+  <div class="min-h-screen bg-app text-app flex justify-center px-3 md:px-4 py-6 md:py-10 pb-28 lg:pb-10">
+    <div class="w-full max-w-5xl">
+      <button type="button" @click="goBack" class="mb-6 text-sm text-app-muted hover:text-app transition">
+        ← Zpět do nastavení
+      </button>
 
       <div v-if="loadingEvents" class="rounded-xl border border-app bg-surface p-6 text-sm text-app-muted">
         Načítám tvoje eventy…
       </div>
 
-      <div v-else class="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <div class="space-y-4">
-          <div class="rounded-2xl border border-app bg-surface p-4">
-            <div class="flex flex-col gap-3">
-              <div>
-                <h2 class="text-sm font-semibold mb-3">Moje eventy</h2>
-                <input
-                  v-model="searchQuery"
-                  type="search"
-                  placeholder="Hledat event podle názvu nebo místa"
-                  class="w-full rounded-2xl border border-app bg-app px-3 py-2 text-sm text-app focus:outline-none focus:border-pink-500 transition"
+      <div v-else class="flex flex-col md:flex-row gap-6 md:gap-10">
+        <aside class="md:w-56 shrink-0">
+          <EventList
+            :searchQuery="searchQuery"
+            :events="events"
+            :filteredEvents="filteredEvents"
+            :selectedEventId="selectedEventId"
+            :showAllEvents="showAllEvents"
+            :activeTab="activeTab"
+            :formatDate="formatDate"
+            @select="selectEvent"
+            @update:searchQuery="val => searchQuery = val"
+            @update:showAllEvents="val => showAllEvents = val"
+            @update:activeTab="val => activeTab = val"
+          />
+        </aside>
+
+        <div class="flex-1 min-w-0">
+          <div v-if="!selectedEvent" class="text-sm text-app-muted">
+            Vyber event vlevo — výběr platí pro všechny taby.
+          </div>
+
+          <template v-else>
+            <template v-if="activeTab === 'league'">
+              <h1 class="text-xl font-semibold">Liga</h1>
+              <p class="text-app-muted text-sm mt-1">
+                {{ selectedEvent.title || 'Bez názvu' }} · {{ selectedEvent.location || 'Bez místa' }}
+              </p>
+
+              <div v-if="selectedEvent.event_mode !== 'league'" class="mt-6 rounded-xl border border-app bg-surface p-4 text-sm text-app-muted">
+                Tento event není nastaven jako liga. Ligové výsledky můžeš upravovat jen pro eventy s módem <strong>league</strong>.
+              </div>
+
+              <div v-else class="mt-6 space-y-6">
+                <div>
+                  <div class="text-sm text-app-muted mb-3">Složení slotů</div>
+                  <div class="grid gap-3 md:grid-cols-2">
+                    <div v-for="slot in localSlots" :key="slot.id" class="rounded-xl border border-app bg-surface p-3">
+                      <div class="text-xs text-app-muted mb-1">Slot {{ slot.id }}</div>
+                      <select v-model="slot.value" class="w-full rounded-md bg-app border border-app p-2 text-sm">
+                        <option :value="null">Vyber účastníka</option>
+                        <option v-for="option in allParticipants" :key="option.key" :value="option.label">{{ option.label }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-app-muted mb-3">Výsledky zápasů</div>
+                  <div class="grid gap-3">
+                    <div v-for="match in matches" :key="match.id" class="rounded-xl border border-app bg-surface p-3">
+                      <div class="flex items-center justify-between gap-3 mb-2">
+                        <div class="text-sm font-medium">{{ getSlot(match.left) }} vs {{ getSlot(match.right) }}</div>
+                        <span class="text-xs text-app-muted">{{ match.label }}</span>
+                      </div>
+                      <select v-model="roundRobin[match.id]" class="w-full rounded-md bg-app border border-app p-2 text-sm">
+                        <option :value="null">Vyber vítěze</option>
+                        <option :value="getSlot(match.left)">{{ getSlot(match.left) }}</option>
+                        <option :value="getSlot(match.right)">{{ getSlot(match.right) }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rounded-xl border border-app bg-surface p-3">
+                  <div class="text-sm text-app-muted mb-3">Finálová tabulka</div>
+                  <div class="grid gap-3">
+                    <div class="rounded-lg bg-app p-3">
+                      <div class="text-xs text-app-muted mb-1">2. kolo: 3. místo vs 2. místo</div>
+                      <select v-model="secondRoundWinner" class="w-full rounded-md bg-surface border border-app p-2 text-sm">
+                        <option :value="null">Vyber vítěze 2. kola</option>
+                        <option v-if="ranking[2]" :value="ranking[2]">{{ ranking[2] }}</option>
+                        <option v-if="ranking[1]" :value="ranking[1]">{{ ranking[1] }}</option>
+                      </select>
+                    </div>
+                    <div class="rounded-lg bg-app p-3">
+                      <div class="text-xs text-app-muted mb-1">Finále: 1. místo vs vítěz 2. kola</div>
+                      <select v-model="finalWinner" class="w-full rounded-md bg-surface border border-app p-2 text-sm">
+                        <option :value="null">Vyber vítěze ligy</option>
+                        <option v-if="ranking[0]" :value="ranking[0]">{{ ranking[0] }}</option>
+                        <option v-if="secondRoundWinner" :value="secondRoundWinner">{{ secondRoundWinner }}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  @click="saveLeague"
+                  class="w-full rounded-md bg-pink-500 hover:bg-pink-600 py-3 text-white font-semibold transition"
+                >
+                  Uložit ligu
+                </button>
+                <p v-if="saveMessage" class="text-sm text-emerald-500">{{ saveMessage }}</p>
+              </div>
+            </template>
+
+            <template v-else-if="activeTab === 'manual'">
+              <h1 class="text-xl font-semibold">Manuální bodování</h1>
+              <p class="text-app-muted text-sm mt-1">
+                {{ selectedEvent.title || 'Bez názvu' }} — vlož body z papíru a ulož.
+              </p>
+              <div class="mt-6">
+                <PointsEditor
+                  :rawPoints="rawPoints"
+                  :parsedParticipants="parsedParticipants"
+                  @parse="parsePoints"
+                  @apply="applyParsedToSlots"
+                  @save="saveLeague"
+                  @update:rawPoints="val => rawPoints = val"
+                  @update:parsedParticipant="({ idx, points }) => { parsedParticipants[idx].points = points }"
                 />
               </div>
-            </div>
-            <div v-if="filteredEvents.length" class="space-y-3">
-              <button
-                v-for="event in filteredEvents"
-                :key="event.id"
-                type="button"
-                @click="selectEvent(event.id)"
-                :class="selectedEventId === event.id ? 'bg-pink-500 text-white' : 'bg-app hover:bg-surface-hover text-app'"
-                class="w-full text-left rounded-2xl border border-app p-3 transition"
-              >
-                <div class="font-semibold truncate">{{ event.title || 'Bez názvu' }}</div>
-                <div class="text-xs text-app-muted mt-1">
-                  {{ event.event_mode === 'league' ? 'Liga' : 'Exhibice' }} · {{ formatDate(event.starts_at) }}
-                </div>
-              </button>
+            </template>
 
-              <div v-if="!searchQuery && events.length > filteredEvents.length" class="mt-2 text-right">
-                <button @click="showAllEvents = true" class="text-sm text-pink-500 hover:underline">Zobrazit všechny moje eventy</button>
-              </div>
-              <div v-if="!searchQuery && showAllEvents && events.length > 4" class="mt-2 text-right">
-                <button @click="showAllEvents = false" class="text-sm text-app-muted hover:underline">Skrýt seznam</button>
-              </div>
-            </div>
-            <div v-else class="text-sm text-app-muted">
-              {{ searchQuery ? 'Nebyly nalezeny žádné eventy podle této fráze.' : 'Nemáš zatím žádné eventy.' }}
-            </div>
-          </div>
-
-          <div class="rounded-2xl border border-app bg-surface p-4">
-            <h2 class="text-sm font-semibold mb-3">Nápověda</h2>
-            <p class="text-sm text-app-muted">
-              Zde můžeš vybrat svůj event a upravit ligovou tabulku. Pokud použiješ body z papíru, můžeš je přepsat sem ručně.
-            </p>
-          </div>
-        </div>
-
-        <div class="rounded-2xl border border-app bg-surface p-4">
-          <div v-if="!selectedEvent">
-            <div class="text-sm text-app-muted">Vyber event vlevo pro zobrazení ligy a ruční úpravy.</div>
-          </div>
-
-          <div v-else>
-            <div class="flex flex-col gap-3 mb-4">
-              <div class="text-xs text-app-muted uppercase">Aktuální event</div>
-              <div class="text-lg font-semibold">{{ selectedEvent.title || 'Bez názvu' }}</div>
-              <div class="text-sm text-app-muted">
-                {{ selectedEvent.location || 'Žádné místo' }} · {{ selectedEvent.event_mode === 'league' ? 'Liga' : 'Exhibice' }}
-              </div>
-            </div>
-
-            <div v-if="selectedEvent.event_mode !== 'league'" class="rounded-2xl border border-app bg-app p-4 text-sm text-app-muted">
-              Tento event není nastaven jako liga. Ligové výsledky můžeš upravovat pouze pro eventy s módem <strong>league</strong>.
-            </div>
-
-            <div v-else class="space-y-6">
-              <div>
-                <div class="text-sm text-app-muted mb-3">Složení slotů</div>
-                <div class="grid gap-3 md:grid-cols-2">
-                  <div v-for="slot in localSlots" :key="slot.id" class="rounded-2xl border border-app bg-app p-3">
-                    <div class="text-xs text-app-muted mb-1">Slot {{ slot.id }}</div>
-                    <select v-model="slot.value" class="w-full rounded-xl bg-surface p-2 text-sm">
-                      <option :value="null">Vyber účastníka</option>
-                      <option v-for="option in allParticipants" :key="option.key" :value="option.label">{{ option.label }}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-                <div class="mt-4">
-                  <div class="text-sm text-app-muted mb-3">Vložit body z papíru</div>
-                  <textarea v-model="rawPoints" placeholder="Jméno 5, Druhý 4 nebo každé jméno na nový řádek s číslem" class="w-full rounded-2xl border border-app bg-app p-3 text-sm h-28 resize-none"></textarea>
-                  <div class="flex gap-2 mt-3">
-                    <button @click="parsePoints" type="button" class="rounded-2xl bg-pink-500 hover:bg-pink-600 text-white px-3 py-2 text-sm">Načíst body</button>
-                    <button @click="applyParsedToSlots" type="button" :disabled="!parsedParticipants.length" class="rounded-2xl bg-surface px-3 py-2 text-sm">Aplikovat do slotů</button>
-                    <button @click="rawPoints = ''" type="button" class="rounded-2xl bg-transparent border border-app px-3 py-2 text-sm">Vyčistit</button>
-                  </div>
-
-                  <div v-if="parsedParticipants.length" class="mt-3 space-y-2">
-                    <div v-for="(p, idx) in parsedParticipants" :key="idx" class="flex items-center justify-between gap-3">
-                      <div class="truncate text-sm">{{ p.name }}</div>
-                      <input v-model.number="p.points" class="w-20 text-sm rounded-md bg-surface p-1 text-center" />
-                    </div>
-                  </div>
-                </div>
-
-              <div>
-                <div class="text-sm text-app-muted mb-3">Výsledky zápasů</div>
-                <div class="grid gap-3">
-                  <div v-for="match in matches" :key="match.id" class="rounded-2xl border border-app bg-app p-3">
-                    <div class="flex items-center justify-between gap-3 mb-2">
-                      <div class="text-sm font-medium">{{ getSlot(match.left) }} vs {{ getSlot(match.right) }}</div>
-                      <span class="text-xs text-app-muted">{{ match.label }}</span>
-                    </div>
-                    <select v-model="roundRobin[match.id]" class="w-full rounded-xl bg-surface p-2 text-sm">
-                      <option :value="null">Vyber vítěze</option>
-                      <option :value="getSlot(match.left)">{{ getSlot(match.left) }}</option>
-                      <option :value="getSlot(match.right)">{{ getSlot(match.right) }}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-2xl border border-app bg-app p-3">
-                <div class="text-sm text-app-muted mb-3">Finálová tabulka</div>
-                <div class="grid gap-3">
-                  <div class="rounded-2xl bg-surface p-3">
-                    <div class="text-xs text-app-muted mb-1">2. kolo: 3. místo vs 2. místo</div>
-                    <select v-model="secondRoundWinner" class="w-full rounded-xl bg-surface p-2 text-sm">
-                      <option :value="null">Vyber vítěze 2. kola</option>
-                      <option v-if="ranking[2]" :value="ranking[2]">{{ ranking[2] }}</option>
-                      <option v-if="ranking[1]" :value="ranking[1]">{{ ranking[1] }}</option>
-                    </select>
-                  </div>
-                  <div class="rounded-2xl bg-surface p-3">
-                    <div class="text-xs text-app-muted mb-1">Finále: 1. místo vs vítěz 2. kola</div>
-                    <select v-model="finalWinner" class="w-full rounded-xl bg-surface p-2 text-sm">
-                      <option :value="null">Vyber vítěze ligy</option>
-                      <option v-if="ranking[0]" :value="ranking[0]">{{ ranking[0] }}</option>
-                      <option v-if="secondRoundWinner" :value="secondRoundWinner">{{ secondRoundWinner }}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-2xl border border-app bg-surface p-3">
-                <div class="text-sm text-app-muted mb-3">Hlasování</div>
-                <div class="flex gap-2 mb-3">
-                  <button v-if="selectedEvent" @click.prevent="router.push(`/events/${selectedEvent.id}/voting/host`)" class="rounded-2xl bg-pink-500 text-white px-3 py-2 text-sm">Otevřít hostitelský panel</button>
-                  <button v-if="selectedEvent" @click.prevent="loadVotingStatus(selectedEvent.id)" class="rounded-2xl bg-surface px-3 py-2 text-sm">Aktualizovat stav</button>
-                </div>
-                <div v-if="votingStatus">
-                  <div v-if="votingStatus.error" class="text-sm text-red-400">Nepodařilo se načíst stav hlasování</div>
-                  <div v-else class="text-sm text-app-muted">{{ JSON.stringify(votingStatus) }}</div>
-                </div>
-              </div>
-
-              <button @click="saveLeague" class="w-full rounded-2xl bg-pink-500 hover:bg-pink-600 py-3 text-white font-semibold">
-                Uložit ligu
-              </button>
-
-              <div v-if="saveMessage" class="text-sm text-emerald-300">{{ saveMessage }}</div>
-            </div>
-          </div>
+            <template v-else-if="activeTab === 'voting'">
+              <VotingHostPanel :event-id="selectedEvent.id" />
+            </template>
+          </template>
         </div>
       </div>
     </div>
@@ -179,6 +138,9 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import EventList from '../components/Organizer/EventList.vue'
+import PointsEditor from '../components/Organizer/PointsEditor.vue'
+import VotingHostPanel from '../components/Organizer/VotingHostPanel.vue'
 
 const router = useRouter()
 const events = ref([])
@@ -186,6 +148,7 @@ const searchQuery = ref('')
 const showAllEvents = ref(false)
 const loadingEvents = ref(true)
 const selectedEventId = ref(null)
+const activeTab = ref('league')
 const selectedEvent = computed(() => events.value.find((event) => event.id === selectedEventId.value) || null)
 const localSlots = ref([{ id: 'A', value: null }, { id: 'B', value: null }, { id: 'C', value: null }])
 const roundRobin = ref({ ab: null, bc: null, ca: null })
@@ -197,7 +160,6 @@ const saveMessage = ref('')
 const rawPoints = ref('')
 const parsedParticipants = ref([])
 const pointsMap = ref({})
-const votingStatus = ref(null)
 
 const matches = [
   { id: 'ab', left: 'A', right: 'B', label: 'Zápas A vs B' },
@@ -237,7 +199,6 @@ const selectEvent = async (id) => {
   selectedEventId.value = id
   saveMessage.value = ''
   await loadLeagueData(id)
-  await loadVotingStatus(id)
 }
 
 const getSlot = (id) => localSlots.value.find((s) => s.id === id)?.value || `Soutěžící ${id}`
@@ -254,15 +215,13 @@ const ranking = computed(() => {
 
 const parsePoints = () => {
   const text = rawPoints.value || ''
-  const lines = text.split(/\n|,/) .map(s => s.trim()).filter(Boolean)
+  const lines = text.split(/\n|,/).map(s => s.trim()).filter(Boolean)
   const out = []
   for (const line of lines) {
-    // try to find a number at end
     const m = line.match(/^(.*?)[\s,:-]*([0-9]+)\s*$/)
     if (m) {
       out.push({ name: m[1].trim(), points: Number(m[2]) })
     } else {
-      // if only name provided, default 0
       out.push({ name: line, points: 0 })
     }
   }
@@ -272,19 +231,8 @@ const parsePoints = () => {
 
 const applyParsedToSlots = () => {
   if (!parsedParticipants.value.length) return
-  // apply names to slots in order
   for (let i = 0; i < localSlots.value.length; i++) {
     localSlots.value[i].value = parsedParticipants.value[i]?.name || localSlots.value[i].value
-  }
-}
-
-const loadVotingStatus = async (eventId) => {
-  if (!eventId) return
-  try {
-    const { data } = await axios.get(`/api/events/${eventId}/voting/status`)
-    votingStatus.value = data
-  } catch (err) {
-    votingStatus.value = { error: true }
   }
 }
 
@@ -296,7 +244,6 @@ const loadEvents = async () => {
     if (events.value.length && !selectedEventId.value) {
       selectedEventId.value = events.value[0].id
       await loadLeagueData(selectedEventId.value)
-      await loadVotingStatus(selectedEventId.value)
     }
   } catch (err) {
     console.error('Chyba načítání eventů:', err)
@@ -319,7 +266,6 @@ const loadLeagueData = async (eventId) => {
     roundRobin.value = { ab: null, bc: null, ca: null, ...(data.round_robin || {}) }
     secondRoundWinner.value = data.second_round_winner || null
     finalWinner.value = data.final_winner || null
-    // restore parsed points if present
     if (data.points && typeof data.points === 'object') {
       parsedParticipants.value = Object.entries(data.points).map(([name, pts]) => ({ name, points: pts }))
       pointsMap.value = { ...data.points }
@@ -341,13 +287,11 @@ const saveLeague = async () => {
     second_round_winner: secondRoundWinner.value,
     final_winner: finalWinner.value,
   }
-    // include any parsed points
-    // ensure pointsMap reflects current parsedParticipants edits
-    if (parsedParticipants.value.length) {
-      payload.points = parsedParticipants.value.reduce((acc, p) => ({ ...acc, [p.name]: p.points }), {})
-    } else if (Object.keys(pointsMap.value).length) {
-      payload.points = pointsMap.value
-    }
+  if (parsedParticipants.value.length) {
+    payload.points = parsedParticipants.value.reduce((acc, p) => ({ ...acc, [p.name]: p.points }), {})
+  } else if (Object.keys(pointsMap.value).length) {
+    payload.points = pointsMap.value
+  }
 
   try {
     await axios.put(`/api/events/${selectedEvent.value.id}/league`, { league_data: payload })
