@@ -96,7 +96,7 @@ public function show($id)
 
     public function index()
     {
-        $events = Event::with('performers', 'organizer')->orderBy('starts_at', 'desc')->get();
+        $events = Event::with('performers', 'organizer')->orderBy('starts_at', 'asc')->get();
         return Inertia::render('Events/Index', [
             'events' => $events
         ]);
@@ -104,7 +104,7 @@ public function show($id)
 
     public function apiIndex()
 {
-    $events = Event::with('performers', 'organizer', 'winnerAward')->orderBy('starts_at', 'desc')->get();
+    $events = Event::with('performers', 'organizer', 'winnerAward')->orderBy('starts_at', 'asc')->get();
     return response()->json($events);
 }
 
