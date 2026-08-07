@@ -20,11 +20,25 @@
           <div class="relative w-full h-full flex items-center justify-center group">
 
             <div
-              class="relative w-full max-w-md h-[100svh] lg:h-full lg:max-h-[calc(100vh-5rem)] lg:aspect-[9/16] overflow-hidden lg:rounded-2xl lg:shadow-2xl">
+              class="relative w-full max-w-md h-[100svh] lg:h-full lg:max-h-[calc(100vh-5rem)] lg:aspect-[9/16] overflow-hidden lg:rounded-2xl lg:shadow-2xl"
+              style="touch-action: manipulation;">
               <video :src="video.video_url" class="w-full h-full object-cover transition group-hover:scale-[1.01]"
                 autoplay muted loop playsinline></video>
 
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              <div class="absolute inset-0 z-[5]" @dblclick="handleDblClick($event, video)"
+                @touchend="handleTouchEnd($event, video)"></div>
+
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none">
+              </div>
+
+              <div v-if="video.likeHeartKey" :key="video.likeHeartKey"
+                class="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
+                <svg viewBox="0 0 24 24" class="w-28 h-28 text-white drop-shadow-xl like-heart-pop" fill="currentColor"
+                  aria-hidden="true">
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z" />
+                </svg>
+              </div>
 
               <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-20">
                 <button type="button" class="rounded-full" @click="openProfile(video.user?.username)">
@@ -60,7 +74,7 @@
                 </button>
               </div>
 
-              <div class="absolute bottom-32 left-4 right-16 z-20 text-white">
+              <div class="absolute bottom-32 left-4 right-16 z-20 text-white pointer-events-none">
                 <p class="font-semibold text-lg leading-tight line-clamp-1">
                   {{ video.title || '' }}
                 </p>
@@ -215,6 +229,7 @@ import axios from 'axios'
 import SideNav from '../components/SideNav.vue'
 import TopSearch from '../components/TopSearch.vue'
 import { useToast } from '../composables/useToast'
+import { useDoubleTap } from '../composables/useDoubleTap'
 
 const { success: toastSuccess } = useToast()
 const videos = ref([])
@@ -290,6 +305,24 @@ const toggleLike = async (video) => {
     console.error(err)
   }
 }
+
+const showLikeHeart = (video) => {
+  const key = Date.now()
+  video.likeHeartKey = key
+  setTimeout(() => {
+    if (video.likeHeartKey === key) video.likeHeartKey = null
+  }, 900)
+}
+
+const likeFromDoubleTap = async (video) => {
+  showLikeHeart(video)
+  if (!hasToken() || video.liked_by_me) return
+  await toggleLike(video)
+}
+
+const { handleDblClick, handleTouchEnd } = useDoubleTap((video) => {
+  likeFromDoubleTap(video)
+})
 
 const fetchComments = async (video) => {
   video.commentsLoading = true
@@ -397,5 +430,38 @@ const handleNavigate = (nav) => {
 <style scoped>
 .flex-1::-webkit-scrollbar {
   display: none;
+}
+
+.like-heart-pop {
+  animation: like-heart-pop 0.85s ease-out forwards;
+}
+
+@keyframes like-heart-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  15% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+
+  30% {
+    transform: scale(0.95);
+  }
+
+  45% {
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
 }
 </style>

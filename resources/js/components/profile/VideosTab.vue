@@ -63,9 +63,20 @@
       Zavrit
     </button>
     <div class="w-full h-full flex items-center justify-center">
-      <div class="w-full max-w-lg rounded-2xl overflow-hidden border border-white/15 bg-black relative">
+      <div class="w-full max-w-lg rounded-2xl overflow-hidden border border-white/15 bg-black relative"
+        style="touch-action: manipulation;">
         <video :src="selectedVideo.video_url" class="w-full max-h-[92vh] aspect-[9/16] object-contain" controls
-          autoplay></video>
+          autoplay @dblclick="handleDblClick($event, selectedVideo)"
+          @touchend="handleTouchEnd($event, selectedVideo)"></video>
+
+        <div v-if="selectedVideo.likeHeartKey" :key="selectedVideo.likeHeartKey"
+          class="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
+          <svg viewBox="0 0 24 24" class="w-28 h-28 text-white drop-shadow-xl like-heart-pop" fill="currentColor"
+            aria-hidden="true">
+            <path
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z" />
+          </svg>
+        </div>
 
         <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-10">
           <button type="button" class="rounded-full" @click="openProfile(selectedVideo.user?.username)"
@@ -116,9 +127,20 @@
       <section v-for="(video, index) in videos" :key="'mobile-view-' + video.id"
         :ref="(el) => setMobileSlideRef(el, index)" class="h-screen w-full snap-start flex items-center justify-center"
         style="scroll-snap-stop: always;">
-        <div class="relative w-full h-full">
+        <div class="relative w-full h-full" style="touch-action: manipulation;">
           <video :src="video.video_url" class="w-full h-full object-contain" controls playsinline
-            :autoplay="index === selectedIndex" preload="metadata"></video>
+            :autoplay="index === selectedIndex" preload="metadata"
+            @dblclick="handleDblClick($event, video)" @touchend="handleTouchEnd($event, video)"></video>
+
+          <div v-if="video.likeHeartKey" :key="video.likeHeartKey"
+            class="absolute inset-0 z-30 pointer-events-none flex items-center justify-center">
+            <svg viewBox="0 0 24 24" class="w-24 h-24 text-white drop-shadow-xl like-heart-pop" fill="currentColor"
+              aria-hidden="true">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09A6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54z" />
+            </svg>
+          </div>
+
           <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-10">
             <button type="button" class="rounded-full" @click="openProfile(video.user?.username)"
               aria-label="Open author profile">
@@ -206,6 +228,7 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useToast } from '../../composables/useToast'
+import { useDoubleTap } from '../../composables/useDoubleTap'
 
 const { success: toastSuccess } = useToast()
 
@@ -287,6 +310,24 @@ const toggleLike = async (video) => {
   }
 }
 
+const showLikeHeart = (video) => {
+  const key = Date.now()
+  video.likeHeartKey = key
+  setTimeout(() => {
+    if (video.likeHeartKey === key) video.likeHeartKey = null
+  }, 900)
+}
+
+const likeFromDoubleTap = async (video) => {
+  showLikeHeart(video)
+  if (!hasToken() || video.liked_by_me) return
+  await toggleLike(video)
+}
+
+const { handleDblClick, handleTouchEnd } = useDoubleTap((video) => {
+  likeFromDoubleTap(video)
+})
+
 const fetchComments = async (video) => {
   video.commentsLoading = true
   try {
@@ -362,3 +403,38 @@ const startReply = (comment) => {
   replyTargetCommentId.value = comment.id
 }
 </script>
+
+<style scoped>
+.like-heart-pop {
+  animation: like-heart-pop 0.85s ease-out forwards;
+}
+
+@keyframes like-heart-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  15% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+
+  30% {
+    transform: scale(0.95);
+  }
+
+  45% {
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+</style>
