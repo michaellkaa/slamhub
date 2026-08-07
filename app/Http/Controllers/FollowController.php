@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Notifications\NewFollowerNotification;
 
 class FollowController extends Controller
 {
@@ -32,6 +33,7 @@ class FollowController extends Controller
         } else {
             $authUser->following()->attach($userToFollow->id);
             $following = true;
+            $userToFollow->notify(new NewFollowerNotification($authUser));
         }
 
         $followersCount = $userToFollow->followers()->count();
