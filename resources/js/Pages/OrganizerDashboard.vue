@@ -3,7 +3,7 @@
     <div class="w-full max-w-5xl">
       <button type="button" @click="goBack" class="mb-6 text-sm text-app-muted hover:text-app transition">
         ← Zpět do nastavení
-      </button>
+      </button> 
 
       <div v-if="loadingEvents" class="rounded-xl border border-app bg-surface p-6 text-sm text-app-muted">
         Načítám tvoje eventy…
